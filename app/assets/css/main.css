@@ -2,17 +2,59 @@
 @import "@nuxt/ui";
 
 @theme static {
-  --font-sans: 'Public Sans', sans-serif;
+  --font-sans: "Manrope", sans-serif;
 
-  --color-green-50: #EFFDF5;
-  --color-green-100: #D9FBE8;
-  --color-green-200: #B3F5D1;
-  --color-green-300: #75EDAE;
-  --color-green-400: #00DC82;
-  --color-green-500: #00C16A;
-  --color-green-600: #00A155;
-  --color-green-700: #007F45;
-  --color-green-800: #016538;
-  --color-green-900: #0A5331;
-  --color-green-950: #052E16;
+  --color-blue-50: #F2F5F8;
+  --color-blue-100: #E2E9F0;
+  --color-blue-200: #C5D4E1;
+  --color-blue-300: #9EB6CE;
+  --color-blue-400: #6B8FB5;
+  --color-blue-500: #2D4E6F;
+  --color-blue-600: #24405C;
+  --color-blue-700: #1D334A;
+  --color-blue-800: #172738;
+  --color-blue-900: #121C28;
+  --color-blue-950: #0B121B;
+
+  --color-green-50: #F2FAF6;
+  --color-green-100: #DEFAF0;
+  --color-green-200: #B7F0D8;
+  --color-green-300: #7ADDB3;
+  --color-green-400: #20A66D;
+  --color-green-500: #0E7E4E;
+  --color-green-600: #09683F;
+  --color-green-700: #065333;
+  --color-green-800: #05422A;
+  --color-green-900: #053723;
+  --color-green-950: #021E12;
+
+  --color-yellow-50: #FBF1E6;
+  --color-yellow-100: #F7E3CD;
+  --color-yellow-200: #EFC89B;
+  --color-yellow-300: #E8AD69;
+  --color-yellow-400: #E09237;
+  --color-yellow-500: #D97706;
+  --color-yellow-600: #B66405;
+  --color-yellow-700: #915004;
+  --color-yellow-800: #6C3B03;
+  --color-yellow-900: #502C02;
+  --color-yellow-950: #341C01;
+
+  --color-red-50: #FCF0F0;
+  --color-red-100: #FBD8D9;
+  --color-red-200: #F8AFB1;
+  --color-red-300: #F8767B;
+  --color-red-400: #FA2A31;
+  --color-red-500: #CC0007;
+  --color-red-600: #AC0006;
+  --color-red-700: #890005;
+  --color-red-800: #670004;
+  --color-red-900: #4B0003;
+  --color-red-950: #300002;
+
+}
+
+:root:not(.dark) {
+  --ui-text-dimmed: var(--ui-color-neutral-500);
+  --ui-text-muted: var(--ui-color-neutral-600);
 }
