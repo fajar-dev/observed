@@ -5,6 +5,9 @@ export default defineNuxtConfig({
     '@nuxt/ui'
   ],
 
+  components: [{ path: '~/components', pathPrefix: false }, { path: '~/features', pattern: '**/*.vue', pathPrefix: false }],
+  imports: { dirs: ['core/composables', 'core/utils', 'features/**/composables'] },
+
   devtools: {
     enabled: false
   },
