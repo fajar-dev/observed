@@ -13,6 +13,7 @@ function menu(source: DataSource) {
     } }
   ]
 }
+useErrorToast(loadError, 'Could not load configuration')
 </script>
 
 <template>
@@ -46,7 +47,6 @@ function menu(source: DataSource) {
       :content="false"
     />
     <template v-if="tab === 'data-sources'">
-      <RequestError :message="loadError" />
       <div class="toolbar">
         <UInput
           v-model="search"

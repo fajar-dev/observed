@@ -2,7 +2,8 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { AlertRule } from '#shared/domain/alert-rule'
 
-const { alerts, loadError, status, sources, destinations, busy, error, search, stateFilter, open, removeOpen, editing, evaluating, destinationName, filtered, edit, indicator, evaluate, remove, menu } = provideAlertRules()
+const { canWrite, isAdmin } = useAuthentication()
+const { alerts, loadError, status, sources, sourcesStatus, sourcesError, destinations, destinationsStatus, destinationsError, busy, error, search, stateFilter, open, removeOpen, editing, evaluating, destinationName, filtered, edit, indicator, evaluate, remove, menu } = provideAlertRules()
 const columns: TableColumn<AlertRule>[] = [
   { id: 'state', header: 'State', meta: { class: { th: 'w-compact', td: 'whitespace-nowrap' } } },
   { accessorKey: 'name', header: 'Alert rule', meta: { class: { th: 'w-full', td: 'min-w-field' } } },
@@ -21,6 +22,16 @@ function duration(seconds: number) {
 function destinationLabels(rule: AlertRule) {
   return rule.telegramDestinationIds.map(id => destinationName.value[id] || 'Unavailable destination').join(', ')
 }
+useErrorToast(() => loadError.value || sourcesError.value || destinationsError.value || (!open.value && !removeOpen.value ? error.value : ''))
+
+useNotice(() => canWrite.value && (!sources.value.length || !destinations.value.length) && sourcesStatus.value === 'success' && destinationsStatus.value === 'success'
+  ? {
+      title: 'Connect your alert sources',
+      description: 'An InfluxDB data source and Telegram destination are required to create alert rules.',
+      color: 'warning',
+      actions: isAdmin.value ? [{ label: 'Open Configuration', to: '/configuration' }] : undefined
+    }
+  : undefined)
 </script>
 
 <template>
@@ -32,6 +43,7 @@ function destinationLabels(rule: AlertRule) {
   >
     <template #actions>
       <UButton
+        v-if="canWrite"
         size="sm"
         label="New alert rule"
         icon="i-lucide-plus"
@@ -39,26 +51,6 @@ function destinationLabels(rule: AlertRule) {
         @click="edit()"
       />
     </template>
-    <RequestError :message="loadError || (!open && !removeOpen ? error : '')" />
-    <div
-      v-if="!sources.length || !destinations.length"
-      class="surface flex flex-wrap items-center justify-between gap-space-lg border-warning-muted p-space-lg"
-    >
-      <div class="flex items-center gap-space-md">
-        <UIcon
-          name="i-lucide-info"
-          class="size-icon-md text-warning"
-        /><p class="text-sm text-muted">
-          Connect an InfluxDB data source and a Telegram destination to create alert rules.
-        </p>
-      </div><UButton
-        size="sm"
-        label="Open Configuration"
-        to="/configuration"
-        color="neutral"
-        variant="outline"
-      />
-    </div>
     <div class="toolbar">
       <UInput
         v-model="search"
@@ -103,7 +95,7 @@ function destinationLabels(rule: AlertRule) {
           <button
             class="block max-w-summary truncate text-left text-sm font-medium text-highlighted hover:text-primary"
             :title="row.original.summary || row.original.name"
-            @click="edit(row.original)"
+            @click="canWrite ? edit(row.original) : undefined"
           >
             {{ row.original.name }}
           </button>
@@ -170,7 +162,10 @@ function destinationLabels(rule: AlertRule) {
         </template>
         <template #actions-cell="{ row }">
           <div class="flex items-center justify-end gap-space-xs">
-            <UTooltip text="Evaluate now">
+            <UTooltip
+              v-if="canWrite"
+              text="Evaluate now"
+            >
               <UButton
                 size="sm"
                 icon="i-lucide-play"

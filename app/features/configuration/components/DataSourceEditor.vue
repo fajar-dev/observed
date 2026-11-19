@@ -5,6 +5,7 @@ const configuration = useConfiguration()
 const { busy, error, open, editing, clearSecret, save } = configuration
 const form = toRef(configuration, 'form')
 const languageOptions = computed(() => languages.map(value => ({ label: value === 'flux' ? 'Flux · InfluxDB 2.x' : 'InfluxQL · Compatible API', value })))
+useErrorToast(() => open.value ? error.value : '')
 </script>
 
 <template>
@@ -18,7 +19,6 @@ const languageOptions = computed(() => languages.map(value => ({ label: value ==
     :busy="busy"
     @save="save"
   >
-    <RequestError :message="error" />
     <UFormField
       name="name"
       label="Name"

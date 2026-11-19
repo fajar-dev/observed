@@ -5,6 +5,15 @@ const { busy, error, open, editing, preview, previewLoading, form, source, sourc
 const previewOptions = defaultPanelOptions()
 const previewResults = computed(() => preview.value?.queryResult ? [preview.value.queryResult] : [])
 const previewColor = computed(() => ({ firing: 'error', normal: 'success', no_data: 'warning', error: 'error', pending: 'warning' } as const)[preview.value?.state ?? 'pending'])
+useErrorToast(() => open.value ? error.value : '', 'Alert rule could not be saved')
+
+useNotice(() => open.value && preview.value?.message
+  ? {
+      title: 'Alert condition preview',
+      description: preview.value.message,
+      color: previewColor.value
+    }
+  : undefined)
 </script>
 
 <template>
@@ -82,7 +91,6 @@ const previewColor = computed(() => ({ firing: 'error', normal: 'success', no_da
               </div>
             </div>
             <div class="space-y-space-lg bg-default p-space-lg">
-              <RequestError :message="error" />
               <div class="flex flex-col items-stretch gap-space-md sm:flex-row sm:items-end sm:justify-between">
                 <div class="toolbar min-w-none sm:flex-fill">
                   <UFormField
@@ -183,12 +191,6 @@ const previewColor = computed(() => ({ firing: 'error', normal: 'success', no_da
                   </UFormField>
                 </div>
               </ContentPanel>
-              <UAlert
-                v-if="preview?.message"
-                :color="previewColor"
-                :description="preview.message"
-                variant="subtle"
-              />
               <p class="text-xs text-muted">
                 Preview evaluates your query and threshold without sending Telegram notifications.
               </p>

@@ -3,13 +3,15 @@ import { cloneValue } from '#shared/utils/clone'
 import { ranges } from '#shared/domain/query'
 import type { AlertRulePreview, AlertRuleInput, AlertRule } from '#shared/domain/alert-rule'
 
-export function createAlertRules() {
+function createAlertRules() {
+  const apiRequest = useApiRequest()
+  const { canWrite } = useAuthentication()
   useSeoMeta({ title: 'Alerts · AMTI Observe' })
   const { data: alerts, error: loadError, status, refresh } = useAlertRuleRecords()
-  const { data: sources } = useDataSources()
-  const { data: destinations } = useTelegramDestinations()
+  const { data: sources, status: sourcesStatus, error: sourcesError } = useDataSources()
+  const { data: destinations, status: destinationsStatus, error: destinationsError } = useTelegramDestinations()
   const { busy, error, perform } = useAsyncAction()
-  const toast = useToast()
+  const toast = useNotifications()
   const route = useRoute()
   const search = ref('')
   const stateFilter = ref('all')
@@ -95,6 +97,10 @@ export function createAlertRules() {
   }
   function menu(rule: AlertRule) {
     const muted = rule.muteUntil && Date.parse(rule.muteUntil) > Date.now()
+    if (!canWrite.value) return [{ label: 'Evaluation history', icon: 'i-lucide-history', onSelect: () => {
+      editing.value = rule
+      historyOpen.value = true
+    } }]
     return [
       { label: 'Edit rule', icon: 'i-lucide-pencil', onSelect: () => edit(rule) },
       { label: rule.enabled ? 'Pause evaluation' : 'Resume evaluation', icon: rule.enabled ? 'i-lucide-pause' : 'i-lucide-play', onSelect: () => updateRule(rule, { enabled: !rule.enabled }) },
@@ -122,7 +128,7 @@ export function createAlertRules() {
   })
   let openedFromRoute = false
   watch(() => [route.query.new, sources.value.length, destinations.value.length], () => {
-    if (!openedFromRoute && route.query.new && sources.value.length && destinations.value.length) {
+    if (canWrite.value && !openedFromRoute && route.query.new && sources.value.length && destinations.value.length) {
       openedFromRoute = true
       edit()
     }
@@ -133,7 +139,7 @@ export function createAlertRules() {
     }, 15000)
     onScopeDispose(() => clearInterval(timer))
   })
-  return { alerts, loadError, status, refresh, sources, destinations, busy, error, perform, toast, route, search, stateFilter, open, removeOpen, historyOpen, editing, evaluating, preview, previewLoading, form, source, destinationName, sourceOptions, destinationOptions, operators, filtered, defaults, edit, indicator, save, evaluate, previewCondition, updateRule, remove, menu, alertRuleSchema, ranges }
+  return { alerts, loadError, status, refresh, sources, sourcesStatus, sourcesError, destinations, destinationsStatus, destinationsError, busy, error, perform, toast, route, search, stateFilter, open, removeOpen, historyOpen, editing, evaluating, preview, previewLoading, form, source, destinationName, sourceOptions, destinationOptions, operators, filtered, defaults, edit, indicator, save, evaluate, previewCondition, updateRule, remove, menu, alertRuleSchema, ranges }
 }
 
 const context = createFeatureContext(createAlertRules, 'AlertRules')

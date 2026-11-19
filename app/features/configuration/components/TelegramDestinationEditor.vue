@@ -8,6 +8,7 @@ defineEmits<{ save: [], change: [patch: Partial<TelegramDestinationInput>] }>()
 const schema = computed(() => telegramDestinationSchema.superRefine((value, context) => {
   if (!props.destination?.hasToken && !value.token) context.addIssue({ code: 'custom', path: ['token'], message: 'Enter a Telegram bot token.' })
 }))
+useErrorToast(() => open.value ? props.error : '')
 </script>
 
 <template>
@@ -21,7 +22,6 @@ const schema = computed(() => telegramDestinationSchema.superRefine((value, cont
     :busy="busy"
     @save="$emit('save')"
   >
-    <RequestError :message="error" />
     <UFormField
       name="name"
       label="Name"

@@ -1,10 +1,12 @@
 import type { DataSource, DataSourceInput } from '#shared/domain/data-source'
 
-export function createConfiguration() {
+function createConfiguration() {
+  const router = useRouter()
+  const apiRequest = useApiRequest()
   useSeoMeta({ title: 'Configuration · AMTI Observe' })
   const { data: sources, error: loadError, status, refresh } = useDataSources()
   const { busy, perform, error } = useAsyncAction()
-  const toast = useToast()
+  const toast = useNotifications()
   const open = ref(false)
   const removeOpen = ref(false)
   const editing = ref<DataSource>()
@@ -15,7 +17,7 @@ export function createConfiguration() {
   const route = useRoute()
   const tab = computed({
     get: () => route.query.section === 'telegram-destinations' ? 'telegram-destinations' : 'data-sources',
-    set: (value: string) => navigateTo({ path: '/configuration', query: value === 'telegram-destinations' ? { section: 'telegram-destinations' } : {} }, { replace: true })
+    set: (value: string) => router.replace({ path: '/configuration', query: value === 'telegram-destinations' ? { section: 'telegram-destinations' } : {} })
   })
   const search = ref('')
   const filteredSources = computed(() => sources.value.filter(item => (item.name + ' ' + item.url).toLowerCase().includes(search.value.toLowerCase())))

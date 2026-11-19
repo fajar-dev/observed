@@ -1,7 +1,8 @@
 <script setup lang="ts">
-defineProps<{ label: string, loading?: boolean, error?: string }>()
+const props = defineProps<{ label: string, loading?: boolean, error?: string }>()
 const open = defineModel<boolean>('open', { required: true })
 defineEmits<{ confirm: [] }>()
+useErrorToast(() => open.value ? props.error : '', 'Could not delete record')
 </script>
 
 <template>
@@ -12,7 +13,6 @@ defineEmits<{ confirm: [] }>()
     :dismissible="!loading"
   >
     <template #body>
-      <RequestError :message="error" />
       <div class="mt-space-md flex justify-end gap-space-sm">
         <UButton
           label="Cancel"
