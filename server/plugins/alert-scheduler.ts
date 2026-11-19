@@ -1,4 +1,4 @@
-import { closeWorkspace, getWorkspace } from '../core/container'
+import { closeWorkspace, getWorkspace } from '~~/server/bootstrap/workspace'
 
 export default defineNitroPlugin((app) => {
   let running: Promise<void> | undefined

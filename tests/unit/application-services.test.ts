@@ -1,32 +1,32 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { randomBytes, randomUUID } from 'node:crypto'
-import { WorkspaceError } from '~~/server/core/workspace-error'
-import type { Resource, StoredEntity, WorkspaceStore, DataSourceAccess, TelegramAccess } from '~~/server/core/ports'
+import { WorkspaceError } from '~~/server/domain/workspace-error'
+import type { Resource, ResourceValues, StoredEntity, WorkspaceRepository, DataSourceAccess, TelegramAccess } from '~~/server/domain/ports'
 import type { DashboardDefinition } from '#shared/domain/dashboard'
 import type { QueryResponse } from '#shared/domain/query'
-import { CredentialVault } from '~~/server/infrastructure/security/credential-vault'
-import { DataSourceService } from '~~/server/application/data-sources/data-source-service'
-import { AlertService } from '~~/server/application/alerts/alert-service'
+import { CredentialVault } from '~~/server/platform/security/credential-vault'
+import { DataSourceService } from '~~/server/features/data-sources/application/data-source.service'
+import { AlertService } from '~~/server/features/alerts/application/alert.service'
 
-class MemoryStore implements WorkspaceStore {
+class MemoryStore implements WorkspaceRepository {
   private records = new Map<string, StoredEntity<unknown>>()
-  async list<T>(resource: Resource) { return [...this.records].filter(([key]) => key.startsWith(resource + ':')).map(([, record]) => record as StoredEntity<T>) }
-  async find<T>(resource: Resource, id: string) { return this.records.get(resource + ':' + id) as StoredEntity<T> | undefined }
-  async get<T>(resource: Resource, id: string) {
-    const record = await this.find<T>(resource, id)
+  async list<K extends Resource>(resource: K) { return [...this.records].filter(([key]) => key.startsWith(resource + ':')).map(([, record]) => record as StoredEntity<ResourceValues[K]>) }
+  async find<K extends Resource>(resource: K, id: string) { return this.records.get(resource + ':' + id) as StoredEntity<ResourceValues[K]> | undefined }
+  async get<K extends Resource>(resource: K, id: string) {
+    const record = await this.find(resource, id)
     if (!record) throw new WorkspaceError({ statusCode: 404, statusMessage: 'Record not found' })
     return record
   }
 
-  async create<T>(resource: Resource, value: T) {
+  async create<K extends Resource>(resource: K, value: ResourceValues[K]) {
     const record = { ...value, id: randomUUID(), updatedAt: new Date().toISOString() }
     this.records.set(resource + ':' + record.id, record)
     return record
   }
 
-  async update<T>(resource: Resource, id: string, patch: Partial<T>, remove: string[] = []) {
-    const record = { ...await this.get<T>(resource, id), ...patch }
+  async update<K extends Resource>(resource: K, id: string, patch: Partial<ResourceValues[K]>, remove: string[] = []) {
+    const record = { ...await this.get(resource, id), ...patch }
     for (const key of remove) Reflect.deleteProperty(record, key)
     this.records.set(resource + ':' + id, record)
     return record
@@ -34,6 +34,16 @@ class MemoryStore implements WorkspaceStore {
 
   async delete(resource: Resource, id: string) { this.records.delete(resource + ':' + id) }
   async saveDashboard(id: string, value: DashboardDefinition) { return this.update('dashboards', id, value) }
+  async isReferenced(resource: 'dataSources' | 'telegramDestinations' | 'dashboardFolders', id: string) {
+    const dashboards = await this.list('dashboards'), alerts = await this.list('alertRules')
+    if (resource === 'dataSources') return dashboards.some(item => item.panels.some(panel => panel.dataSourceId === id) || item.variables?.some(variable => variable.dataSourceId === id)) || alerts.some(rule => rule.dataSourceId === id)
+    if (resource === 'telegramDestinations') return alerts.some(rule => rule.telegramDestinationIds.includes(id))
+    const folder = await this.get('dashboardFolders', id)
+    return dashboards.some(item => item.folder === folder.name) || alerts.some(item => item.folder === folder.name)
+  }
+
+  async dueAlerts() { return (await this.list('alertRules')).filter(rule => rule.enabled) }
+  async versions(id: string) { return (await this.list('dashboardVersions')).filter(version => version.dashboardId === id) }
   async withLock<T>(_id: string, action: () => Promise<T>) { return action() }
 }
 
@@ -64,7 +74,7 @@ test('data source service conceals credentials and preserves them during editing
   assert.equal(updated.hasSecret, true)
   await service.query({ dataSourceId: source.id, query: 'query', range: '1h' })
   assert.equal(credential, 'credential')
-  await store.create('dashboards', { panels: [{ dataSourceId: source.id }] })
+  await store.create('dashboards', { name: 'Usage', description: '', range: '1h', refresh: 0, panels: [{ id: randomUUID(), title: 'Usage', type: 'line', span: 6, dataSourceId: source.id, query: 'cpu', additionalQueries: [] }] })
   await assert.rejects(() => service.deleteSource(source.id), /Remove this data source/)
 })
 

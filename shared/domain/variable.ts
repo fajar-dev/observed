@@ -1,9 +1,10 @@
+import { variableName } from './common'
 import { z } from 'zod'
 import { querySchema, rangeSchema } from './query'
 import type { QueryRequest } from './query'
 
 export const variableSchema = z.object({
-  name: z.string().regex(/^[A-Za-z][A-Za-z0-9_]*$/).max(60).refine(value => !value.startsWith('__'), 'Reserved variable name'),
+  name: variableName,
   label: z.string().max(80),
   values: z.array(z.string().min(1).max(500)).max(500),
   current: z.string().max(500),

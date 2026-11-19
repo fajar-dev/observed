@@ -1,3 +1,5 @@
+import { assertReadOnlyInfluxQl } from '~~/server/features/queries/domain/read-only-influxql'
+import { variableSchema } from '#shared/domain/variable'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { InfluxQueryBuilder } from '#shared/domain/query-builder'
@@ -24,4 +26,13 @@ test('InfluxQL builder quotes names and literals without replacing the time macr
   assert.match(builder.build({ ...selection, aggregation: 'raw' }), /LIMIT 500$/)
   assert.equal(builder.build({ ...selection, field: '' }), '')
   assert.throws(() => builder.build({ ...selection, aggregation: 'arbitrary()' }), /supported aggregation/)
+})
+
+test('InfluxQL read-only checks distinguish executable tokens from quoted data', () => {
+  for (const query of ['SELECT value FROM cpu', 'SHOW MEASUREMENTS', 'SELECT value FROM "INTO"', 'SELECT value FROM cpu WHERE host=\'a;INTO\'', 'SELECT value FROM cpu WHERE host =~ /INTO;/', '/* source */ SELECT value FROM cpu']) assert.doesNotThrow(() => assertReadOnlyInfluxQl(query))
+  for (const query of ['DROP DATABASE cpu', 'SELECT value INTO backup FROM cpu', 'SELECT value FROM cpu; DROP DATABASE cpu', '/* unclosed', 'SELECT value FROM cpu WHERE host=\'unclosed']) assert.throws(() => assertReadOnlyInfluxQl(query))
+})
+
+test('reserved dashboard variables and unresolved prototype names are rejected', () => {
+  for (const name of ['constructor', 'prototype', 'toString']) assert.equal(variableSchema.safeParse({ name, label: '', values: ['value'], current: 'value' }).success, false)
 })

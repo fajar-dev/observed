@@ -27,7 +27,7 @@ export function interpolateVariables(query: string, variables: QueryRequest['var
   const known: VariableValues = variables ?? {}
   const valuesFor = (name: string) => {
     if (name.startsWith('__') || (queryLanguage === 'influxql' && name === 'timeFilter')) return undefined
-    const value = known[name]
+    const value = Object.hasOwn(known, name) ? known[name] : undefined
     if (value === undefined) throw new Error(`Variable "${name}" is not resolved. Configure it in dashboard settings.`)
     const selected = Array.isArray(value) ? value : [value]
     if (!selected.length) throw new Error(`Select at least one value for variable "${name}".`)

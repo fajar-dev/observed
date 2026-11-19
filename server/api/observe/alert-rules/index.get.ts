@@ -1,3 +1,4 @@
-import { getWorkspace } from '~~/server/core/container'
+import { defineWorkspaceHandler } from '~~/server/http/workspace-handler'
+import { getWorkspace } from '~~/server/bootstrap/workspace'
 
-export default defineEventHandler(async () => getWorkspace().alerts.list())
+export default defineWorkspaceHandler(async () => getWorkspace().alerts.list())

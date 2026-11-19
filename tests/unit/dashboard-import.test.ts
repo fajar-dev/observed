@@ -1,9 +1,9 @@
 import { describe, test } from 'node:test'
 import assert from 'node:assert/strict'
 import { createError } from 'h3'
-import { DashboardJsonImporter } from '~~/server/infrastructure/imports/dashboard-json-importer'
-import { VariableResolver } from '~~/server/application/queries/variable-resolver'
-import { DashboardDiagnostics } from '~~/server/application/dashboards/dashboard-diagnostics'
+import { DashboardJsonImporter } from '~~/server/features/dashboards/infrastructure/dashboard-json-importer'
+import { VariableResolver } from '~~/server/features/queries/application/variable-resolver'
+import { DashboardDiagnostics } from '~~/server/features/dashboards/application/dashboard-diagnostics'
 import { defaultPanelOptions } from '#shared/domain/panel'
 import { dataSourceSchema } from '#shared/domain/data-source'
 import type { DashboardVariable } from '#shared/domain/variable'
@@ -178,7 +178,7 @@ test('Grafana appearance retains sections, tall panels, classic palette, legend 
 })
 
 test('Grafana neutral cards, fixed colors and percentage thresholds preserve their meaning', async () => {
-  const { grafanaAppearance } = await import('~~/server/infrastructure/imports/grafana-appearance')
+  const { grafanaAppearance } = await import('~~/server/features/dashboards/infrastructure/grafana-appearance')
   const { metricColor } = await import('~~/app/features/queries/utils/visualization')
   const neutral = grafanaAppearance({ options: { colorMode: 'none', graphMode: 'area' }, fieldConfig: { defaults: { color: { mode: 'thresholds' }, thresholds: { mode: 'percentage', steps: [{ color: 'green', value: null }, { color: 'red', value: 80 }] }, min: 100, max: 200 } } }, [])
   assert.equal(neutral.statColorMode, 'none')
@@ -215,7 +215,7 @@ test('Grafana query aliases and field color overrides remain consistent with the
 })
 
 test('InfluxQL legacy timeFilter remains a macro while dashboard variables are resolved', async () => {
-  const { InfluxClient } = await import('~~/server/infrastructure/influx/influx-client')
+  const { InfluxClient } = await import('~~/server/features/queries/infrastructure/influx-client')
   let statement = ''
   const client = new InfluxClient(async (url) => {
     statement = url.searchParams.get('q') ?? ''

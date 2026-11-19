@@ -1,5 +1,6 @@
-import { getWorkspace } from '~~/server/core/container'
-import { resourceId, validateBody } from '~~/server/http/validation'
+import { defineWorkspaceHandler } from '~~/server/http/workspace-handler'
+import { getWorkspace } from '~~/server/bootstrap/workspace'
+import { resourceId, validateBody } from '~~/server/http/request-validation'
 import { dataSourceSchema } from '#shared/domain/data-source'
 
-export default defineEventHandler(async event => getWorkspace().dataSources.saveSource(await validateBody(event, dataSourceSchema), resourceId(event)))
+export default defineWorkspaceHandler(async event => getWorkspace().dataSources.saveSource(await validateBody(event, dataSourceSchema), resourceId(event)))

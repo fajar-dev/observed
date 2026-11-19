@@ -1,5 +1,6 @@
-import { getWorkspace } from '~~/server/core/container'
-import { validateBody } from '~~/server/http/validation'
+import { defineWorkspaceHandler } from '~~/server/http/workspace-handler'
+import { getWorkspace } from '~~/server/bootstrap/workspace'
+import { validateBody } from '~~/server/http/request-validation'
 import { alertRuleSchema } from '#shared/domain/alert-rule'
 
-export default defineEventHandler(async event => getWorkspace().alerts.saveAlert(await validateBody(event, alertRuleSchema)))
+export default defineWorkspaceHandler(async event => getWorkspace().alerts.saveAlert(await validateBody(event, alertRuleSchema)))

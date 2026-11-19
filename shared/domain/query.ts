@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import type { DataSource } from './data-source'
-import { queryText } from './common'
+import { queryText, variableName } from './common'
 
 export const ranges = [
   { label: 'Last 5 minutes', value: '5m', seconds: 300 },
@@ -21,7 +21,7 @@ export const querySchema = z.object({
   range: rangeSchema,
   from: z.iso.datetime().optional(),
   to: z.iso.datetime().optional(),
-  variables: z.record(z.string().regex(/^[A-Za-z][A-Za-z0-9_]*$/), z.union([z.string().max(500), z.array(z.string().max(500)).max(500)])).optional()
+  variables: z.record(variableName, z.union([z.string().max(500), z.array(z.string().max(500)).max(500)])).optional()
 })
 
 export type QueryRequest = z.infer<typeof querySchema>
