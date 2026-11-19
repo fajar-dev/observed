@@ -1,8 +1,7 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'app', breadcrumb: 'Configuration' })
-useSeoMeta({ title: 'Configuration · gsi-one' })
+definePageMeta({ layout: 'workspace' })
 </script>
 
 <template>
-  <div />
+  <ConfigurationView />
 </template>
