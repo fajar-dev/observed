@@ -26,7 +26,14 @@ export default defineAppConfig({
     tabs: { variants: { orientation: { horizontal: { list: 'w-fit max-w-full' } } }, slots: { root: 'items-start', list: 'w-fit max-w-full rounded-lg p-space-xs', trigger: 'rounded-md px-space-lg py-space-sm text-sm font-medium', indicator: 'rounded-md' }, defaultVariants: { size: 'md' } },
     popover: { slots: { content: 'rounded-lg' } },
     empty: { slots: { root: 'rounded-xl p-space-xxl', title: 'text-heading font-medium', description: 'text-sm leading-relaxed text-muted' } },
-    alert: { slots: { root: 'rounded-lg', title: 'text-sm font-medium', description: 'text-sm break-words' } },
+    toast: { slots: {
+      root: 'rounded-lg border border-default bg-default p-space-lg shadow-lg ring-none gap-space-md',
+      title: 'text-sm font-semibold text-highlighted',
+      description: 'mt-space-xs text-xs leading-relaxed break-words text-muted',
+      icon: 'size-icon-md shrink-none',
+      actions: 'flex gap-space-sm shrink-none',
+      close: 'p-none'
+    } },
     badge: { slots: { base: 'rounded-sm font-medium' } },
     table: { slots: { th: 'bg-muted px-space-lg py-space-md text-xs font-medium text-muted', td: 'px-space-lg py-space-md text-sm font-normal' } },
     navigationMenu: { slots: { link: 'rounded-md font-medium', linkLeadingIcon: 'size-icon-md' } }

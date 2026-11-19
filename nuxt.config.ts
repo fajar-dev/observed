@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/ui'
   ],
+  ssr: false,
 
   components: [{ path: '~/components', pathPrefix: false }, { path: '~/features', pattern: '**/*.vue', pathPrefix: false }],
   imports: { dirs: ['core/composables', 'core/utils', 'features/**/composables'] },
@@ -11,12 +12,9 @@ export default defineNuxtConfig({
   devtools: {
     enabled: false
   },
+  app: { head: { title: 'AMTI Observe' } },
 
   css: ['~/assets/css/main.css'],
-
-  routeRules: {
-    '/': { prerender: true }
-  },
 
   compatibilityDate: '2026-06-30',
 
