@@ -13,21 +13,52 @@ bun install
 bun run dev
 ```
 
-Set `DATABASE_URL` and paste the generated key into `OBSERVE_SECRET_KEY` before starting. The key encrypts InfluxDB credentials and Telegram tokens with AES-256-GCM; keep it with database backups. Changing it makes previously encrypted credentials unreadable.
+Set `DATABASE_URL` and paste the base64 key into `OBSERVE_SECRET_KEY` before starting. Open `/sign-in` to create the first administrator directly with a name, email and password. No setup token is needed. Complete this step before exposing a new installation publicly. A durable database marker closes setup permanently once it succeeds, including after a restart or deletion of user records; no default account or password is created. Existing installations with users are marked as already configured automatically. The key encrypts InfluxDB credentials and Telegram tokens with AES-256-GCM; keep it with database backups. Changing it makes previously encrypted credentials unreadable.
 
-The application creates the `observe` PostgreSQL schema and its feature tables automatically. This rewrite starts with a new schema; it does not read or migrate previous application tables.
+The application creates the `observe` PostgreSQL schema and its feature tables automatically. A transactional, one-time migration converts the previous document tables into relational tables, including credentials and dashboard history. Normal runtime reads only the new schema.
 
 | Variable | Purpose |
 | --- | --- |
 | `DATABASE_URL` | PostgreSQL connection string |
 | `OBSERVE_SECRET_KEY` | Base64 encoded 32-byte encryption key |
-| `OBSERVE_AUTH_USER` | Basic authentication username, defaults to `admin` |
-| `OBSERVE_AUTH_PASSWORD` | Authentication password; required outside development unless an authenticating proxy is configured |
-| `OBSERVE_TRUST_PROXY_AUTH` | `true` only when access is restricted to an authenticating reverse proxy |
+| `OBSERVE_TRUST_PROXY` | Trust X-Forwarded-For for login throttling only behind a trusted proxy |
 | `OBSERVE_ORIGIN` | Public origin when a reverse proxy changes the origin seen by the app |
 | `OBSERVE_ALERTS_ENABLED` | Set `false` on processes that should not run the alert scheduler |
 
-Development uses Node.js for Nuxt SSR. Production can run the generated server with Bun:
+## Authentication and authorization
+
+Local sign-in uses email and password. Passwords use salted scrypt hashes. Access tokens are HS256 JWTs with issuer/audience validation and a 10-minute lifetime, signed with a key derived separately from `OBSERVE_SECRET_KEY`. Refresh tokens are random opaque values, stored only as SHA-256 hashes in PostgreSQL. Sessions have an absolute 30-day expiry. Every refresh rotates its token; reuse revokes that session. Browser credentials use HttpOnly, SameSite=Lax cookies and Secure cookies on HTTPS. Tokens are never stored in localStorage.
+
+The browser renews expired access tokens automatically, sharing renewal across tabs through Web Locks where supported. Signing out revokes the current session. Profile lists active sessions and allows revocation. Password changes revoke all sessions. Role, account status and session validity are checked against PostgreSQL on every authenticated API request. Disabling/deleting a user or changing their role takes effect immediately. Self-deletion, self-demotion and removal of the last active administrator are blocked.
+
+| Capability | Viewer | Editor | Admin |
+| --- | --- | --- | --- |
+| Read dashboards, alerts, query results and source metadata | Yes | Yes | Yes |
+| Create/edit/delete dashboards, folders and alert rules; import JSON; evaluate alerts | No | Yes | Yes |
+| Configure/test InfluxDB and Telegram | No | No | Yes |
+| Manage users and roles | No | No | Yes |
+| Update own profile/password; manage own sessions | Yes | Yes | Yes |
+
+Users are workspace-wide; per-dashboard ACLs and organizations are not implemented. Configure InfluxDB connections with read-only credentials scoped to the intended buckets. Telegram chat IDs are omitted from metadata responses for non-admin users. All protected endpoints enforce role checks on the server. Cookie-authenticated mutations validate the request origin. Password sign-in is rate-limited by account and client IP. The old Basic authentication and trusted-auth-proxy bypass are no longer supported.
+
+Use **Users → Add user** to provision accounts. New local accounts require a password of at least 12 characters; share initial credentials securely. There is no public local registration, email delivery or forgotten-password flow. An administrator can reset another user's password.
+
+### Google and Microsoft sign-in
+
+Providers are disabled by default. Set `OBSERVE_ORIGIN` to the exact public origin (for example `https://observe.example.com`). Register a confidential web OAuth/OIDC application with each provider, then configure:
+
+| Provider | Environment | Registered redirect URI |
+| --- | --- | --- |
+| Google | `OBSERVE_GOOGLE_ENABLED=true`, `OBSERVE_GOOGLE_CLIENT_ID`, `OBSERVE_GOOGLE_CLIENT_SECRET` | `{OBSERVE_ORIGIN}/api/observe/auth/oauth/google/callback` |
+| Microsoft Entra ID | `OBSERVE_MICROSOFT_ENABLED=true`, `OBSERVE_MICROSOFT_CLIENT_ID`, `OBSERVE_MICROSOFT_CLIENT_SECRET`, `OBSERVE_MICROSOFT_TENANT_ID` | `{OBSERVE_ORIGIN}/api/observe/auth/oauth/microsoft/callback` |
+
+Microsoft requires a specific tenant UUID and an application configured to supply an email claim; `common`/`organizations` multi-tenant issuers are not accepted. Both providers use Authorization Code with PKCE (S256), state, nonce, issuer/audience validation and signed ID-token verification. Provider access/refresh tokens are discarded after identifying the user.
+
+By default, an existing user signs in locally and connects Google/Microsoft from **Profile → Sign-in methods**. Provider identities are bound by provider + subject and never automatically attached by matching email. Set `OBSERVE_OAUTH_ALLOW_SIGNUP=true` to let new identities create Viewer accounts after administrator setup. An identity whose email matches an existing account must still link from Profile. OAuth cannot create the first administrator or elevate roles. Disabled providers reject both initiation and callback requests. Restart the server after changing provider environment settings.
+
+Database authentication tables are relational: `auth_setup`, `users`, `auth_identities`, `auth_sessions`, `auth_refresh_tokens` and `auth_throttles`. They are added automatically without replacing dashboards or configuration.
+
+The private dashboard is client-rendered (`ssr: false`). Authentication is restored before protected navigation, avoiding competing server/client session renders and hydration mismatches. APIs and authorization remain on the Nitro server. Production runs the generated server with Bun:
 
 ```sh
 bun run test
@@ -67,22 +98,35 @@ app/
     configuration/             InfluxDB and Telegram management
   assets/styles/               Semantic tokens, base, shell and visualization styles
 server/
-  core/                        Ports and dependency composition
-  application/                 Feature services and use cases
-  infrastructure/              PostgreSQL, encryption, HTTP, InfluxDB, imports and Telegram
-  http/                        Request validation
+  bootstrap/                   Configuration and dependency composition
+  domain/                      Repository/gateway ports and shared entities
+  features/                    Feature application services and adapters
+    auth/                      Accounts, sessions, JWT, passwords and OIDC
+    dashboards/                Dashboard services, imports and diagnostics
+    data-sources/              InfluxDB source management
+    queries/                   Query execution and variable resolution
+    alerts/                    Evaluation, state and delivery coordination
+    telegram/                  Destination management and transport
+  platform/                    Database, encryption, HTTP and clock adapters
+    database/migrations/       Versioned, transactional schema changes
+  http/                        Request validation and authentication helpers
   api/observe/                 Thin HTTP controllers
-  middleware/                  Authentication and origin validation
+  middleware/                  Authorization and origin validation
   plugins/                     Alert scheduler and lifecycle
 shared/
   domain/                      Validated domain contracts and query builder
   utils/                       Pure interpolation, layout and variable helpers
 tests/unit/                    Domain and application tests
+tests/integration/             Isolated PostgreSQL integration tests
+tests/browser/                 Portable browser regression tests
+tooling/audit/                 Architecture and source inventory checks
 ```
 
-Services receive interfaces through constructors. `server/core/container.ts` composes concrete adapters. HTTP controllers validate input and invoke services. Database table names, API paths and resource state are defined consistently around data sources, dashboards, alert rules and Telegram destinations.
+Services receive interfaces through constructors. `server/bootstrap/workspace.ts` composes concrete adapters. HTTP controllers validate input and invoke services. Database table names, API paths and resource state are defined consistently around data sources, dashboards, alert rules and Telegram destinations.
 
-Persistence uses separate `observe.data_sources`, `dashboards`, `dashboard_folders`, `dashboard_versions`, `alert_rules` and `telegram_destinations` tables. Versioned documents are validated at the application boundary; revision checks and dashboard snapshots are committed together. Schema changes belong in `server/infrastructure/database/migrations`.
+Persistence uses typed resource repositories over explicit metadata columns. Flexible dashboard definitions, alert configuration and runtime state remain JSONB; source credentials and Telegram tokens have dedicated encrypted columns. `dashboard_data_sources` and `alert_rule_destinations` enforce references through foreign keys. Folder references, cascading version deletion, atomic revision checks and snapshots are enforced in transactions. Alert scheduling selects indexed due rules instead of scanning every rule. Authentication has independent relational tables. Schema changes belong in `server/platform/database/migrations`.
+
+Frontend controllers are organized by feature. Shared HTTP transport, renewal, resource caching and query cancellation live in dedicated modules. The API client is injected once; Vue controllers capture it during setup. Superseded queries are aborted and stale results cannot replace the latest result. Collection fetches are deduplicated across panel instances.
 
 ## UI conventions
 
@@ -93,3 +137,34 @@ Spacing uses `space-xs`, `space-sm`, `space-md`, `space-lg`, `space-xl`, `space-
 Manrope is the interface font; JetBrains Mono is for query text. Theme colors and typography apply in light and dark modes. The shell uses a compact sidebar rail and a full-width top header. Dense data stays scrollable inside its panel rather than expanding the dashboard.
 
 Reference: [Nuxt UI documentation](https://ui.nuxt.com/docs/getting-started), [design system](https://ui.nuxt.com/docs/getting-started/theme/design-system), [components](https://ui.nuxt.com/docs/components).
+
+
+## Verification
+
+```sh
+bun run lint
+bun run typecheck
+bun run test
+bun run audit:architecture --inventory
+bun run build
+```
+
+Database integration tests require a disposable PostgreSQL database with a name ending in `_test`. They reset its `observe` schema and refuse to run without an explicit test database:
+
+```sh
+TEST_DATABASE_URL=postgresql://.../observe_test bun run test:integration
+```
+
+Browser tests require the application to be running and Chrome installed. They use synthetic API fixtures and do not send Telegram messages or modify the real database:
+
+```sh
+bun run dev
+# In another terminal:
+bun run test:browser
+```
+
+Override `BROWSER_BASE_URL` for another server and `BROWSER_EXECUTABLE` for a custom Chrome/Chromium executable. Tests check three authentication states at twenty viewport sizes, validation layout, nine visualization types, editor rendering, overflow and unexpected browser warnings/errors.
+
+`audit:architecture` checks module reachability, imports and layer boundaries. The inventory covers every runtime source file and stylesheet. See [audit findings and verification](docs/audit.md).
+
+The versioned Bun patch for `@nuxt/icon@2.6.3` replaces its deprecated DevTools registration API with `onDevtoolsReady`/`docks.register`. It fixes the dependency warning at its source; logs are not filtered or suppressed. Reassess the patch when upgrading Nuxt Icon.

@@ -1,0 +1,1023 @@
+{
+  "runtimeModules": 195,
+  "styleSheets": 6,
+  "featureModules": [
+    "alerts",
+    "auth",
+    "configuration",
+    "dashboards",
+    "data-sources",
+    "overview",
+    "panels",
+    "queries",
+    "telegram"
+  ],
+  "unresolvedOrInvalid": [],
+  "files": [
+    {
+      "path": "shared/domain/auth.ts",
+      "lines": 21,
+      "reachable": true
+    },
+    {
+      "path": "server/domain/workspace-entities.ts",
+      "lines": 17,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/query-builder.ts",
+      "lines": 34,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/data-source.ts",
+      "lines": 27,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/query.ts",
+      "lines": 47,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/alert-rule.ts",
+      "lines": 33,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/variable.ts",
+      "lines": 44,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/dashboard.ts",
+      "lines": 41,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/common.ts",
+      "lines": 8,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/panel.ts",
+      "lines": 93,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/telegram-destination.ts",
+      "lines": 12,
+      "reachable": true
+    },
+    {
+      "path": "server/domain/ports.ts",
+      "lines": 36,
+      "reachable": true
+    },
+    {
+      "path": "server/domain/workspace-error.ts",
+      "lines": 21,
+      "reachable": true
+    },
+    {
+      "path": "app/pages/users.vue",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "shared/utils/grid-layout.ts",
+      "lines": 21,
+      "reachable": true
+    },
+    {
+      "path": "shared/utils/query-interpolation.ts",
+      "lines": 125,
+      "reachable": true
+    },
+    {
+      "path": "shared/utils/import-appearance.ts",
+      "lines": 21,
+      "reachable": true
+    },
+    {
+      "path": "shared/utils/clone.ts",
+      "lines": 3,
+      "reachable": true
+    },
+    {
+      "path": "shared/utils/dashboard-variables.ts",
+      "lines": 30,
+      "reachable": true
+    },
+    {
+      "path": "app/pages/dashboards/[id].vue",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "app/pages/dashboards/index.vue",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "app/pages/profile.vue",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "app/pages/sign-in.vue",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "app/pages/configuration.vue",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "app/pages/alerts.vue",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "app/pages/index.vue",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "server/plugins/alert-scheduler.ts",
+      "lines": 19,
+      "reachable": true
+    },
+    {
+      "path": "server/bootstrap/configuration.ts",
+      "lines": 13,
+      "reachable": true
+    },
+    {
+      "path": "server/bootstrap/workspace.ts",
+      "lines": 46,
+      "reachable": true
+    },
+    {
+      "path": "app/assets/styles/base.css",
+      "lines": 30,
+      "reachable": null
+    },
+    {
+      "path": "server/middleware/authorization.ts",
+      "lines": 29,
+      "reachable": true
+    },
+    {
+      "path": "app/assets/styles/workspace.css",
+      "lines": 51,
+      "reachable": null
+    },
+    {
+      "path": "app/assets/styles/tokens.css",
+      "lines": 132,
+      "reachable": null
+    },
+    {
+      "path": "app/assets/styles/auth.css",
+      "lines": 82,
+      "reachable": null
+    },
+    {
+      "path": "app/assets/styles/visualizations.css",
+      "lines": 14,
+      "reachable": null
+    },
+    {
+      "path": "server/api/observe/alert-rules/preview.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "app/assets/css/main.css",
+      "lines": 8,
+      "reachable": null
+    },
+    {
+      "path": "app/error.vue",
+      "lines": 33,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/alert-rules/[id]/evaluate.post.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/alert-rules/[id].put.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/alert-rules/index.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/alert-rules/index.get.ts",
+      "lines": 4,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/alert-rules/[id].delete.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "app/layouts/workspace.vue",
+      "lines": 28,
+      "reachable": true
+    },
+    {
+      "path": "app/app.config.ts",
+      "lines": 41,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/telegram-destinations/[id]/test.post.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/telegram-destinations/[id].put.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/telegram-destinations/index.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/telegram-destinations/index.get.ts",
+      "lines": 8,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/telegram-destinations/[id].delete.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboard-imports/preview.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboard-imports/check.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/queries/index.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "app/components/layout/WorkspaceSidebar.vue",
+      "lines": 45,
+      "reachable": true
+    },
+    {
+      "path": "app/components/layout/WorkspaceBrand.vue",
+      "lines": 30,
+      "reachable": true
+    },
+    {
+      "path": "app/components/layout/WorkspaceHeader.vue",
+      "lines": 59,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboard-folders/index.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboard-folders/index.get.ts",
+      "lines": 4,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboard-folders/[id].delete.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/data-sources/[id]/test.post.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/data-sources/[id].put.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/data-sources/index.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/data-sources/index.get.ts",
+      "lines": 4,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/data-sources/[id].delete.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "app/components/ui/ContentPanel.vue",
+      "lines": 26,
+      "reachable": true
+    },
+    {
+      "path": "app/components/ui/ContentToolbar.vue",
+      "lines": 34,
+      "reachable": true
+    },
+    {
+      "path": "app/components/ui/ViewToggle.vue",
+      "lines": 24,
+      "reachable": true
+    },
+    {
+      "path": "app/components/ui/ContentRow.vue",
+      "lines": 20,
+      "reachable": true
+    },
+    {
+      "path": "app/components/ui/ColorField.vue",
+      "lines": 37,
+      "reachable": true
+    },
+    {
+      "path": "app/components/ui/ConfirmDeleteDialog.vue",
+      "lines": 33,
+      "reachable": true
+    },
+    {
+      "path": "app/components/ui/FormDialog.vue",
+      "lines": 48,
+      "reachable": true
+    },
+    {
+      "path": "app/components/ui/WorkspacePage.vue",
+      "lines": 34,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/refresh.post.ts",
+      "lines": 12,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/config.get.ts",
+      "lines": 8,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/sign-out.post.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/sessions.get.ts",
+      "lines": 8,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/sign-in.post.ts",
+      "lines": 10,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/sessions.delete.ts",
+      "lines": 13,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/me.get.ts",
+      "lines": 4,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/setup.post.ts",
+      "lines": 12,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/profile.put.ts",
+      "lines": 12,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/users/[id].put.ts",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/users/index.post.ts",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/users/index.get.ts",
+      "lines": 4,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/users/[id].delete.ts",
+      "lines": 9,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/variables/resolve.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/oauth/[provider]/callback.get.ts",
+      "lines": 30,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/oauth/[provider]/index.get.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/session.get.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/providers.get.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "app/features/overview/views/OverviewView.vue",
+      "lines": 150,
+      "reachable": true
+    },
+    {
+      "path": "server/http/workspace-handler.ts",
+      "lines": 21,
+      "reachable": true
+    },
+    {
+      "path": "server/http/request-validation.ts",
+      "lines": 45,
+      "reachable": true
+    },
+    {
+      "path": "server/http/authentication.ts",
+      "lines": 37,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboards/[id]/restore-import.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboards/[id]/versions.get.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboards/[id]/diagnostics.post.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboards/[id].put.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboards/[id].get.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboards/index.post.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboards/index.get.ts",
+      "lines": 4,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/dashboards/[id].delete.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/views/DashboardLibraryView.vue",
+      "lines": 213,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/views/DashboardEditorView.vue",
+      "lines": 110,
+      "reachable": true
+    },
+    {
+      "path": "server/features/data-sources/application/data-source.service.ts",
+      "lines": 59,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/NewDashboardMenu.vue",
+      "lines": 25,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/DashboardSettingsDrawer.vue",
+      "lines": 262,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/DashboardPanel.vue",
+      "lines": 139,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/DashboardVariables.vue",
+      "lines": 52,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/DashboardEditorHeader.vue",
+      "lines": 110,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/DashboardDiagnostics.vue",
+      "lines": 142,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/DashboardGrid.vue",
+      "lines": 141,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/DashboardImportDialog.vue",
+      "lines": 147,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/views/SignInView.vue",
+      "lines": 122,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/views/UsersView.vue",
+      "lines": 160,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/views/ProfileView.vue",
+      "lines": 153,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardLibrary.ts",
+      "lines": 80,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardImport.ts",
+      "lines": 86,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardTimeState.ts",
+      "lines": 66,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardResources.ts",
+      "lines": 4,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardPanelEditing.ts",
+      "lines": 51,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardKiosk.ts",
+      "lines": 17,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardEditor.ts",
+      "lines": 98,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardVariables.ts",
+      "lines": 82,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardSettings.ts",
+      "lines": 66,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/components/AuthIllustration.vue",
+      "lines": 121,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/components/AccountMenu.vue",
+      "lines": 28,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/components/AuthProviderButton.vue",
+      "lines": 66,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/components/AuthLayout.vue",
+      "lines": 44,
+      "reachable": true
+    },
+    {
+      "path": "server/features/telegram/infrastructure/telegram-http-gateway.ts",
+      "lines": 17,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/composables/useProfile.ts",
+      "lines": 41,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/composables/useUsers.ts",
+      "lines": 55,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/composables/useAuthentication.ts",
+      "lines": 47,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/composables/useSignIn.ts",
+      "lines": 30,
+      "reachable": true
+    },
+    {
+      "path": "server/features/telegram/application/telegram.service.ts",
+      "lines": 43,
+      "reachable": true
+    },
+    {
+      "path": "app/features/alerts/views/AlertRulesView.vue",
+      "lines": 206,
+      "reachable": true
+    },
+    {
+      "path": "app/middleware/auth.global.ts",
+      "lines": 15,
+      "reachable": true
+    },
+    {
+      "path": "app/app.vue",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "app/features/alerts/components/AlertRuleEditor.vue",
+      "lines": 204,
+      "reachable": true
+    },
+    {
+      "path": "app/features/alerts/components/AlertRuleSettings.vue",
+      "lines": 111,
+      "reachable": true
+    },
+    {
+      "path": "app/features/alerts/components/AlertHistoryDrawer.vue",
+      "lines": 44,
+      "reachable": true
+    },
+    {
+      "path": "app/plugins/workspace-api.client.ts",
+      "lines": 17,
+      "reachable": true
+    },
+    {
+      "path": "app/features/configuration/views/ConfigurationView.vue",
+      "lines": 173,
+      "reachable": true
+    },
+    {
+      "path": "app/features/alerts/composables/useAlertResources.ts",
+      "lines": 3,
+      "reachable": true
+    },
+    {
+      "path": "app/features/alerts/composables/useAlertRules.ts",
+      "lines": 147,
+      "reachable": true
+    },
+    {
+      "path": "app/features/configuration/components/TelegramDestinations.vue",
+      "lines": 119,
+      "reachable": true
+    },
+    {
+      "path": "app/features/configuration/components/DataSourceEditor.vue",
+      "lines": 121,
+      "reachable": true
+    },
+    {
+      "path": "app/features/configuration/components/TelegramDestinationEditor.vue",
+      "lines": 69,
+      "reachable": true
+    },
+    {
+      "path": "app/core/http/workspace-api.ts",
+      "lines": 27,
+      "reachable": true
+    },
+    {
+      "path": "app/core/http/api-error.ts",
+      "lines": 10,
+      "reachable": true
+    },
+    {
+      "path": "app/features/configuration/composables/useConfigurationResources.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "app/core/http/session-renewal.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "app/features/configuration/composables/useTelegramDestinationsController.ts",
+      "lines": 70,
+      "reachable": true
+    },
+    {
+      "path": "app/features/configuration/composables/useConfiguration.ts",
+      "lines": 72,
+      "reachable": true
+    },
+    {
+      "path": "server/features/dashboards/infrastructure/grafana-appearance.ts",
+      "lines": 122,
+      "reachable": true
+    },
+    {
+      "path": "server/features/dashboards/infrastructure/dashboard-json-importer.ts",
+      "lines": 157,
+      "reachable": true
+    },
+    {
+      "path": "server/features/dashboards/infrastructure/grafana-query.ts",
+      "lines": 51,
+      "reachable": true
+    },
+    {
+      "path": "app/core/utils/downloads.ts",
+      "lines": 20,
+      "reachable": true
+    },
+    {
+      "path": "server/features/queries/domain/read-only-influxql.ts",
+      "lines": 47,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/composables/useQueryBuilder.ts",
+      "lines": 99,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/composables/useQueryRunner.ts",
+      "lines": 36,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/composables/useQueryExecution.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/components/QueryInspector.vue",
+      "lines": 81,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/components/QueryVisualization.vue",
+      "lines": 245,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/components/TimeRangePicker.vue",
+      "lines": 127,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/components/QueryChart.vue",
+      "lines": 176,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/components/QueryEditor.vue",
+      "lines": 197,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/components/QueryWorkbench.vue",
+      "lines": 88,
+      "reachable": true
+    },
+    {
+      "path": "app/core/composables/useAsyncAction.ts",
+      "lines": 15,
+      "reachable": true
+    },
+    {
+      "path": "app/core/composables/useApi.ts",
+      "lines": 8,
+      "reachable": true
+    },
+    {
+      "path": "app/core/composables/useNotifications.ts",
+      "lines": 52,
+      "reachable": true
+    },
+    {
+      "path": "app/core/composables/useAppNavigation.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "app/core/composables/useResourceCollection.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "app/core/composables/useAppBreadcrumb.ts",
+      "lines": 35,
+      "reachable": true
+    },
+    {
+      "path": "app/core/composables/createFeatureContext.ts",
+      "lines": 17,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/utils/visualization.ts",
+      "lines": 143,
+      "reachable": true
+    },
+    {
+      "path": "app/features/queries/utils/chart-definition.ts",
+      "lines": 66,
+      "reachable": true
+    },
+    {
+      "path": "server/features/dashboards/application/dashboard-diagnostics.ts",
+      "lines": 39,
+      "reachable": true
+    },
+    {
+      "path": "server/features/dashboards/application/dashboard.service.ts",
+      "lines": 83,
+      "reachable": true
+    },
+    {
+      "path": "app/features/panels/components/PanelEditor.vue",
+      "lines": 208,
+      "reachable": true
+    },
+    {
+      "path": "app/features/panels/components/PanelAppearanceForm.vue",
+      "lines": 241,
+      "reachable": true
+    },
+    {
+      "path": "server/features/queries/infrastructure/influx-client.ts",
+      "lines": 127,
+      "reachable": true
+    },
+    {
+      "path": "server/features/alerts/application/evaluate-threshold.ts",
+      "lines": 49,
+      "reachable": true
+    },
+    {
+      "path": "server/features/alerts/application/alert.service.ts",
+      "lines": 97,
+      "reachable": true
+    },
+    {
+      "path": "server/features/auth/application/auth.service.ts",
+      "lines": 102,
+      "reachable": true
+    },
+    {
+      "path": "server/features/auth/domain/authentication.ports.ts",
+      "lines": 28,
+      "reachable": true
+    },
+    {
+      "path": "server/features/auth/domain/access-policy.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "server/features/auth/infrastructure/scrypt-password-hasher.ts",
+      "lines": 24,
+      "reachable": true
+    },
+    {
+      "path": "server/features/auth/infrastructure/oidc-providers.ts",
+      "lines": 68,
+      "reachable": true
+    },
+    {
+      "path": "server/features/auth/infrastructure/authentication.repository.ts",
+      "lines": 170,
+      "reachable": true
+    },
+    {
+      "path": "server/features/auth/infrastructure/jwt-access-tokens.ts",
+      "lines": 23,
+      "reachable": true
+    },
+    {
+      "path": "server/features/queries/application/variable-resolver.ts",
+      "lines": 80,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/http/remote-transport.ts",
+      "lines": 46,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/time/system-clock.ts",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/security/credential-vault.ts",
+      "lines": 30,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/database/database.ts",
+      "lines": 87,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/database/resource-mapping.ts",
+      "lines": 47,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/database/workspace.repository.ts",
+      "lines": 122,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/database/workspace-schema.ts",
+      "lines": 74,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/database/migrations/normalize-workspace.ts",
+      "lines": 52,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/database/migrations/authentication.ts",
+      "lines": 52,
+      "reachable": true
+    }
+  ]
+}
