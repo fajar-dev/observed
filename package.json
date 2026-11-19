@@ -10,16 +10,20 @@
     "postinstall": "bun run nuxt prepare",
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
-    "test": "bun test --tsconfig-override .nuxt/tsconfig.server.json tests"
+    "test": "bun test --tsconfig-override .nuxt/tsconfig.server.json tests/unit",
+    "test:integration": "bun test --tsconfig-override .nuxt/tsconfig.server.json tests/integration",
+    "audit:architecture": "node tooling/audit/architecture.mjs",
+    "test:browser": "node --test tests/browser/*.test.mjs"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.147",
-    "@iconify-json/simple-icons": "^1.2.100",
     "@nuxt/ui": "^4.12.0",
     "@tanstack/charts": "^1.5.0",
     "csv-parse": "^7.0.3",
     "gridstack": "^14.1.1",
+    "jose": "^6.2.18",
     "nuxt": "^4.6.3",
+    "openid-client": "^6.9.0",
     "pg": "^8.23.1",
     "tailwindcss": "^4.3.3",
     "zod": "^4.6.7"
@@ -29,8 +33,12 @@
     "@types/pg": "^8.23.1",
     "eslint": "^10.13.0",
     "eslint-plugin-better-tailwindcss": "^4.10.0",
+    "playwright-core": "^1.65.1",
     "typescript": "^6.0.3",
     "vue-tsc": "^3.3.13"
   },
-  "packageManager": "bun@1.4.4"
+  "packageManager": "bun@1.4.4",
+  "patchedDependencies": {
+    "@nuxt/icon@2.6.3": "patches/@nuxt%2Ficon@2.6.3.patch"
+  }
 }
