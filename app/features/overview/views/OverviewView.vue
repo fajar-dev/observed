@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { canWrite, isAdmin } = useAuthentication()
 useSeoMeta({ title: 'Overview · AMTI Observe' })
 const { data: sources, error: sourcesError } = useDataSources()
 const { data: dashboards, error: dashboardsError, status } = useDashboards()
@@ -7,10 +8,11 @@ const { data: destinations, error: destinationsError } = useTelegramDestinations
 const firing = computed(() => alerts.value.filter(rule => rule.enabled && rule.evaluation?.state === 'firing'))
 const recent = computed(() => [...dashboards.value].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 6))
 const summaries = computed(() => [
-  { title: 'Data sources', count: sources.value.length, to: '/configuration', icon: 'i-lucide-database' },
+  { title: 'Data sources', count: sources.value.length, to: isAdmin.value ? '/configuration' : '/dashboards', icon: 'i-lucide-database' },
   { title: 'Dashboards', count: dashboards.value.length, to: '/dashboards', icon: 'i-lucide-panels-top-left' },
   { title: 'Firing alerts', count: firing.value.length, to: '/alerts', icon: 'i-lucide-bell-ring' }
 ])
+useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.value || destinationsError.value, 'Could not load overview')
 </script>
 
 <template>
@@ -23,7 +25,6 @@ const summaries = computed(() => [
     <template #actions>
       <NewDashboardMenu />
     </template>
-    <RequestError :message="sourcesError || dashboardsError || alertsError || destinationsError" />
     <div
       class="toolbar"
       role="group"
@@ -68,7 +69,7 @@ const summaries = computed(() => [
           description="Start with a panel or import dashboard JSON."
           icon="i-lucide-panels-top-left"
           size="sm"
-          :actions="[{ label: 'Create dashboard', to: '/dashboards/new', icon: 'i-lucide-plus', size: 'sm' }]"
+          :actions="canWrite ? [{ label: 'Create dashboard', to: '/dashboards/new', icon: 'i-lucide-plus', size: 'sm' }] : []"
         />
         <NuxtLink
           v-for="dashboard in recent"
@@ -131,7 +132,7 @@ const summaries = computed(() => [
           />
         </NuxtLink>
         <div
-          v-if="!destinations.length"
+          v-if="isAdmin && !destinations.length"
           class="px-space-lg py-space-md"
         >
           <UButton

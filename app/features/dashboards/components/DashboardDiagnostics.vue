@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Dashboard, DashboardDiagnostic, DashboardDefinition } from '#shared/domain/dashboard'
 
+const apiRequest = useApiRequest()
+
 const props = defineProps<{ dashboard: DashboardDefinition & { id: string } }>()
 const open = defineModel<boolean>('open', { required: true })
 const emit = defineEmits<{ repaired: [dashboard: Dashboard] }>()
@@ -30,6 +32,15 @@ async function repair() {
 watch(open, (value) => {
   if (value) void check()
 })
+useErrorToast(() => open.value ? error.value : '', 'Dashboard check failed')
+
+useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value.variables.errors).length
+  ? {
+      title: 'Variable issues',
+      description: Object.values(diagnostics.value.variables.errors).join(' '),
+      color: 'warning'
+    }
+  : undefined)
 </script>
 
 <template>
@@ -41,7 +52,6 @@ watch(open, (value) => {
   >
     <template #body>
       <div class="space-y-space-lg">
-        <RequestError :message="error" />
         <div class="flex items-center justify-between">
           <span class="text-sm text-muted">{{ dashboard.panels.length }} panels</span><UButton
             size="sm"
@@ -58,12 +68,6 @@ watch(open, (value) => {
           class="h-field-sm"
         />
         <template v-if="diagnostics">
-          <UAlert
-            v-if="Object.keys(diagnostics.variables.errors).length"
-            color="warning"
-            title="Variable issues"
-            :description="Object.values(diagnostics.variables.errors).join(' ')"
-          />
           <div class="grid grid-cols-pair gap-space-sm sm:grid-cols-quartet">
             <div
               v-for="state in ['ready', 'empty', 'error', 'unconfigured'] as const"

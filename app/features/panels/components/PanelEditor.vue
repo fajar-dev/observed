@@ -3,7 +3,7 @@ import { cloneValue } from '#shared/utils/clone'
 import { defaultPanelOptions } from '#shared/domain/panel'
 import { panelDataSourceId } from '#shared/utils/dashboard-variables'
 import type { Panel } from '#shared/domain/panel'
-import type { QueryRequest, QueryResponse } from '#shared/domain/query'
+import type { QueryRequest } from '#shared/domain/query'
 
 const props = defineProps<{ panel: Panel, range: QueryRequest['range'], from?: string, to?: string, variables?: import('#shared/domain/variable').VariableValues }>()
 const open = defineModel<boolean>('open', { required: true })
@@ -22,39 +22,32 @@ const queries = computed({
 const effectiveSourceId = computed(() => panelDataSourceId(draft.value, props.variables))
 const source = computed(() => sources.value.find(item => item.id === effectiveSourceId.value))
 const sourceItems = computed(() => [{ label: 'Select data source', value: '@none' }, ...sources.value.map(item => ({ label: item.name, value: item.id }))])
-const results = shallowRef<QueryResponse[]>([])
-const loading = ref(false)
+const { results, failures, loading, run: runQueries, cancel } = useQueryRunner()
 const error = ref('')
 const tab = ref('queries')
 const inspector = ref(false)
 const textFields = computed(() => [...new Set(results.value.flatMap(result => result.columns))])
-let requestId = 0
 let previewTimer: ReturnType<typeof setTimeout> | undefined
 
 async function run() {
-  const id = ++requestId
   error.value = ''
-  if (draft.value.type === 'text' || !effectiveSourceId.value || !queries.value.some(query => query.trim())) {
-    results.value = []
-    loading.value = false
-    return
-  }
-  loading.value = true
-  const outcomes = await Promise.allSettled(queries.value.filter(query => query.trim()).map(query =>
-    executeQuery({ dataSourceId: effectiveSourceId.value!, query, range: props.range, from: props.from, to: props.to, variables: props.variables })
-  ))
-  if (id !== requestId) return
-  results.value = outcomes.flatMap(outcome => outcome.status === 'fulfilled' ? [outcome.value] : [])
-  error.value = outcomes.flatMap(outcome => outcome.status === 'rejected' ? [apiErrorMessage(outcome.reason)] : []).join('\n')
-  loading.value = false
+  const inputs = draft.value.type === 'text' || !effectiveSourceId.value
+    ? []
+    : queries.value.filter(query => query.trim()).map(query => ({
+        dataSourceId: effectiveSourceId.value!, query, range: props.range, from: props.from, to: props.to, variables: props.variables
+      }))
+  await runQueries(inputs)
+  error.value = failures.value.join(' · ')
 }
 watch(() => [effectiveSourceId.value, draft.value.query, draft.value.additionalQueries], () => {
   clearTimeout(previewTimer)
   previewTimer = setTimeout(run, 800)
 }, { deep: true })
+watch(open, (value) => {
+  if (!value) cancel()
+})
 onMounted(run)
 onBeforeUnmount(() => {
-  requestId++
   clearTimeout(previewTimer)
 })
 
@@ -69,6 +62,7 @@ function apply() {
   }
   emit('apply', cloneValue({ ...draft.value, additionalQueries: draft.value.additionalQueries.filter(query => query.trim()) }))
 }
+useErrorToast(() => open.value ? error.value : '', 'Panel query failed')
 </script>
 
 <template>
@@ -144,7 +138,6 @@ function apply() {
               />
             </div>
             <div class="space-y-space-lg p-space-lg">
-              <RequestError :message="error" />
               <template v-if="tab === 'queries'">
                 <div class="flex flex-wrap items-center justify-between gap-space-md">
                   <div class="flex min-w-none max-w-full flex-wrap items-center gap-space-sm">

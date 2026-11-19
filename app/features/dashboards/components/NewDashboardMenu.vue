@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { canWrite } = useAuthentication()
 const props = defineProps<{ importAction?: () => void }>()
 const items = [
   { label: 'Create new', icon: 'i-lucide-plus', to: '/dashboards/new' },
@@ -10,7 +11,10 @@ const items = [
 </script>
 
 <template>
-  <UDropdownMenu :items="items">
+  <UDropdownMenu
+    v-if="canWrite"
+    :items="items"
+  >
     <UButton
       size="sm"
       label="New dashboard"

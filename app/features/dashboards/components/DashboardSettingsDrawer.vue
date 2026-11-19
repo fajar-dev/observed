@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { isNew, sources, folders, busy, error, toast, draft, original, editing, range, settings, settingsTab, removeOpen, tagText, jsonDocument, versionLoading, versions, settingsError, variableTypes, save, addVariable, updateVariable, exportDashboard, applyJson, cloneValue } = useDashboardEditor()
+useErrorToast(() => settings.value ? error.value || settingsError.value : '')
 </script>
 
 <template>
@@ -17,7 +18,6 @@ const { isNew, sources, folders, busy, error, toast, draft, original, editing, r
         :items="[{ label: 'General', value: 'general' }, { label: 'Variables', value: 'variables' }, { label: 'Versions', value: 'versions' }, { label: 'JSON', value: 'json' }]"
       />
       <div class="mt-space-lg space-y-space-lg">
-        <RequestError :message="error || settingsError" />
         <template v-if="settingsTab === 'general'">
           <UFormField
             label="Dashboard name"

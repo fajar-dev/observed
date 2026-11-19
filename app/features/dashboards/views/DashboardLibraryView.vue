@@ -2,8 +2,11 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { Dashboard } from '#shared/domain/dashboard'
 
-const { dashboards, loadError, status, busy, error, open, filter, folder, view, sort, tag, folderOpen, folderName, removeOpen, selected, folderNames, allTags, filtered, startImport, rowMenu, createFolder, remove } = provideDashboardLibrary()
+const { canWrite } = useAuthentication()
+const { dashboards, loadError, status, busy, error, importer, filter, folder, view, sort, tag, folderOpen, folderName, removeOpen, selected, folderNames, allTags, filtered, startImport, rowMenu, createFolder, remove } = provideDashboardLibrary()
+const { open } = importer
 const columns: TableColumn<Dashboard>[] = [{ accessorKey: 'name', header: 'Name' }, { accessorKey: 'folder', header: 'Folder' }, { accessorKey: 'tags', header: 'Tags' }, { accessorKey: 'updatedAt', header: 'Updated' }, { id: 'actions', header: 'Actions', meta: { class: { th: 'w-control-md text-right', td: 'w-control-md text-right' } } }]
+useErrorToast(() => loadError.value || (!open.value && !removeOpen.value ? error.value : ''))
 </script>
 
 <template>
@@ -15,6 +18,7 @@ const columns: TableColumn<Dashboard>[] = [{ accessorKey: 'name', header: 'Name'
   >
     <template #actions>
       <UButton
+        v-if="canWrite"
         size="sm"
         label="New folder"
         icon="i-lucide-folder-plus"
@@ -24,7 +28,6 @@ const columns: TableColumn<Dashboard>[] = [{ accessorKey: 'name', header: 'Name'
       />
       <NewDashboardMenu :import-action="startImport" />
     </template>
-    <RequestError :message="loadError || (!open && !folderOpen && !removeOpen ? error : '')" />
     <div class="toolbar justify-between">
       <div class="toolbar flex-fill">
         <UInput
@@ -70,7 +73,7 @@ const columns: TableColumn<Dashboard>[] = [{ accessorKey: 'name', header: 'Name'
       class="surface py-space-lg"
       :title="dashboards.length ? 'No matching dashboards' : 'Create your first dashboard'"
       :description="dashboards.length ? 'Try a different search or filter.' : 'Start with a panel or import dashboard JSON.'"
-      :actions="dashboards.length ? [] : [{ label: 'Create dashboard', to: '/dashboards/new', icon: 'i-lucide-plus', size: 'sm' }]"
+      :actions="dashboards.length || !canWrite ? [] : [{ label: 'Create dashboard', to: '/dashboards/new', icon: 'i-lucide-plus', size: 'sm' }]"
     />
     <ContentPanel v-else-if="view === 'list'">
       <UTable
@@ -173,7 +176,7 @@ const columns: TableColumn<Dashboard>[] = [{ accessorKey: 'name', header: 'Name'
       description="Organize related dashboards."
     >
       <template #body>
-        <RequestError :message="error" /><UFormField label="Folder name">
+        <UFormField label="Folder name">
           <UInput
             v-model="folderName"
             size="sm"

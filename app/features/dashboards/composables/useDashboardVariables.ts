@@ -11,9 +11,11 @@ export function useDashboardVariables(
   from: Ref<string | undefined>,
   to: Ref<string | undefined>
 ) {
+  const apiRequest = useApiRequest()
   const loading = ref(false)
   const errors = ref<Record<string, string>>({})
   const resolved = computed(() => expandVariableValues(dashboard.value.variables ?? [], selected.value))
+  let controller: AbortController | undefined
   let request = 0
   let lastInput = ''
   let timer: ReturnType<typeof setTimeout> | undefined
@@ -38,10 +40,12 @@ export function useDashboardVariables(
       lastInput = key
       return
     }
+    controller?.abort()
+    controller = new AbortController()
     const current = ++request
     loading.value = true
     try {
-      const result = await apiRequest<VariableResolution>('variables/resolve', { method: 'POST', body: input })
+      const result = await apiRequest<VariableResolution>('variables/resolve', { method: 'POST', body: input, signal: controller.signal })
       if (current !== request) return
       const byName = new Map(result.variables.map(variable => [variable.name, variable]))
       dashboard.value.variables = (dashboard.value.variables ?? []).map(variable => ({
@@ -68,6 +72,7 @@ export function useDashboardVariables(
   })
   onBeforeUnmount(() => {
     request++
+    controller?.abort()
     clearTimeout(timer)
   })
   return { loading, errors, resolved, refresh: () => {

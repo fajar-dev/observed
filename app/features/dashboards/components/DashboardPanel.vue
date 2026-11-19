@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { panelDataSourceId } from '#shared/utils/dashboard-variables'
 import type { Panel } from '#shared/domain/panel'
-import type { QueryRequest, QueryResponse } from '#shared/domain/query'
+import type { QueryRequest } from '#shared/domain/query'
 
 const props = defineProps<{ panel: Panel, range: QueryRequest['range'], from?: string, to?: string, variables?: import('#shared/domain/variable').VariableValues, refresh: number, editing: boolean, kiosk?: boolean }>()
+const { canWrite } = useAuthentication()
 const emit = defineEmits<{ edit: [], remove: [], duplicate: [] }>()
-const results = shallowRef<QueryResponse[]>([])
-const failures = ref<string[]>([])
-const loading = ref(false)
+const { results, failures, loading, run } = useQueryRunner()
 const inspector = ref(false)
-let revision = 0
 const { data: sources } = useDataSources()
 const effectiveSourceId = computed(() => panelDataSourceId(props.panel, props.variables))
 const configurationIssue = computed(() => {
@@ -21,33 +19,23 @@ const configurationIssue = computed(() => {
 })
 const queries = computed(() => [props.panel.query, ...props.panel.additionalQueries].filter(query => query.trim()))
 const menu = computed(() => [
-  [{ label: 'Edit', icon: 'i-lucide-pencil', onSelect: () => emit('edit') }, { label: 'Inspect data', icon: 'i-lucide-scan-search', onSelect: () => {
+  [...(canWrite.value ? [{ label: 'Edit', icon: 'i-lucide-pencil', onSelect: () => emit('edit') }] : []), { label: 'Inspect data', icon: 'i-lucide-scan-search', onSelect: () => {
     inspector.value = true
   } }],
   ...(props.editing ? [[{ label: 'Duplicate', icon: 'i-lucide-copy', onSelect: () => emit('duplicate') }, { label: 'Remove', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => emit('remove') }]] : [])
 ])
 
-async function load() {
+function load() {
   const dataSourceId = effectiveSourceId.value
-  const current = ++revision
-  failures.value = []
-  if (configurationIssue.value || props.panel.type === 'text') {
-    results.value = []
-    loading.value = false
-    return
-  }
-  loading.value = true
-  const input = { dataSourceId: dataSourceId!, range: props.range, from: props.from, to: props.to, variables: props.variables }
-  const outcomes = await Promise.allSettled(queries.value.map(query => executeQuery({ ...input, query })))
-  if (current !== revision) return
-  failures.value = outcomes.flatMap((outcome, index) => outcome.status === 'rejected' ? [`Query ${String.fromCharCode(65 + index)} · ${apiErrorMessage(outcome.reason)}`] : [])
-  results.value = outcomes.flatMap(outcome => outcome.status === 'fulfilled' ? [outcome.value] : [])
-  loading.value = false
+  const inputs = configurationIssue.value || props.panel.type === 'text'
+    ? []
+    : queries.value.map(query => ({
+        dataSourceId: dataSourceId!, range: props.range, from: props.from, to: props.to, variables: props.variables, query
+      }))
+  return run(inputs)
 }
 onMounted(() => watch(() => [effectiveSourceId.value, props.panel.query, props.panel.additionalQueries, props.range, props.from, props.to, props.variables, props.refresh], load, { immediate: true, deep: true }))
-onBeforeUnmount(() => {
-  revision++
-})
+useErrorToast(() => failures.value.join(' · '), props.panel.title + ' · Query failed')
 </script>
 
 <template>
@@ -100,11 +88,6 @@ onBeforeUnmount(() => {
       </div>
     </template>
     <template #default>
-      <RequestError
-        v-for="failure in failures"
-        :key="failure"
-        :message="failure"
-      />
       <USkeleton
         v-if="loading && !results.length"
         class="h-full min-h-compact"
@@ -125,9 +108,19 @@ onBeforeUnmount(() => {
           name="i-lucide-unplug"
           class="size-icon-md text-warning"
         />
-        <span class="max-w-summary text-center text-sm text-muted">{{ configurationIssue || 'No records in this time range' }}</span>
+        <span class="max-w-summary text-center text-sm text-muted">{{ failures.length ? 'Could not load panel data' : configurationIssue || 'No records in this time range' }}</span>
         <UButton
-          v-if="configurationIssue && !kiosk"
+          v-if="failures.length"
+          label="Retry"
+          icon="i-lucide-refresh-cw"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :loading="loading"
+          @click="load"
+        />
+        <UButton
+          v-if="configurationIssue && !kiosk && canWrite"
           size="sm"
           label="Configure query"
           icon="i-lucide-plus"

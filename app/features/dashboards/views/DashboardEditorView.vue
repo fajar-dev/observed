@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { canWrite } = useAuthentication()
 const { kiosk, exitKiosk } = useDashboardKiosk()
 function handleEscape(event: KeyboardEvent) {
   if (event.key === 'Escape' && kiosk.value) {
@@ -9,6 +10,16 @@ function handleEscape(event: KeyboardEvent) {
 onMounted(() => window.addEventListener('keydown', handleEscape))
 onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
 const { draft, ready, isNew, sourcesError, error, removeOpen, settings, variableErrors, variablesLoading, refreshVariables, resolvedVariables, editing, range, from, to, refreshKey, panel, panelOpen, panelSession, finishPanelClose, healthOpen, busy, editPanel, updateLayout, duplicate, remove, applyPanel, setDashboard, refreshList } = provideDashboardEditor()
+useErrorToast(() => sourcesError.value || (!removeOpen.value && !settings.value ? error.value : ''))
+
+useNotice(() => Object.keys(variableErrors.value).length
+  ? {
+      title: 'Review dashboard filters',
+      description: Object.values(variableErrors.value).join(' '),
+      color: 'warning',
+      actions: [{ label: 'Reload values', onClick: refreshVariables }]
+    }
+  : undefined)
 </script>
 
 <template>
@@ -20,15 +31,6 @@ const { draft, ready, isNew, sourcesError, error, removeOpen, settings, variable
     <template #header>
       <DashboardEditorHeader v-if="!kiosk" />
     </template>
-    <RequestError :message="sourcesError || (!removeOpen && !settings ? error : '')" />
-    <UAlert
-      v-if="Object.keys(variableErrors).length"
-      icon="i-lucide-list-filter"
-      title="Review dashboard filters"
-      :description="Object.values(variableErrors).join(' ')"
-      color="warning"
-      :actions="[{ label: 'Reload values', onClick: refreshVariables }]"
-    />
     <USkeleton
       v-if="!ready || variablesLoading"
       class="h-placeholder w-full rounded-lg"
@@ -58,7 +60,7 @@ const { draft, ready, isNew, sourcesError, error, removeOpen, settings, variable
         icon="i-lucide-panels-top-left"
         :title="kiosk ? 'No panels' : 'Add your first panel'"
         description="Choose a data source, build a query, and select a visualization."
-        :actions="kiosk ? [] : [{ label: 'Add panel', icon: 'i-lucide-plus', onClick: () => editPanel() }]"
+        :actions="kiosk || !canWrite ? [] : [{ label: 'Add panel', icon: 'i-lucide-plus', onClick: () => editPanel() }]"
       />
       <UEmpty
         v-else

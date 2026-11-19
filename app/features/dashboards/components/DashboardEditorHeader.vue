@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { canWrite } = useAuthentication()
 const { enterKiosk } = useDashboardKiosk()
 const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions, editPanel, openSettings, save, discard, healthOpen, exportDashboard } = useDashboardEditor()
 </script>
@@ -61,6 +62,7 @@ const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions
         @click="enterKiosk"
       />
       <UButton
+        v-if="canWrite"
         size="sm"
         label="Edit dashboard"
         icon="i-lucide-pencil"
@@ -70,7 +72,7 @@ const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions
       />
       <UDropdownMenu
         :content="{ align: 'end' }"
-        :items="[{ label: 'Dashboard settings', icon: 'i-lucide-settings', onSelect: openSettings }, { label: 'Check panel data', icon: 'i-lucide-stethoscope', onSelect: () => healthOpen = true }, { label: 'Export JSON', icon: 'i-lucide-download', onSelect: exportDashboard }]"
+        :items="[...(canWrite ? [{ label: 'Dashboard settings', icon: 'i-lucide-settings', onSelect: openSettings }] : []), { label: 'Check panel data', icon: 'i-lucide-stethoscope', onSelect: () => healthOpen = true }, { label: 'Export JSON', icon: 'i-lucide-download', onSelect: exportDashboard }]"
       >
         <UButton
           size="sm"

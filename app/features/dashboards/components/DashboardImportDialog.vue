@@ -1,5 +1,15 @@
 <script setup lang="ts">
-const { sourcesError, busy, error, open, json, dataSourceId, diagnostics, checking, preview, sourceOptions, readFile, inspect, checkImport, importDashboard } = useDashboardLibrary()
+const { sourcesError, importer } = useDashboardLibrary()
+const { busy, error, open, json, dataSourceId, diagnostics, checking, preview, sourceOptions, readFile, inspect, checkImport, importDashboard } = importer
+useErrorToast(() => open.value ? error.value || sourcesError.value : '', 'Dashboard import failed')
+
+useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value.variables.errors).length
+  ? {
+      title: 'Review import variables',
+      description: Object.values(diagnostics.value.variables.errors).join(' '),
+      color: 'warning'
+    }
+  : undefined)
 </script>
 
 <template>
@@ -12,7 +22,6 @@ const { sourcesError, busy, error, open, json, dataSourceId, diagnostics, checki
   >
     <template #body>
       <div class="space-y-space-lg">
-        <RequestError :message="error || sourcesError" />
         <div class="space-y-space-sm">
           <UFormField label="JSON file">
             <UInput
@@ -75,11 +84,6 @@ const { sourcesError, busy, error, open, json, dataSourceId, diagnostics, checki
             <p class="text-xs text-muted">
               {{ diagnostics.panels.filter(panel => panel.status === 'ready').length }} ready · {{ diagnostics.panels.filter(panel => panel.status === 'empty').length }} empty · {{ diagnostics.panels.filter(panel => panel.status === 'error').length }} errors
             </p>
-            <UAlert
-              v-if="Object.keys(diagnostics.variables.errors).length"
-              color="warning"
-              :description="Object.values(diagnostics.variables.errors).join(' ')"
-            />
             <p
               v-for="panel in diagnostics.panels.filter(panel => panel.status === 'error')"
               :key="panel.id"
