@@ -1,0 +1,121 @@
+<template>
+  <svg
+    class="auth-illustration"
+    viewBox="0 0 520 300"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <g
+      class="auth-diagram-soft"
+      stroke="currentColor"
+    >
+      <circle
+        cx="260"
+        cy="150"
+        r="113"
+      />
+      <circle
+        cx="260"
+        cy="150"
+        r="85"
+        stroke-dasharray="4 8"
+      />
+      <ellipse
+        cx="260"
+        cy="150"
+        rx="180"
+        ry="62"
+        transform="rotate(-25 260 150)"
+      />
+      <ellipse
+        cx="260"
+        cy="150"
+        rx="180"
+        ry="62"
+        transform="rotate(25 260 150)"
+      />
+      <path d="M40 150h440M260 16v268" />
+    </g>
+    <g
+      class="auth-diagram-node"
+      stroke="currentColor"
+    >
+      <circle
+        cx="260"
+        cy="150"
+        r="52"
+      />
+      <rect
+        x="229"
+        y="127"
+        width="62"
+        height="46"
+        rx="7"
+      />
+      <path
+        d="m237 153 11-9 9 15 12-24 14 12"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path d="M249 181h22M260 174v7" />
+      <circle
+        cx="108"
+        cy="188"
+        r="5"
+        fill="currentColor"
+      />
+      <circle
+        cx="407"
+        cy="105"
+        r="5"
+        fill="currentColor"
+      />
+      <circle
+        cx="300"
+        cy="255"
+        r="5"
+        fill="currentColor"
+      />
+    </g>
+    <g class="auth-diagram-label">
+      <rect
+        x="24"
+        y="150"
+        width="112"
+        height="32"
+        rx="6"
+      />
+      <text
+        x="80"
+        y="170"
+        text-anchor="middle"
+      >Data sources</text>
+      <rect
+        x="376"
+        y="65"
+        width="118"
+        height="32"
+        rx="6"
+      />
+      <text
+        x="435"
+        y="85"
+        text-anchor="middle"
+      >Dashboards</text>
+      <rect
+        x="319"
+        y="244"
+        width="118"
+        height="32"
+        rx="6"
+      />
+      <text
+        x="378"
+        y="264"
+        text-anchor="middle"
+      >Telegram alerts</text>
+    </g>
+  </svg>
+</template>

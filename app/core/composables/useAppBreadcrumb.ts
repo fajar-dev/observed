@@ -27,6 +27,8 @@ export function useAppBreadcrumb() {
       return [{ label: 'Dashboards', to: '/dashboards' }, { label: title }]
     }
     if (route.path === '/alerts') return [{ label: 'Alerts' }]
+    if (route.path === '/users') return [{ label: 'Users' }]
+    if (route.path === '/profile') return [{ label: 'Profile' }]
     if (route.path === '/configuration') return [{ label: 'Configuration' }]
     return [{ label: 'Overview' }]
   })

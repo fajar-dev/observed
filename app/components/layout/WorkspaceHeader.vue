@@ -4,14 +4,10 @@ const navigation = useAppNavigation()
 const { data: dashboards } = useDashboards()
 const { data: alerts } = useAlertRuleRecords()
 const firing = computed(() => alerts.value.filter(rule => rule.enabled && rule.evaluation?.state === 'firing').length)
-const search = ref(false)
 const groups = computed(() => [
-  { id: 'pages', label: 'Workspace', items: navigation.map(item => ({ label: item.label, to: item.to, icon: item.icon, onSelect: () => { search.value = false } })) },
-  { id: 'dashboards', label: 'Dashboards', items: dashboards.value.map(item => ({ label: item.name, to: '/dashboards/' + item.id, icon: 'i-lucide-panels-top-left', onSelect: () => { search.value = false } })) }
+  { id: 'pages', label: 'Workspace', items: navigation.value.map(item => ({ label: item.label, to: item.to, icon: item.icon })) },
+  { id: 'dashboards', label: 'Dashboards', items: dashboards.value.map(item => ({ label: item.name, to: '/dashboards/' + item.id, icon: 'i-lucide-panels-top-left' })) }
 ])
-defineShortcuts({
-  meta_k: () => { search.value = !search.value }
-})
 </script>
 
 <template>
@@ -32,26 +28,15 @@ defineShortcuts({
       />
     </template>
     <template #right>
-      <UButton
-        label="Search dashboards and pages"
-        icon="i-lucide-search"
-        color="neutral"
-        variant="outline"
-        aria-label="Search dashboards and pages"
-        class="hidden rounded-full md:inline-flex"
-        @click="search = true"
-      >
-        <template #trailing>
-          <UKbd>⌘ K</UKbd>
-        </template>
-      </UButton>
-      <UButton
-        icon="i-lucide-search"
-        aria-label="Search dashboards and pages"
-        color="neutral"
-        variant="ghost"
+      <UDashboardSearchButton
+        label="Search"
+        size="sm"
+        class="hidden w-search justify-start rounded-full md:inline-flex"
+      />
+      <UDashboardSearchButton
+        label="Search"
+        collapsed
         class="md:hidden"
-        @click="search = true"
       />
       <UButton
         v-if="firing"
@@ -62,19 +47,13 @@ defineShortcuts({
         color="error"
         variant="subtle"
       />
+      <AccountMenu />
     </template>
   </UDashboardNavbar>
-  <UModal
-    v-model:open="search"
+  <UDashboardSearch
+    :groups="groups"
+    :color-mode="false"
     title="Search workspace"
-    :ui="{ content: 'sm:max-w-modal', body: 'p-none sm:p-none' }"
-  >
-    <template #body>
-      <UCommandPalette
-        :groups="groups"
-        placeholder="Search dashboards and pages…"
-        @update:open="search = $event"
-      />
-    </template>
-  </UModal>
+    placeholder="Search"
+  />
 </template>
