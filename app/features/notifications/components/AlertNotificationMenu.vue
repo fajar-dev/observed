@@ -18,10 +18,12 @@ const number = (value: number | null) => value === null ? '—' : new Intl.Numbe
       size="lg"
     >
       <UButton
+        size="sm"
         icon="i-lucide-bell"
         aria-label="Notifications"
         color="neutral"
-        variant="ghost"
+        variant="outline"
+        class="rounded-full"
         square
       />
     </UChip>

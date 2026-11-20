@@ -18,7 +18,9 @@ const items = computed(() => [
     :content="{ align: 'end' }"
   >
     <UButton
-      :avatar="{ alt: user?.name || 'Account', size: 'sm' }"
+      size="sm"
+      class="rounded-full"
+      :avatar="{ alt: user?.name || 'Account', size: 'md' }"
       aria-label="Account menu"
       color="neutral"
       variant="ghost"
