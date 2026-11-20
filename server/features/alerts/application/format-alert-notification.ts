@@ -30,7 +30,7 @@ export function formatAlertNotification(
   const threshold = `${operators[rule.operator]} ${numbers.format(rule.threshold)}`
   return [
     `${firing ? '🔴 <b>FIRING</b>' : '🟢 <b>RECOVERED</b>'} · ${product.name}`,
-    firing ? 'Kondisi alert terpenuhi.' : 'Kondisi sudah kembali normal.',
+    firing ? 'Nilai pengukuran memenuhi kondisi alert.' : 'Nilai pengukuran tidak lagi memenuhi kondisi alert.',
     '',
     `<b>Alert:</b> ${singleLine(rule.name)}`,
     `<b>Source:</b> ${singleLine(sourceName)}`,
