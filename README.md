@@ -4,6 +4,17 @@ A structural health monitoring application for IoT sensor data from buildings, b
 
 Product terminology, metadata, and the retained AMTI identity are documented in [brand guidelines](docs/brand.md).
 
+## Run with Docker
+
+Docker runs Observed and PostgreSQL without a reverse proxy:
+
+```sh
+sh docker/setup.sh
+sh docker/compose.sh up -d --build --wait
+```
+
+Open **http://localhost:3000/sign-in** to create the first administrator. Container settings are stored in `.env.docker`, separate from local development. See the [Docker deployment guide](docs/docker.md) for ports, existing InfluxDB/PostgreSQL connections, backups, restore and runtime verification.
+
 ## Run locally
 
 Install Node.js, Bun, and PostgreSQL, then:

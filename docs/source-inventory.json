@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 227,
+  "runtimeModules": 229,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -7,6 +7,7 @@
     "configuration",
     "dashboards",
     "data-sources",
+    "health",
     "notifications",
     "overview",
     "panels",
@@ -158,7 +159,7 @@
     },
     {
       "path": "server/bootstrap/workspace.ts",
-      "lines": 52,
+      "lines": 54,
       "reachable": true
     },
     {
@@ -1179,6 +1180,16 @@
     {
       "path": "shared/domain/dashboard-refresh.ts",
       "lines": 41,
+      "reachable": true
+    },
+    {
+      "path": "server/api/health.get.ts",
+      "lines": 13,
+      "reachable": true
+    },
+    {
+      "path": "server/features/health/application/health.service.ts",
+      "lines": 11,
       "reachable": true
     }
   ]
