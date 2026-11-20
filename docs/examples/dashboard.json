@@ -1,0 +1,65 @@
+{
+  "name": "Bridge sensor monitoring",
+  "description": "Example dashboard; replace the source UUID and sensor schema before importing.",
+  "range": "1h",
+  "refresh": "auto",
+  "columns": 24,
+  "tags": [
+    "bridge",
+    "tilt"
+  ],
+  "sections": [
+    {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "title": "Pier P2 sensors",
+      "y": 0,
+      "collapsed": false
+    }
+  ],
+  "panels": [
+    {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "title": "Pier P2 tilt",
+      "type": "line",
+      "span": 12,
+      "height": 8,
+      "x": 0,
+      "y": 1,
+      "sectionId": "33333333-3333-4333-8333-333333333333",
+      "dataSourceId": "11111111-1111-4111-8111-111111111111",
+      "queryLanguage": "flux",
+      "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"structure_sensors\" and r._field == \"tilt\")\n  |> filter(fn: (r) => r.sensor == \"P2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+      "additionalQueries": [],
+      "options": {
+        "unit": "°",
+        "decimals": 3,
+        "color": "#356f9f",
+        "legend": true,
+        "legendPlacement": "bottom"
+      }
+    },
+    {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "title": "Tilt readings",
+      "type": "table",
+      "span": 12,
+      "height": 8,
+      "x": 12,
+      "y": 1,
+      "sectionId": "33333333-3333-4333-8333-333333333333",
+      "dataSourceId": "11111111-1111-4111-8111-111111111111",
+      "queryLanguage": "flux",
+      "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"structure_sensors\" and r._field == \"tilt\")\n  |> filter(fn: (r) => r.sensor == \"P2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+      "additionalQueries": [],
+      "options": {
+        "unit": "none",
+        "decimals": 3,
+        "tableShowHeader": true,
+        "tableCellHeight": "sm",
+        "fieldUnits": {
+          "_value": "°"
+        }
+      }
+    }
+  ]
+}

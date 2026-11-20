@@ -13,7 +13,8 @@
     "test": "bun test --tsconfig-override .nuxt/tsconfig.server.json tests/unit",
     "test:integration": "bun test --tsconfig-override .nuxt/tsconfig.server.json tests/integration",
     "audit:architecture": "node tooling/audit/architecture.mjs",
-    "test:browser": "node --test tests/browser/*.test.mjs"
+    "test:browser": "node --test tests/browser/*.test.mjs",
+    "docs:check": "bun tooling/docs/check.mjs"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.147",

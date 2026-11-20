@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process'
 import ts from 'typescript'
 
 const root = process.cwd()
-const files = execFileSync('rg', ['--files', 'app', 'server', 'shared'], { encoding: 'utf8' }).trim().split('\n')
+const files = execFileSync('rg', ['--files', 'app', 'server', 'shared'], { encoding: 'utf8' }).trim().split('\n').sort()
 const runtimeFiles = files.filter(file => /\.(ts|vue)$/.test(file))
 const source = new Map(files.map(file => [file, fs.readFileSync(file, 'utf8')]))
 const autoImports = new Map()
@@ -73,8 +73,8 @@ const summary = {
   unresolvedOrInvalid: issues
 }
 if (process.argv.includes('--inventory')) {
-  fs.mkdirSync(path.join(root, 'docs'), { recursive: true })
-  fs.writeFileSync('docs/source-inventory.json', JSON.stringify({ ...summary, files: files.map(file => ({ path: file, lines: source.get(file).split('\n').length - 1, reachable: graph.has(file) ? reachable.has(file) : null })) }, null, 2) + '\n')
+  fs.mkdirSync(path.join(root, 'docs/reference'), { recursive: true })
+  fs.writeFileSync('docs/reference/source-inventory.json', JSON.stringify({ ...summary, files: files.map(file => ({ path: file, lines: source.get(file).split('\n').length - 1, reachable: graph.has(file) ? reachable.has(file) : null })) }, null, 2) + '\n')
 }
 console.log(JSON.stringify(summary, null, 2))
 if (issues.length) process.exitCode = 1

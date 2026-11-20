@@ -1,0 +1,16 @@
+{
+  "name": "Pier P2 tilt threshold",
+  "summary": "Review pier P2 tilt readings.",
+  "severity": "warning",
+  "dataSourceId": "11111111-1111-4111-8111-111111111111",
+  "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"structure_sensors\" and r._field == \"tilt\")\n  |> filter(fn: (r) => r.sensor == \"P2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+  "range": "1h",
+  "enabled": true,
+  "telegramDestinationIds": [],
+  "operator": "gt",
+  "reducer": "last",
+  "field": "_value",
+  "threshold": 0.5,
+  "interval": 60,
+  "pendingFor": 300
+}
