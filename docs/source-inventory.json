@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 196,
+  "runtimeModules": 200,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -51,7 +51,7 @@
     },
     {
       "path": "shared/domain/dashboard.ts",
-      "lines": 41,
+      "lines": 46,
       "reachable": true
     },
     {
@@ -61,7 +61,7 @@
     },
     {
       "path": "shared/domain/panel.ts",
-      "lines": 93,
+      "lines": 94,
       "reachable": true
     },
     {
@@ -161,7 +161,7 @@
     },
     {
       "path": "app/assets/styles/base.css",
-      "lines": 30,
+      "lines": 31,
       "reachable": null
     },
     {
@@ -171,12 +171,12 @@
     },
     {
       "path": "app/assets/styles/workspace.css",
-      "lines": 51,
+      "lines": 61,
       "reachable": null
     },
     {
       "path": "app/assets/styles/tokens.css",
-      "lines": 132,
+      "lines": 133,
       "reachable": null
     },
     {
@@ -186,7 +186,7 @@
     },
     {
       "path": "app/assets/styles/visualizations.css",
-      "lines": 14,
+      "lines": 18,
       "reachable": null
     },
     {
@@ -341,7 +341,7 @@
     },
     {
       "path": "app/components/ui/ContentToolbar.vue",
-      "lines": 34,
+      "lines": 37,
       "reachable": true
     },
     {
@@ -531,7 +531,7 @@
     },
     {
       "path": "app/features/dashboards/views/DashboardEditorView.vue",
-      "lines": 110,
+      "lines": 118,
       "reachable": true
     },
     {
@@ -546,7 +546,7 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardSettingsDrawer.vue",
-      "lines": 262,
+      "lines": 260,
       "reachable": true
     },
     {
@@ -561,7 +561,7 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardEditorHeader.vue",
-      "lines": 110,
+      "lines": 138,
       "reachable": true
     },
     {
@@ -571,7 +571,7 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardGrid.vue",
-      "lines": 141,
+      "lines": 127,
       "reachable": true
     },
     {
@@ -616,7 +616,7 @@
     },
     {
       "path": "app/features/dashboards/composables/useDashboardPanelEditing.ts",
-      "lines": 51,
+      "lines": 55,
       "reachable": true
     },
     {
@@ -626,7 +626,7 @@
     },
     {
       "path": "app/features/dashboards/composables/useDashboardEditor.ts",
-      "lines": 98,
+      "lines": 100,
       "reachable": true
     },
     {
@@ -726,7 +726,7 @@
     },
     {
       "path": "app/features/configuration/views/ConfigurationView.vue",
-      "lines": 173,
+      "lines": 171,
       "reachable": true
     },
     {
@@ -846,7 +846,7 @@
     },
     {
       "path": "app/features/queries/components/QueryEditor.vue",
-      "lines": 197,
+      "lines": 196,
       "reachable": true
     },
     {
@@ -911,7 +911,7 @@
     },
     {
       "path": "app/features/panels/components/PanelEditor.vue",
-      "lines": 208,
+      "lines": 206,
       "reachable": true
     },
     {
@@ -1022,6 +1022,26 @@
     {
       "path": "server/features/alerts/application/format-alert-notification.ts",
       "lines": 42,
+      "reachable": true
+    },
+    {
+      "path": "shared/utils/dashboard-layout.ts",
+      "lines": 103,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/DashboardPanelGrid.vue",
+      "lines": 111,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/components/DashboardSectionEditor.vue",
+      "lines": 49,
+      "reachable": true
+    },
+    {
+      "path": "app/features/dashboards/composables/useDashboardSections.ts",
+      "lines": 57,
       "reachable": true
     }
   ]
