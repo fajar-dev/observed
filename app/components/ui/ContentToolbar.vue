@@ -1,9 +1,12 @@
 <script setup lang="ts">
-defineProps<{ title: string, description?: string, icon?: string }>()
+defineProps<{ title: string, description?: string, icon?: string, inline?: boolean }>()
 </script>
 
 <template>
-  <header class="content-toolbar">
+  <header
+    class="content-toolbar"
+    :data-inline="inline || undefined"
+  >
     <div class="flex min-w-none items-center gap-space-md">
       <UIcon
         v-if="icon"

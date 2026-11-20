@@ -2,6 +2,14 @@
 const { canWrite } = useAuthentication()
 const { enterKiosk } = useDashboardKiosk()
 const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions, editPanel, editSection, compactLayout, openSettings, save, discard, healthOpen, exportDashboard } = useDashboardEditor()
+const addItems = computed(() => [
+  { label: 'Add panel', icon: 'i-lucide-panel-top', disabled: draft.value.panels.length >= 100, onSelect: () => editPanel() },
+  { label: 'Add row', icon: 'i-lucide-rows-3', disabled: (draft.value.sections?.length ?? 0) >= 100, onSelect: () => editSection() }
+])
+const editItems = [
+  [{ label: 'Compact layout', icon: 'i-lucide-panels-top-left', onSelect: compactLayout }],
+  [{ label: 'Dashboard settings', icon: 'i-lucide-settings', onSelect: openSettings }]
+]
 </script>
 
 <template>
@@ -9,53 +17,48 @@ const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions
     :title="draft.name"
     :description="draft.description || undefined"
     icon="i-lucide-panels-top-left"
+    inline
   >
     <template #status>
       <UBadge
         v-if="editing"
-        :label="dirty ? 'Unsaved changes' : 'Editing'"
+        :label="dirty ? 'Unsaved' : 'Editing'"
+        :title="dirty ? 'Unsaved changes' : 'Editing dashboard'"
         color="warning"
         variant="subtle"
         class="shrink-none"
       />
     </template>
-    <template v-if="editing">
-      <UButton
-        size="sm"
-        label="Add panel"
-        icon="i-lucide-plus"
-        color="neutral"
-        variant="outline"
-        :disabled="draft.panels.length >= 100"
-        @click="editPanel()"
-      />
-      <UButton
-        size="sm"
-        label="Add row"
-        icon="i-lucide-rows-3"
-        color="neutral"
-        variant="outline"
-        :disabled="(draft.sections?.length ?? 0) >= 100"
-        @click="editSection()"
-      />
-      <UTooltip text="Remove empty space and align panels within each row">
+    <div
+      v-if="editing"
+      class="flex shrink-none items-center gap-space-sm"
+    >
+      <UDropdownMenu
+        :items="addItems"
+        :content="{ align: 'end' }"
+      >
         <UButton
           size="sm"
-          label="Compact layout"
-          icon="i-lucide-panels-top-left"
+          label="Add"
+          icon="i-lucide-plus"
+          trailing-icon="i-lucide-chevron-down"
+          aria-label="Add to dashboard"
           color="neutral"
-          variant="ghost"
-          @click="compactLayout"
+          variant="outline"
         />
-      </UTooltip>
-      <UButton
-        size="sm"
-        icon="i-lucide-settings"
-        aria-label="Dashboard settings"
-        color="neutral"
-        variant="outline"
-        @click="openSettings"
-      />
+      </UDropdownMenu>
+      <UDropdownMenu
+        :items="editItems"
+        :content="{ align: 'end' }"
+      >
+        <UButton
+          size="sm"
+          icon="i-lucide-ellipsis-vertical"
+          aria-label="Dashboard actions"
+          color="neutral"
+          variant="outline"
+        />
+      </UDropdownMenu>
       <UButton
         size="sm"
         label="Discard"
@@ -65,13 +68,17 @@ const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions
       />
       <UButton
         size="sm"
-        label="Save dashboard"
+        label="Save"
+        aria-label="Save dashboard"
         icon="i-lucide-save"
         :loading="busy"
         @click="save"
       />
-    </template>
-    <template v-else>
+    </div>
+    <div
+      v-else
+      class="flex shrink-none items-center gap-space-sm"
+    >
       <UButton
         size="sm"
         label="Kiosk mode"
@@ -101,29 +108,31 @@ const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions
           variant="outline"
         />
       </UDropdownMenu>
-    </template>
-    <USeparator
-      orientation="vertical"
-      class="hidden h-control-sm shrink-none md:block"
-    />
-    <TimeRangePicker
-      v-model="range"
-      v-model:from="from"
-      v-model:to="to"
-    />
-    <UButton
-      size="sm"
-      icon="i-lucide-refresh-cw"
-      aria-label="Refresh panels"
-      color="neutral"
-      variant="outline"
-      @click="refreshKey++"
-    />
-    <USelect
-      v-model="draft.refresh"
-      size="sm"
-      :items="refreshOptions"
-      aria-label="Auto refresh"
-    />
+    </div>
+    <div class="flex shrink-none items-center gap-space-sm">
+      <USeparator
+        orientation="vertical"
+        class="hidden h-control-sm shrink-none md:block"
+      />
+      <TimeRangePicker
+        v-model="range"
+        v-model:from="from"
+        v-model:to="to"
+      />
+      <UButton
+        size="sm"
+        icon="i-lucide-refresh-cw"
+        aria-label="Refresh panels"
+        color="neutral"
+        variant="outline"
+        @click="refreshKey++"
+      />
+      <USelect
+        v-model="draft.refresh"
+        size="sm"
+        :items="refreshOptions"
+        aria-label="Auto refresh"
+      />
+    </div>
   </ContentToolbar>
 </template>

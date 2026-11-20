@@ -49,3 +49,14 @@
 }
 
 .kiosk-exit { position: fixed; right: var(--spacing-space-lg); bottom: var(--spacing-space-lg); z-index: 50; }
+
+/* Dashboard actions stay grouped; long titles yield space instead of pushing buttons down. */
+.content-toolbar[data-inline] > :first-child { flex: 1 1 0%; }
+@media (min-width: 64rem) {
+  .content-toolbar[data-inline] { flex-wrap: nowrap; }
+  .content-toolbar[data-inline] > .content-toolbar-actions { flex-shrink: 0; flex-wrap: nowrap; }
+}
+@media (width < 64rem) {
+  .content-toolbar[data-inline] > :first-child { flex-basis: 100%; }
+  .content-toolbar[data-inline] > .content-toolbar-actions { width: 100%; justify-content: flex-start; }
+}
