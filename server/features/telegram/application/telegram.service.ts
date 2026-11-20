@@ -1,5 +1,5 @@
 import { WorkspaceError } from '~~/server/domain/workspace-error'
-import type { TelegramTransport, WorkspaceRepository, SecretVault } from '~~/server/domain/ports'
+import type { TelegramTransport, TelegramMessageOptions, WorkspaceRepository, SecretVault } from '~~/server/domain/ports'
 
 import type { StoredTelegramDestination } from '~~/server/domain/workspace-entities'
 
@@ -28,10 +28,10 @@ export class TelegramService {
     return publicDestination(await this.repository.create('telegramDestinations', { ...data, ciphertext }))
   }
 
-  async send(id: string, text: string) {
+  async send(id: string, text: string, options?: TelegramMessageOptions) {
     const settings = await this.repository.get('telegramDestinations', id)
     const token = this.vault.decrypt(settings.ciphertext)
-    await this.transport.send(token, settings.chatId, text)
+    await this.transport.send(token, settings.chatId, text, options)
   }
 
   async deleteDestination(id: string) {

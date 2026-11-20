@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 195,
+  "runtimeModules": 196,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -71,7 +71,7 @@
     },
     {
       "path": "server/domain/ports.ts",
-      "lines": 36,
+      "lines": 37,
       "reachable": true
     },
     {
@@ -931,7 +931,7 @@
     },
     {
       "path": "server/features/alerts/application/alert.service.ts",
-      "lines": 97,
+      "lines": 101,
       "reachable": true
     },
     {
@@ -1017,6 +1017,11 @@
     {
       "path": "server/platform/database/migrations/authentication.ts",
       "lines": 52,
+      "reachable": true
+    },
+    {
+      "path": "server/features/alerts/application/format-alert-notification.ts",
+      "lines": 42,
       "reachable": true
     }
   ]

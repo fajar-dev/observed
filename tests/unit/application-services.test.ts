@@ -83,9 +83,12 @@ test('alert delivery retries individual destinations and emits recovery only aft
   let value = 90, failOnce = true
   const deliveries: string[] = []
   const response = (): QueryResponse => ({ columns: ['_time', '_value'], rows: [{ _time: new Date().toISOString(), _value: value }], duration: 1, truncated: false })
-  const sources: DataSourceAccess = { listSources: async () => [], validateSources: async () => {}, query: async () => response() }
-  const telegram: TelegramAccess = { list: async () => [first, second].map(id => ({ id, name: id, chatId: id, hasToken: true })), send: async (id, text) => {
-    deliveries.push(id + ':' + (text.startsWith('[FIRING]') ? 'firing' : 'recovery'))
+  const sources: DataSourceAccess = { listSources: async () => [{ id: sourceId, name: 'Production InfluxDB', url: 'http://influx.example.test', queryLanguage: 'flux', organization: 'test', database: 'metrics', hasSecret: true }], validateSources: async () => {}, query: async () => response() }
+  const telegram: TelegramAccess = { list: async () => [first, second].map(id => ({ id, name: id, chatId: id, hasToken: true })), send: async (id, text, options) => {
+    assert.equal(options?.parseMode, 'HTML')
+    assert.ok(text.includes('<b>Source:</b> Production InfluxDB'))
+    assert.ok(text.includes('<b>Threshold alert:</b> <code>&gt; 80</code>'))
+    deliveries.push(id + ':' + (text.includes('<b>FIRING</b>') ? 'firing' : 'recovery'))
     if (id === second && failOnce) {
       failOnce = false
       throw new Error('temporary failure')

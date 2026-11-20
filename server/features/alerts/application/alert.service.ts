@@ -3,6 +3,7 @@ import type { AlertEvaluation, AlertRuleInput, AlertRule, AlertRulePreview } fro
 
 import type { WorkspaceRepository, DataSourceAccess, TelegramAccess, Clock } from '~~/server/domain/ports'
 import { evaluateThreshold } from '~~/server/features/alerts/application/evaluate-threshold'
+import { formatAlertNotification } from './format-alert-notification'
 
 export class AlertService {
   constructor(private readonly repository: WorkspaceRepository, private readonly dataSources: DataSourceAccess, private readonly telegram: TelegramAccess, private readonly clock: Clock) {}
@@ -54,16 +55,19 @@ export class AlertService {
       const destinations = rule.telegramDestinationIds ?? []
       if (rule.enabled && (!rule.muteUntil || Date.parse(rule.muteUntil) <= this.clock.now().getTime()) && (firing || evaluation.state === 'normal')) {
         const pending = destinations.filter(destination => firing !== notified.has(destination))
-        const text = `[${firing ? 'FIRING' : 'RECOVERED'}] ${rule.name}${rule.severity ? ' · ' + rule.severity.toUpperCase() : ''}${rule.summary ? '\n' + rule.summary : ''}\nValue: ${evaluation.value}\nThreshold: ${rule.operator} ${rule.threshold}\n${time}`
-        const outcomes = await Promise.allSettled(pending.map(destination => this.telegram.send(destination, text)))
-        const failed = outcomes.filter(outcome => outcome.status === 'rejected').length
-        outcomes.forEach((outcome, index) => {
-          const destination = pending[index]
-          if (outcome.status !== 'fulfilled' || !destination) return
-          if (firing) notified.add(destination)
-          else notified.delete(destination)
-        })
-        if (failed) evaluation.deliveryError = `Telegram delivery failed for ${failed} destination(s). Check Configuration.`
+        if (pending.length) {
+          const source = (await this.dataSources.listSources()).find(source => source.id === rule.dataSourceId)
+          const text = formatAlertNotification(rule, evaluation, source?.name ?? rule.dataSourceId)
+          const outcomes = await Promise.allSettled(pending.map(destination => this.telegram.send(destination, text, { parseMode: 'HTML' })))
+          const failed = outcomes.filter(outcome => outcome.status === 'rejected').length
+          outcomes.forEach((outcome, index) => {
+            const destination = pending[index]
+            if (outcome.status !== 'fulfilled' || !destination) return
+            if (firing) notified.add(destination)
+            else notified.delete(destination)
+          })
+          if (failed) evaluation.deliveryError = `Telegram delivery failed for ${failed} destination(s). Check Configuration.`
+        }
       }
       await this.repository.update('alertRules', id, {
         evaluation, pendingSince, evaluationHistory: [evaluation, ...(rule.evaluationHistory ?? [])].slice(0, 50), notifiedDestinations: destinations.filter(destination => notified.has(destination))

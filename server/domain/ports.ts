@@ -28,9 +28,10 @@ export interface DataSourceAccess {
   query(input: QueryRequest): Promise<QueryResponse>
   validateSources(ids: string[]): Promise<void>
 }
-export interface TelegramAccess { list(): Promise<TelegramDestination[]>, send(id: string, text: string): Promise<void> }
+export type TelegramMessageOptions = { parseMode?: 'HTML' }
+export interface TelegramAccess { list(): Promise<TelegramDestination[]>, send(id: string, text: string, options?: TelegramMessageOptions): Promise<void> }
 export interface DashboardImporter { convert(document: unknown, source: DataSource | null): { dashboard: DashboardDefinition, warnings: string[] } }
-export interface TelegramTransport { send(token: string, chatId: string, text: string): Promise<void> }
+export interface TelegramTransport { send(token: string, chatId: string, text: string, options?: TelegramMessageOptions): Promise<void> }
 export interface Clock { now(): Date }
 export interface DashboardVariableResolver { resolve(input: VariableResolutionInput): Promise<VariableResolution> }
 export interface DashboardChecker { check(input: DashboardDefinition): Promise<DashboardDiagnostic> }
