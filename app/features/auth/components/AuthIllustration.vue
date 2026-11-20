@@ -91,7 +91,7 @@
         x="80"
         y="170"
         text-anchor="middle"
-      >Data sources</text>
+      >Strain &amp; tilt</text>
       <rect
         x="376"
         y="65"
@@ -103,7 +103,7 @@
         x="435"
         y="85"
         text-anchor="middle"
-      >Dashboards</text>
+      >Vibration</text>
       <rect
         x="319"
         y="244"
@@ -115,7 +115,7 @@
         x="378"
         y="264"
         text-anchor="middle"
-      >Telegram alerts</text>
+      >Sensor trends</text>
     </g>
   </svg>
 </template>

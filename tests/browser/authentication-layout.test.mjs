@@ -21,7 +21,7 @@ test('authentication controls fit all supported viewport sizes', async () => {
         if (['warning', 'error'].includes(message.type())) errors.push(message.text())
       })
       await page.goto(baseUrl + '/sign-in', { waitUntil: 'load' })
-      await page.getByRole('heading', { name: scenario === 'setup' ? 'Set up your workspace' : 'Welcome back.', exact: true }).waitFor()
+      await page.getByRole('heading', { name: scenario === 'setup' ? 'Set up Observed' : 'Welcome back.', exact: true }).waitFor()
       await page.evaluate(() => document.fonts.ready)
       for (const [width, height] of viewports) {
         await page.setViewportSize({ width, height })

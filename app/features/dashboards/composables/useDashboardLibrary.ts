@@ -4,7 +4,7 @@ function createDashboardLibrary() {
   const router = useRouter()
   const apiRequest = useApiRequest()
   const { canWrite } = useAuthentication()
-  useSeoMeta({ title: 'Dashboards · AMTI Observe' })
+  usePageSeo('Dashboards', 'Build and organize custom sensor dashboards for buildings, bridges, and other structures.')
   const { data: dashboards, error: loadError, status, refresh } = useDashboards()
   const { data: sources, error: sourcesError } = useDataSources()
   const { busy, perform, error } = useAsyncAction()

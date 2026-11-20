@@ -2,7 +2,7 @@
 import { signInSchema, setupSchema } from '#shared/domain/auth'
 
 const { route, configuration, loadError, busy, error, form, settingUp, showPassword, submit } = useSignIn()
-useSeoMeta({ title: () => settingUp.value ? 'Set up workspace · AMTI Observe' : 'Sign in · AMTI Observe' })
+usePageSeo(() => settingUp.value ? 'Set up Observed' : 'Sign in')
 useErrorToast(() => loadError.value || error.value, 'Sign in failed')
 
 useNotice(() => route.query.error === 'oauth'
@@ -26,10 +26,10 @@ useNotice(() => route.query.error === 'oauth'
           id="auth-title"
           class="auth-form-title"
         >
-          {{ settingUp ? 'Set up your workspace' : 'Welcome back.' }}
+          {{ settingUp ? 'Set up Observed' : 'Welcome back.' }}
         </h1>
         <p class="auth-form-description">
-          {{ settingUp ? 'Create your administrator account to start building your monitoring workspace.' : 'Sign in to your workspace. Your dashboards, metrics, and alerts are one step away.' }}
+          {{ settingUp ? 'Create an administrator account for your structural monitoring team.' : 'Access your sensor dashboards, structural trends, and monitoring alerts.' }}
         </p>
       </div>
       <UForm

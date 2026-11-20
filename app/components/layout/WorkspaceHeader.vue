@@ -5,7 +5,7 @@ const { data: dashboards } = useDashboards()
 const { data: alerts } = useAlertRuleRecords()
 const firing = computed(() => alerts.value.filter(rule => rule.enabled && rule.evaluation?.state === 'firing').length)
 const groups = computed(() => [
-  { id: 'pages', label: 'Workspace', items: navigation.value.map(item => ({ label: item.label, to: item.to, icon: item.icon })) },
+  { id: 'pages', label: 'Monitoring', items: navigation.value.map(item => ({ label: item.label, to: item.to, icon: item.icon })) },
   { id: 'dashboards', label: 'Dashboards', items: dashboards.value.map(item => ({ label: item.name, to: '/dashboards/' + item.id, icon: 'i-lucide-panels-top-left' })) }
 ])
 </script>
@@ -53,7 +53,7 @@ const groups = computed(() => [
   <UDashboardSearch
     :groups="groups"
     :color-mode="false"
-    title="Search workspace"
+    title="Search Observed"
     placeholder="Search"
   />
 </template>

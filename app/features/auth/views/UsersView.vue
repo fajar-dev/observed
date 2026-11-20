@@ -3,6 +3,8 @@ import type { TableColumn } from '@nuxt/ui'
 import type { AuthUser } from '#shared/domain/auth'
 import { userInputSchema } from '#shared/domain/auth'
 
+usePageSeo('Users', 'Manage team access and monitoring permissions in Observed.')
+
 const { current, users, status, loadError, busy, error, search, open, deleting, selected, form, password, filtered, edit, save, menu, remove } = useUsers()
 const columns: TableColumn<AuthUser>[] = [
   { accessorKey: 'name', header: 'User' }, { accessorKey: 'role', header: 'Role' }, { accessorKey: 'enabled', header: 'Status' },
@@ -17,7 +19,7 @@ useErrorToast(() => loadError.value || (!deleting.value ? error.value : ''))
   <WorkspacePage
     compact
     title="Users"
-    description="Manage accounts and workspace permissions."
+    description="Manage team access and monitoring permissions."
     icon="i-lucide-users"
   >
     <template #actions>
@@ -88,7 +90,7 @@ useErrorToast(() => loadError.value || (!deleting.value ? error.value : ''))
     <FormDialog
       v-model:open="open"
       :title="selected ? 'Edit user' : 'Add user'"
-      description="Admin manages the workspace, Editor builds dashboards and alerts, Viewer reads dashboards."
+      description="Admin manages users and configuration, Editor builds dashboards and alerts, Viewer reads dashboards."
       :state="form"
       :schema="userInputSchema"
       :busy="busy"

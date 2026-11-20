@@ -6,7 +6,7 @@ import type { AlertRulePreview, AlertRuleInput, AlertRule } from '#shared/domain
 function createAlertRules() {
   const apiRequest = useApiRequest()
   const { canWrite } = useAuthentication()
-  useSeoMeta({ title: 'Alerts · AMTI Observe' })
+  usePageSeo('Alerts', 'Configure sensor threshold rules and keep your monitoring team informed through Telegram.')
   const { data: alerts, error: loadError, status, refresh } = useAlertRuleRecords()
   const { data: sources, status: sourcesStatus, error: sourcesError } = useDataSources()
   const { data: destinations, status: destinationsStatus, error: destinationsError } = useTelegramDestinations()

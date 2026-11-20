@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { canWrite, isAdmin } = useAuthentication()
-useSeoMeta({ title: 'Overview · AMTI Observe' })
+usePageSeo('Overview', 'Review sensor dashboards, structural trends, and configured threshold alerts in Observed.')
 const { data: sources, error: sourcesError } = useDataSources()
 const { data: dashboards, error: dashboardsError, status } = useDashboards()
 const { data: alerts, error: alertsError } = useAlertRuleRecords()
@@ -20,7 +20,7 @@ useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.v
     compact
     icon="i-lucide-house"
     title="Overview"
-    description="InfluxDB dashboards and Telegram alert status."
+    description="Sensor dashboards, structural trends, and threshold alerts."
   >
     <template #actions>
       <NewDashboardMenu />
@@ -28,7 +28,7 @@ useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.v
     <div
       class="toolbar"
       role="group"
-      aria-label="Workspace summary"
+      aria-label="Monitoring summary"
     >
       <UButton
         v-for="item in summaries"
@@ -66,7 +66,7 @@ useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.v
           v-else-if="!recent.length"
           variant="naked"
           title="Create your first dashboard"
-          description="Start with a panel or import dashboard JSON."
+          description="Visualize your sensor data or import dashboard JSON."
           icon="i-lucide-panels-top-left"
           size="sm"
           :actions="canWrite ? [{ label: 'Create dashboard', to: '/dashboards/new', icon: 'i-lucide-plus', size: 'sm' }] : []"

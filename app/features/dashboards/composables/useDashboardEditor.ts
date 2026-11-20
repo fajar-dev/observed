@@ -28,7 +28,7 @@ function createDashboardEditor() {
   const removeOpen = ref(false)
   useBreadcrumbTitle(computed(() => ready.value ? draft.value.name : error.value ? 'Unavailable dashboard' : undefined))
   const dirty = computed(() => ready.value && (isNew ? draft.value.panels.length > 0 || draft.value.name !== 'New dashboard' : JSON.stringify(persistedDashboard(draft.value)) !== JSON.stringify(persistedDashboard(original.value!))))
-  useSeoMeta({ title: () => `${draft.value.name} · AMTI Observe` })
+  usePageSeo(() => draft.value.name, () => draft.value.description || 'Explore sensor measurements and structural trends in a custom Observed dashboard.')
   function persistedDashboard(value: DashboardDefinition) {
     return { ...value, variables: value.variables?.map(variable => ({
       ...variable, ...(variable.type === 'query' || variable.type === 'datasource' ? { values: [], current: '' } : {})

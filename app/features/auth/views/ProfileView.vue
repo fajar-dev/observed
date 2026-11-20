@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { profileSchema } from '#shared/domain/auth'
 
+usePageSeo('Profile', 'Manage your Observed account, sign-in methods, and active sessions.')
+
 const { auth, route, configuration, linked, sessions, busy, error, loadError, form, state, save, revoke } = useProfile()
 useErrorToast(() => loadError.value || error.value, 'Account action failed')
 

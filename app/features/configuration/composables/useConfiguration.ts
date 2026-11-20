@@ -3,7 +3,7 @@ import type { DataSource, DataSourceInput } from '#shared/domain/data-source'
 function createConfiguration() {
   const router = useRouter()
   const apiRequest = useApiRequest()
-  useSeoMeta({ title: 'Configuration · AMTI Observe' })
+  usePageSeo('Configuration', 'Connect InfluxDB sensor data and configure Telegram notification destinations in Observed.')
   const { data: sources, error: loadError, status, refresh } = useDataSources()
   const { busy, perform, error } = useAsyncAction()
   const toast = useNotifications()

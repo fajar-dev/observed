@@ -2,7 +2,7 @@
   <NuxtLink
     to="/"
     class="shrink-none rounded-md focus-visible:outline-medium focus-visible:outline-primary"
-    aria-label="AMTI overview"
+    aria-label="Observed overview"
   >
     <picture class="block h-control-sm w-control-sm lg:h-logo-height lg:w-logo dark:hidden">
       <source

@@ -3,7 +3,7 @@ import type { NuxtError } from '#app'
 
 const props = defineProps<{ error: NuxtError }>()
 const missing = computed(() => props.error.statusCode === 404)
-useHead({ title: () => `${missing.value ? 'Page not found' : 'Unable to load page'} · AMTI Observe` })
+usePageSeo(() => missing.value ? 'Page not found' : 'Unable to load page')
 </script>
 
 <template>
