@@ -12,3 +12,7 @@
 .stat-grid { grid-auto-rows: minmax(var(--spacing-compact), auto); align-content: start; }
 .stat-grid > div { min-height: var(--spacing-compact); }
 .gauge-grid { grid-auto-rows: minmax(var(--spacing-gauge-item), auto); align-content: start; }
+
+.grid-stack[data-editing="true"] .panel-drag-handle { cursor: grab; }
+.grid-stack[data-editing="true"] .panel-drag-handle:active { cursor: grabbing; }
+.grid-stack[data-editing="true"] .ui-resizable-se { cursor: se-resize; }

@@ -3,9 +3,9 @@ import { panelDataSourceId } from '#shared/utils/dashboard-variables'
 import type { Panel } from '#shared/domain/panel'
 import type { QueryRequest } from '#shared/domain/query'
 
-const props = defineProps<{ panel: Panel, range: QueryRequest['range'], from?: string, to?: string, variables?: import('#shared/domain/variable').VariableValues, refresh: number, editing: boolean, kiosk?: boolean }>()
+const props = defineProps<{ panel: Panel, sections?: import('#shared/domain/dashboard').DashboardSection[], sectionId?: string | null, range: QueryRequest['range'], from?: string, to?: string, variables?: import('#shared/domain/variable').VariableValues, refresh: number, editing: boolean, kiosk?: boolean }>()
 const { canWrite } = useAuthentication()
-const emit = defineEmits<{ edit: [], remove: [], duplicate: [] }>()
+const emit = defineEmits<{ edit: [], remove: [], duplicate: [], move: [sectionId: string | null] }>()
 const { results, failures, loading, run } = useQueryRunner()
 const inspector = ref(false)
 const { data: sources } = useDataSources()
@@ -22,7 +22,7 @@ const menu = computed(() => [
   [...(canWrite.value ? [{ label: 'Edit', icon: 'i-lucide-pencil', onSelect: () => emit('edit') }] : []), { label: 'Inspect data', icon: 'i-lucide-scan-search', onSelect: () => {
     inspector.value = true
   } }],
-  ...(props.editing ? [[{ label: 'Duplicate', icon: 'i-lucide-copy', onSelect: () => emit('duplicate') }, { label: 'Remove', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => emit('remove') }]] : [])
+  ...(props.editing ? [[...(props.sections?.length ? [{ label: 'Move to row', icon: 'i-lucide-rows-3', children: [{ label: 'No row', disabled: !props.sectionId, onSelect: () => emit('move', null) }, ...props.sections.map(section => ({ label: section.title, disabled: section.id === props.sectionId, onSelect: () => emit('move', section.id) }))] }] : []), { label: 'Duplicate', icon: 'i-lucide-copy', onSelect: () => emit('duplicate') }, { label: 'Remove', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => emit('remove') }]] : [])
 ])
 
 function load() {

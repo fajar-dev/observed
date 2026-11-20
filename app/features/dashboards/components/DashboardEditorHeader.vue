@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { canWrite } = useAuthentication()
 const { enterKiosk } = useDashboardKiosk()
-const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions, editPanel, openSettings, save, discard, healthOpen, exportDashboard } = useDashboardEditor()
+const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions, editPanel, editSection, compactLayout, openSettings, save, discard, healthOpen, exportDashboard } = useDashboardEditor()
 </script>
 
 <template>
@@ -29,6 +29,25 @@ const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions
         :disabled="draft.panels.length >= 100"
         @click="editPanel()"
       />
+      <UButton
+        size="sm"
+        label="Add row"
+        icon="i-lucide-rows-3"
+        color="neutral"
+        variant="outline"
+        :disabled="(draft.sections?.length ?? 0) >= 100"
+        @click="editSection()"
+      />
+      <UTooltip text="Remove empty space and align panels within each row">
+        <UButton
+          size="sm"
+          label="Compact layout"
+          icon="i-lucide-panels-top-left"
+          color="neutral"
+          variant="ghost"
+          @click="compactLayout"
+        />
+      </UTooltip>
       <UButton
         size="sm"
         icon="i-lucide-settings"

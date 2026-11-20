@@ -21,6 +21,7 @@ function createDashboardEditor() {
   const ready = ref(isNew)
   const editing = ref(canWrite.value && !kiosk.value && (isNew || route.query.edit === '1'))
   const { panel, panelOpen, panelSession, newPanel, editPanel, finishPanelClose, applyPanel, duplicate, updateLayout } = useDashboardPanelEditing(draft, sources, editing)
+  const sections = useDashboardSections(draft, editing)
   const { settings, settingsTab, tagText, jsonDocument, versionLoading, versions, settingsError, variableValues, variableTypes, openSettings, addVariable, updateVariable, exportDashboard, loadVersions, applyJson } = useDashboardSettings(draft, editing, id, isNew)
   const { range, from, to, variables, variablesLoading, variableErrors, resolvedVariables, refreshVariables, refreshKey, refreshOptions, selectVariable, hydrateTime } = useDashboardTimeState(draft, ready, editing, isNew)
   const healthOpen = ref(false)
@@ -34,6 +35,7 @@ function createDashboardEditor() {
     })) }
   }
   function setDashboard(saved: Dashboard) {
+    sections.collapsedRows.value = {}
     saved = { ...saved, revision: saved.revision ?? 1 }
     original.value = cloneValue(saved)
     draft.value = cloneValue(saved)
@@ -90,7 +92,7 @@ function createDashboardEditor() {
     window.addEventListener('beforeunload', unload)
     onScopeDispose(() => window.removeEventListener('beforeunload', unload))
   })
-  return { route, id, isNew, sources, sourcesError, folders, refreshList, busy, error, perform, toast, draft, original, ready, editing, range, from, to, variables, variablesLoading, variableErrors, resolvedVariables, refreshVariables, healthOpen, refreshKey, panel, panelOpen, panelSession, finishPanelClose, settings, settingsTab, removeOpen, tagText, jsonDocument, versionLoading, versions, settingsError, dirty, refreshOptions, variableValues, variableTypes, persistedDashboard, selectVariable, setDashboard, newPanel, editPanel, applyPanel, duplicate, updateLayout, save, discard, openSettings, addVariable, updateVariable, exportDashboard, loadVersions, applyJson, remove, cloneValue, allVariableValue }
+  return { ...sections, route, id, isNew, sources, sourcesError, folders, refreshList, busy, error, perform, toast, draft, original, ready, editing, range, from, to, variables, variablesLoading, variableErrors, resolvedVariables, refreshVariables, healthOpen, refreshKey, panel, panelOpen, panelSession, finishPanelClose, settings, settingsTab, removeOpen, tagText, jsonDocument, versionLoading, versions, settingsError, dirty, refreshOptions, variableValues, variableTypes, persistedDashboard, selectVariable, setDashboard, newPanel, editPanel, applyPanel, duplicate, updateLayout, save, discard, openSettings, addVariable, updateVariable, exportDashboard, loadVersions, applyJson, remove, cloneValue, allVariableValue }
 }
 
 const context = createFeatureContext(createDashboardEditor, 'DashboardEditor')

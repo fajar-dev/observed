@@ -9,7 +9,7 @@ function handleEscape(event: KeyboardEvent) {
 }
 onMounted(() => window.addEventListener('keydown', handleEscape))
 onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
-const { draft, ready, isNew, sourcesError, error, removeOpen, settings, variableErrors, variablesLoading, refreshVariables, resolvedVariables, editing, range, from, to, refreshKey, panel, panelOpen, panelSession, finishPanelClose, healthOpen, busy, editPanel, updateLayout, duplicate, remove, applyPanel, setDashboard, refreshList } = provideDashboardEditor()
+const { draft, ready, isNew, sourcesError, error, removeOpen, settings, variableErrors, variablesLoading, refreshVariables, resolvedVariables, editing, range, from, to, refreshKey, panel, panelOpen, panelSession, finishPanelClose, collapsedRows, editSection, removeSection, moveSection, collapseSection, movePanel, healthOpen, busy, editPanel, updateLayout, duplicate, remove, applyPanel, setDashboard, refreshList } = provideDashboardEditor()
 useErrorToast(() => sourcesError.value || (!removeOpen.value && !settings.value ? error.value : ''))
 
 useNotice(() => Object.keys(variableErrors.value).length
@@ -38,10 +38,11 @@ useNotice(() => Object.keys(variableErrors.value).length
     <template v-else>
       <DashboardVariables v-if="!kiosk" />
       <DashboardGrid
-        v-if="draft.panels.length && !Object.keys(variableErrors).length"
+        v-if="(draft.panels.length || draft.sections?.length) && !Object.keys(variableErrors).length"
         :key="draft.columns ?? 12"
         :columns="draft.columns ?? 12"
         :sections="draft.sections"
+        :collapsed-rows="collapsedRows"
         :panels="draft.panels"
         :editing="editing && !kiosk"
         :kiosk="kiosk"
@@ -54,6 +55,12 @@ useNotice(() => Object.keys(variableErrors.value).length
         @edit="editPanel"
         @remove="item => draft.panels = draft.panels.filter(panel => panel.id !== item.id)"
         @duplicate="duplicate"
+        @edit-section="editSection"
+        @remove-section="removeSection"
+        @move-section="moveSection"
+        @collapse-section="collapseSection"
+        @move="movePanel"
+        @add-panel="sectionId => editPanel(undefined, sectionId)"
       />
       <UEmpty
         v-else-if="!draft.panels.length"
@@ -88,6 +95,7 @@ useNotice(() => Object.keys(variableErrors.value).length
       @repaired="setDashboard($event); refreshList(); refreshVariables()"
     />
     <DashboardSettingsDrawer />
+    <DashboardSectionEditor />
     <UButton
       v-if="kiosk"
       size="sm"

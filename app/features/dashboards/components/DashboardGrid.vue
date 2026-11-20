@@ -1,141 +1,127 @@
 <script setup lang="ts">
-import type { GridStack, GridStackNode } from 'gridstack'
-import type { DashboardDefinition } from '#shared/domain/dashboard'
+import type { DashboardSection } from '#shared/domain/dashboard'
 import type { Panel } from '#shared/domain/panel'
 import type { QueryRequest } from '#shared/domain/query'
+import { DashboardLayout } from '#shared/utils/dashboard-layout'
+import type { PanelLayoutChange } from '#shared/utils/dashboard-layout'
 
-const props = defineProps<{ columns?: 12 | 24, sections?: DashboardDefinition['sections'], panels: Panel[], editing: boolean, kiosk?: boolean, range: QueryRequest['range'], from?: string, to?: string, variables?: import('#shared/domain/variable').VariableValues, refresh: number }>()
-const emit = defineEmits<{ layout: [changes: { id: string, x: number, y: number, span: number, height: number }[]], edit: [panel: Panel], remove: [panel: Panel], duplicate: [panel: Panel] }>()
-const element = ref<HTMLDivElement>()
-let grid: GridStack | undefined
-let alive = true
-let synchronizing = false
-let resizeObserver: ResizeObserver | undefined
-const positions = computed(() => {
-  let y = 0
-  let x = 0
-  return props.panels.map((panel) => {
-    if (x + panel.span > (props.columns ?? 12)) {
-      y += 5
-      x = 0
-    }
-    const position = { x: panel.x ?? x, y: panel.y ?? y, w: panel.span, h: panel.height ?? 5 }
-    x += panel.span
-    return position
+const props = defineProps<{ columns?: 12 | 24, sections?: DashboardSection[], collapsedRows?: Record<string, boolean>, panels: Panel[], editing: boolean, kiosk?: boolean, range: QueryRequest['range'], from?: string, to?: string, variables?: import('#shared/domain/variable').VariableValues, refresh: number }>()
+const emit = defineEmits<{
+  'layout': [changes: PanelLayoutChange[], sectionId: string | null]
+  'edit': [panel: Panel]
+  'remove': [panel: Panel]
+  'duplicate': [panel: Panel]
+  'move': [panel: Panel, sectionId: string | null]
+  'edit-section': [section: DashboardSection]
+  'remove-section': [section: DashboardSection]
+  'move-section': [section: DashboardSection, direction: -1 | 1]
+  'add-panel': [sectionId: string]
+  'collapse-section': [section: DashboardSection, collapsed: boolean]
+}>()
+const groups = computed(() => new DashboardLayout(props).groups.filter(group => group.section || group.panels.length))
+const collapsed = (section: DashboardSection) => props.collapsedRows?.[section.id] ?? section.collapsed ?? false
+function toggle(section: DashboardSection) {
+  emit('collapse-section', section, !collapsed(section))
+}
+const original = (panel: Panel) => props.panels.find(item => item.id === panel.id)!
+function title(section: DashboardSection) {
+  return section.title.replace(/\$\{([^}]+)\}|\$(\w+)/g, (token, first, second) => {
+    const value = props.variables?.[first || second]
+    return value ? Array.isArray(value) ? value.join(', ') : value : token
   })
-})
-
-onMounted(async () => {
-  const { GridStack } = await import('gridstack')
-  if (!alive || !element.value) return
-  grid = GridStack.init({
-    column: props.columns ?? 12, cellHeight: props.columns === 24 ? 38 : 65, margin: props.columns === 24 ? 4 : 6, mode: 'float', handle: '.panel-drag-handle',
-    disableDrag: !props.editing, disableResize: !props.editing,
-    columnOpts: { columnMax: props.columns ?? 12, breakpoints: [{ w: 700, c: 1 }] },
-    resizable: { handles: 'se' }, acceptWidgets: false
-  }, element.value) ?? undefined
-  const updateEditing = () => {
-    const enabled = props.editing && grid?.getColumn() === (props.columns ?? 12)
-    grid?.enableMove(enabled)
-    grid?.enableResize(enabled)
-  }
-  resizeObserver = new ResizeObserver(updateEditing)
-  resizeObserver.observe(element.value)
-  updateEditing()
-  grid?.on('change', (_event: Event, nodes: GridStackNode[]) => {
-    if (synchronizing || !props.editing || grid?.getColumn() !== (props.columns ?? 12)) return
-    emit('layout', nodes.flatMap(node => node.id && props.panels.some(panel => panel.id === node.id) ? [{ id: node.id, x: node.x ?? 0, y: node.y ?? 0, span: node.w ?? 6, height: node.h ?? 5 }] : []))
-  })
-})
-watch(() => props.editing, (value) => {
-  const enabled = value && grid?.getColumn() === (props.columns ?? 12)
-  grid?.enableMove(enabled)
-  grid?.enableResize(enabled)
-})
-watch(() => props.panels.map(panel => [panel.id, panel.x, panel.y, panel.span, panel.height]), async () => {
-  await nextTick()
-  if (!grid || !element.value) return
-  synchronizing = true
-  grid.batchUpdate()
-  const ids = new Set([...props.panels.map(panel => panel.id), ...(props.sections ?? []).map(section => section.id)])
-  grid.engine.nodes.filter(node => node.id && !ids.has(node.id)).forEach((node) => {
-    if (node.el) grid?.removeWidget(node.el, false, false)
-  })
-  element.value.querySelectorAll<HTMLElement>('.grid-stack-item').forEach((element) => {
-    const node = (element as HTMLElement & { gridstackNode?: GridStackNode }).gridstackNode
-    if (!node) {
-      grid?.makeWidget(element)
-      return
-    }
-    const position = positions.value[props.panels.findIndex(panel => panel.id === node.id)]
-    if (grid?.getColumn() === (props.columns ?? 12) && position && (node.x !== position.x || node.y !== position.y || node.w !== position.w || node.h !== position.h)) grid.update(element, position)
-  })
-  grid.batchUpdate(false)
-  synchronizing = false
-})
-onBeforeUnmount(() => {
-  alive = false
-  resizeObserver?.disconnect()
-  grid?.destroy(false)
-})
+}
+function actions(section: DashboardSection) {
+  const index = groups.value.filter(group => group.section).findIndex(group => group.section?.id === section.id)
+  return [
+    [{ label: 'Add panel to row', icon: 'i-lucide-plus', onSelect: () => emit('add-panel', section.id) }, { label: 'Rename row', icon: 'i-lucide-pencil', onSelect: () => emit('edit-section', section) }],
+    [{ label: 'Move row up', icon: 'i-lucide-arrow-up', disabled: index === 0, onSelect: () => emit('move-section', section, -1) }, { label: 'Move row down', icon: 'i-lucide-arrow-down', disabled: index === (props.sections?.length ?? 0) - 1, onSelect: () => emit('move-section', section, 1) }],
+    [{ label: 'Remove row, keep panels', icon: 'i-lucide-list-minus', onSelect: () => emit('remove-section', section) }]
+  ]
+}
 </script>
 
 <template>
-  <div
-    ref="element"
-    class="grid-stack min-h-compact"
-  >
-    <div
-      v-for="section in sections ?? []"
-      :key="section.id"
-      class="grid-stack-item"
-      :gs-id="section.id"
-      gs-x="0"
-      :gs-y="section.y"
-      :gs-w="columns ?? 24"
-      gs-h="1"
-      gs-no-move="true"
-      gs-no-resize="true"
-      gs-locked="true"
+  <div class="flex min-w-none flex-col gap-space-md">
+    <section
+      v-for="group in groups"
+      :key="group.section?.id ?? 'ungrouped'"
+      :data-section-id="group.section?.id ?? 'ungrouped'"
+      class="min-w-none"
     >
-      <div class="grid-stack-item-content flex items-center gap-space-sm px-space-xs text-sm font-medium text-highlighted">
-        <UIcon
-          name="i-lucide-chevron-down"
-          class="size-icon-sm shrink-none text-muted"
+      <div
+        v-if="group.section"
+        class="flex min-w-none items-center gap-space-sm"
+      >
+        <UButton
+          :id="'row-trigger-' + group.section.id"
+          :label="title(group.section)"
+          :icon="collapsed(group.section) ? 'i-lucide-chevron-right' : 'i-lucide-chevron-down'"
+          :aria-expanded="!collapsed(group.section)"
+          :aria-controls="'row-content-' + group.section.id"
+          :aria-label="(collapsed(group.section) ? 'Expand row ' : 'Collapse row ') + title(group.section)"
+          class="min-w-none flex-fill justify-start text-highlighted"
+          :ui="{ label: 'truncate' }"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          @click="toggle(group.section)"
         />
-        <span
-          class="truncate"
-          :title="section.title"
-        >{{ section.title.replace(/\$\{([^}]+)\}|\$(\w+)/g, (token, first, second) => { const value = variables?.[first || second]; return value ? Array.isArray(value) ? value.join(', ') : value : token }) }}</span>
+        <span class="shrink-none text-xs text-dimmed">{{ group.panels.length }} {{ group.panels.length === 1 ? 'panel' : 'panels' }}</span>
+        <UDropdownMenu
+          v-if="editing && !kiosk"
+          :items="actions(group.section)"
+          :content="{ align: 'end' }"
+        >
+          <UButton
+            :aria-label="'Row actions ' + title(group.section)"
+            icon="i-lucide-ellipsis-vertical"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+          />
+        </UDropdownMenu>
       </div>
-    </div>
-    <div
-      v-for="(panel, index) in panels"
-      :key="panel.id"
-      class="grid-stack-item"
-      :gs-id="panel.id"
-      :gs-x="positions[index]?.x"
-      :gs-y="positions[index]?.y"
-      :gs-w="panel.span"
-      :gs-h="panel.height ?? 5"
-      gs-min-w="2"
-      gs-min-h="2"
-    >
-      <div class="grid-stack-item-content">
-        <DashboardPanel
-          :panel="panel"
-          :range="range"
-          :from="from"
-          :to="to"
-          :variables="variables"
-          :refresh="refresh"
-          :editing="editing"
-          :kiosk="kiosk"
-          @edit="emit('edit', panel)"
-          @remove="emit('remove', panel)"
-          @duplicate="emit('duplicate', panel)"
-        />
-      </div>
-    </div>
+      <UCollapsible :open="!group.section || !collapsed(group.section)">
+        <template #content>
+          <div
+            :id="group.section ? 'row-content-' + group.section.id : undefined"
+            :aria-labelledby="group.section ? 'row-trigger-' + group.section.id : undefined"
+          >
+            <DashboardPanelGrid
+              v-if="group.panels.length"
+              :columns="columns"
+              :panels="group.panels"
+              :sections="sections"
+              :section-id="group.section?.id ?? null"
+              :editing="editing"
+              :kiosk="kiosk"
+              :range="range"
+              :from="from"
+              :to="to"
+              :variables="variables"
+              :refresh="refresh"
+              @layout="changes => emit('layout', changes, group.section?.id ?? null)"
+              @edit="panel => emit('edit', original(panel))"
+              @remove="panel => emit('remove', original(panel))"
+              @duplicate="panel => emit('duplicate', original(panel))"
+              @move="(panel, sectionId) => emit('move', original(panel), sectionId)"
+            />
+            <div
+              v-else-if="editing && group.section"
+              class="flex items-center justify-center rounded-sm border border-dashed border-default p-space-xl"
+            >
+              <UButton
+                label="Add panel to row"
+                icon="i-lucide-plus"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                @click="emit('add-panel', group.section.id)"
+              />
+            </div>
+          </div>
+        </template>
+      </UCollapsible>
+    </section>
   </div>
 </template>
