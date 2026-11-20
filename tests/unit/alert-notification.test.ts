@@ -9,7 +9,7 @@ const time = '2026-11-20T01:42:00.000Z'
 test('firing and recovery identify status, source, measured value, original threshold and event time', () => {
   const firing = formatAlertNotification(rule, { state: 'firing', value: 91.125, time }, 'Production InfluxDB')
   assert.equal(firing, [
-    '🔴 <b>FIRING</b> · AMTI Observe',
+    '🔴 <b>FIRING</b> · Observed',
     'Kondisi alert terpenuhi.', '',
     '<b>Alert:</b> CPU Proxmox pve &gt; 80%',
     '<b>Source:</b> Production InfluxDB',

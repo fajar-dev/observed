@@ -1,3 +1,4 @@
+import { product } from '#shared/config/product'
 import type { AlertEvaluation, AlertRuleInput } from '#shared/domain/alert-rule'
 
 const operators = { gt: '>', gte: '≥', lt: '<', lte: '≤' } as const
@@ -28,7 +29,7 @@ export function formatAlertNotification(
   const value = evaluation.value === null ? '—' : numbers.format(evaluation.value)
   const threshold = `${operators[rule.operator]} ${numbers.format(rule.threshold)}`
   return [
-    `${firing ? '🔴 <b>FIRING</b>' : '🟢 <b>RECOVERED</b>'} · AMTI Observe`,
+    `${firing ? '🔴 <b>FIRING</b>' : '🟢 <b>RECOVERED</b>'} · ${product.name}`,
     firing ? 'Kondisi alert terpenuhi.' : 'Kondisi sudah kembali normal.',
     '',
     `<b>Alert:</b> ${singleLine(rule.name)}`,
