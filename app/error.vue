@@ -10,7 +10,7 @@ useHead({ title: () => `${missing.value ? 'Page not found' : 'Unable to load pag
   <UApp>
     <main class="flex min-h-dvh items-center justify-center bg-default p-space-xl text-default">
       <div class="max-w-summary text-center">
-        <p class="font-mono text-sm text-dimmed">
+        <p class="font-mono text-status tracking-tight text-dimmed">
           {{ error.statusCode || 500 }}
         </p>
         <h1 class="mt-space-sm text-title font-semibold tracking-tight text-highlighted">

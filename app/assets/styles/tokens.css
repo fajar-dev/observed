@@ -49,6 +49,8 @@
   --text-title: 1.5rem;
   --text-heading: 1rem;
   --text-display: 2.5rem;
+  --text-status: 6rem;
+  --text-status--line-height: 1;
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.375rem;
