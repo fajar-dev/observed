@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{ title: string, description?: string, dashboard?: boolean, compact?: boolean, icon?: string, headerHidden?: boolean }>()
+defineProps<{ title: string, description?: string, dashboard?: boolean, compact?: boolean, icon?: string }>()
 </script>
 
 <template>
@@ -7,10 +7,7 @@ defineProps<{ title: string, description?: string, dashboard?: boolean, compact?
     class="workspace-content"
     :class="dashboard ? 'workspace-dashboard' : compact ? 'workspace-management' : 'space-y-space-xl'"
   >
-    <slot
-      v-if="!headerHidden"
-      name="header"
-    >
+    <slot name="header">
       <ContentToolbar
         v-if="compact"
         :title="title"

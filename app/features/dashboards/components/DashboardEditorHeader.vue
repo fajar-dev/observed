@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { canWrite } = useAuthentication()
-const { enterKiosk } = useDashboardKiosk()
+const { kiosk, enterKiosk, exitKiosk } = useDashboardKiosk()
 const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions, editPanel, editSection, compactLayout, openSettings, save, discard, healthOpen, exportDashboard } = useDashboardEditor()
 const addItems = computed(() => [
   { label: 'Add panel', icon: 'i-lucide-panel-top', disabled: draft.value.panels.length >= 100, onSelect: () => editPanel() },
@@ -21,7 +21,7 @@ const editItems = [
   >
     <template #status>
       <UBadge
-        v-if="editing"
+        v-if="editing && !kiosk"
         :label="dirty ? 'Unsaved' : 'Editing'"
         :title="dirty ? 'Unsaved changes' : 'Editing dashboard'"
         color="warning"
@@ -30,7 +30,7 @@ const editItems = [
       />
     </template>
     <div
-      v-if="editing"
+      v-if="editing && !kiosk"
       class="flex shrink-none items-center gap-space-sm"
     >
       <UDropdownMenu
@@ -81,14 +81,15 @@ const editItems = [
     >
       <UButton
         size="sm"
-        label="Kiosk mode"
-        icon="i-lucide-maximize"
+        :label="kiosk ? 'Exit kiosk' : 'Kiosk mode'"
+        :icon="kiosk ? 'i-lucide-minimize' : 'i-lucide-maximize'"
+        :aria-keyshortcuts="kiosk ? 'Escape' : undefined"
         color="neutral"
         variant="outline"
-        @click="enterKiosk"
+        @click="kiosk ? exitKiosk() : enterKiosk()"
       />
       <UButton
-        v-if="canWrite"
+        v-if="canWrite && !kiosk"
         size="sm"
         label="Edit dashboard"
         icon="i-lucide-pencil"
@@ -97,6 +98,7 @@ const editItems = [
         @click="editing = true"
       />
       <UDropdownMenu
+        v-if="!kiosk"
         :content="{ align: 'end' }"
         :items="[...(canWrite ? [{ label: 'Dashboard settings', icon: 'i-lucide-settings', onSelect: openSettings }] : []), { label: 'Check panel data', icon: 'i-lucide-stethoscope', onSelect: () => healthOpen = true }, { label: 'Export JSON', icon: 'i-lucide-download', onSelect: exportDashboard }]"
       >

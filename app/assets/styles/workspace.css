@@ -47,7 +47,6 @@
   .content-row-heading .content-row-actions { display: none; }
 }
 
-.kiosk-exit { position: fixed; right: var(--spacing-space-lg); bottom: var(--spacing-space-lg); z-index: 50; }
 
 /* Dashboard actions stay grouped; long titles yield space instead of pushing buttons down. */
 .content-toolbar[data-inline] > :first-child { flex: 1 1 0%; }

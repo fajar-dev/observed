@@ -171,7 +171,7 @@
     },
     {
       "path": "app/assets/styles/workspace.css",
-      "lines": 61,
+      "lines": 60,
       "reachable": null
     },
     {
@@ -371,7 +371,7 @@
     },
     {
       "path": "app/components/ui/WorkspacePage.vue",
-      "lines": 34,
+      "lines": 31,
       "reachable": true
     },
     {
@@ -531,7 +531,7 @@
     },
     {
       "path": "app/features/dashboards/views/DashboardEditorView.vue",
-      "lines": 118,
+      "lines": 106,
       "reachable": true
     },
     {
@@ -561,7 +561,7 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardEditorHeader.vue",
-      "lines": 138,
+      "lines": 140,
       "reachable": true
     },
     {

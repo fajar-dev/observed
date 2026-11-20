@@ -25,18 +25,17 @@ useNotice(() => Object.keys(variableErrors.value).length
 <template>
   <WorkspacePage
     :title="draft.name"
-    :header-hidden="kiosk"
     dashboard
   >
     <template #header>
-      <DashboardEditorHeader v-if="!kiosk" />
+      <DashboardEditorHeader />
     </template>
     <USkeleton
       v-if="!ready || variablesLoading"
       class="h-placeholder w-full rounded-lg"
     />
     <template v-else>
-      <DashboardVariables v-if="!kiosk" />
+      <DashboardVariables />
       <DashboardGrid
         v-if="(draft.panels.length || draft.sections?.length) && !Object.keys(variableErrors).length"
         :key="draft.columns ?? 12"
@@ -96,17 +95,6 @@ useNotice(() => Object.keys(variableErrors.value).length
     />
     <DashboardSettingsDrawer />
     <DashboardSectionEditor />
-    <UButton
-      v-if="kiosk"
-      size="sm"
-      label="Exit kiosk"
-      icon="i-lucide-minimize"
-      color="neutral"
-      variant="outline"
-      class="kiosk-exit"
-      aria-keyshortcuts="Escape"
-      @click="exitKiosk"
-    />
     <ConfirmDeleteDialog
       v-model:open="removeOpen"
       :label="draft.name"
