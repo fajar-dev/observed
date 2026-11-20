@@ -48,7 +48,6 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
   <USlideover
     v-model:open="open"
     title="Dashboard health"
-    description="Check data source mappings, variable queries, and the results of every panel."
     :ui="{ content: 'sm:max-w-modal' }"
   >
     <template #body>
@@ -112,12 +111,11 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
             Repair a Grafana import
           </h2>
           <p class="text-xs leading-normal text-muted">
-            Reload the original variable definitions and reconnect missing data sources. The repair is saved as a new version. Enable appearance restoration to reload the original sizes, colors, units, legend, and tables.
+            Restore source mappings and variables as a new version.
           </p>
           <UFormField label="InfluxDB data source">
             <USelect
               v-model="dataSourceId"
-              size="sm"
               :items="sourceItems"
               class="w-full"
               placeholder="Choose a data source"
@@ -126,7 +124,7 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
           <USwitch
             v-model="restorePanelOptions"
             label="Restore original Grafana appearance"
-            description="Replace panel layout and visual options with the saved Grafana configuration."
+            description="Restore panel sizes, colors, units, and legends."
           />
           <UButton
             size="sm"

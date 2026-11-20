@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { z } from 'zod'
 
-defineProps<{ title: string, description: string, saveLabel: string, schema: z.ZodType, state: Record<string, unknown>, busy: boolean }>()
+defineProps<{ title: string, saveLabel: string, schema: z.ZodType, state: Record<string, unknown>, busy: boolean }>()
 const open = defineModel<boolean>('open', { required: true })
 const form = useTemplateRef('form')
 defineEmits<{ save: [] }>()
@@ -11,7 +11,6 @@ defineEmits<{ save: [] }>()
   <UModal
     v-model:open="open"
     :title="title"
-    :description="description"
     :dismissible="!busy"
     :close="busy ? false : undefined"
     :ui="{ content: 'sm:max-w-modal' }"

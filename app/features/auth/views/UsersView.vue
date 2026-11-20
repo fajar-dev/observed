@@ -90,7 +90,6 @@ useErrorToast(() => loadError.value || (!deleting.value ? error.value : ''))
     <FormDialog
       v-model:open="open"
       :title="selected ? 'Edit user' : 'Add user'"
-      description="Admin manages users and configuration, Editor builds dashboards and alerts, Viewer reads dashboards."
       :state="form"
       :schema="userInputSchema"
       :busy="busy"
@@ -104,6 +103,7 @@ useErrorToast(() => loadError.value || (!deleting.value ? error.value : ''))
       >
         <UInput
           v-model="form.name"
+          placeholder="Full name"
           autocomplete="name"
           class="w-full"
         />
@@ -115,6 +115,7 @@ useErrorToast(() => loadError.value || (!deleting.value ? error.value : ''))
       >
         <UInput
           v-model="form.email"
+          placeholder="you@company.com"
           type="email"
           autocomplete="username"
           class="w-full"
@@ -127,6 +128,7 @@ useErrorToast(() => loadError.value || (!deleting.value ? error.value : ''))
       >
         <USelect
           v-model="form.role"
+          placeholder="Select a role"
           :items="roleOptions"
           :disabled="selected?.id === current?.id"
           class="w-full"
@@ -135,11 +137,12 @@ useErrorToast(() => loadError.value || (!deleting.value ? error.value : ''))
       <UFormField
         name="password"
         :label="selected ? 'New password' : 'Password'"
-        :help="selected ? 'Leave blank to keep the password. Resetting it signs out all sessions.' : 'At least 12 characters. Share credentials securely.'"
+        :help="selected ? 'Password changes sign out all sessions.' : undefined"
         :required="!selected"
       >
         <UInput
           v-model="password"
+          :placeholder="selected ? 'Leave blank to keep current password' : 'At least 12 characters'"
           type="password"
           autocomplete="new-password"
           class="w-full"

@@ -136,6 +136,7 @@ const editItems = [
       />
       <USelect
         v-model="draft.refresh"
+        placeholder="Refresh interval"
         size="sm"
         :items="refreshOptions"
         aria-label="Auto refresh"

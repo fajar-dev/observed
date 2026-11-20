@@ -9,25 +9,24 @@ useErrorToast(() => open.value ? props.error : '', 'Could not delete record')
   <UModal
     v-model:open="open"
     :title="'Delete ' + label + '?'"
-    description="This action permanently removes the record."
     :dismissible="!loading"
   >
-    <template #body>
-      <div class="mt-space-md flex justify-end gap-space-sm">
-        <UButton
-          label="Cancel"
-          color="neutral"
-          variant="outline"
-          :disabled="loading"
-          @click="open = false"
-        />
-        <UButton
-          label="Delete"
-          color="error"
-          :loading="loading"
-          @click="$emit('confirm')"
-        />
-      </div>
+    <template #footer>
+      <UButton
+        size="sm"
+        label="Cancel"
+        color="neutral"
+        variant="outline"
+        :disabled="loading"
+        @click="open = false"
+      />
+      <UButton
+        size="sm"
+        label="Delete"
+        color="error"
+        :loading="loading"
+        @click="$emit('confirm')"
+      />
     </template>
   </UModal>
 </template>

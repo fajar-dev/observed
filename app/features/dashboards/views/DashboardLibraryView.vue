@@ -41,12 +41,14 @@ useErrorToast(() => loadError.value || (!open.value && !removeOpen.value ? error
         />
         <USelect
           v-model="folder"
+          placeholder="Filter by folder"
           size="sm"
           :items="[{ label: 'All folders', value: '@all' }, { label: 'General', value: 'folder:General' }, ...folderNames.filter(name => name !== 'General').map(name => ({ label: name, value: 'folder:' + name }))]"
           aria-label="Filter folder"
         />
         <USelect
           v-model="tag"
+          placeholder="Filter by tag"
           size="sm"
           :items="[{ label: 'All tags', value: '@all' }, ...allTags.map(name => ({ label: name, value: 'tag:' + name }))]"
           aria-label="Filter tag"
@@ -55,6 +57,7 @@ useErrorToast(() => loadError.value || (!open.value && !removeOpen.value ? error
       <div class="toolbar">
         <USelect
           v-model="sort"
+          placeholder="Sort dashboards"
           size="sm"
           :items="[{ label: 'Recently updated', value: 'updated' }, { label: 'Name A–Z', value: 'name' }]"
           aria-label="Sort dashboards"
@@ -174,13 +177,12 @@ useErrorToast(() => loadError.value || (!open.value && !removeOpen.value ? error
     <UModal
       v-model:open="folderOpen"
       title="New folder"
-      description="Organize related dashboards."
     >
       <template #body>
         <UFormField label="Folder name">
           <UInput
             v-model="folderName"
-            size="sm"
+            placeholder="Bridge monitoring"
             class="w-full"
             @keydown.enter="createFolder"
           />

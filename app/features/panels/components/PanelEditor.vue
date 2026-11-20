@@ -70,7 +70,7 @@ useErrorToast(() => open.value ? error.value : '', 'Panel query failed')
     v-model:open="open"
     fullscreen
     title="Edit panel"
-    :ui="{ content: 'rounded-none', header: 'hidden', body: 'panel-editor-body', overlay: 'bg-muted' }"
+    :ui="{ content: 'rounded-none', header: 'hidden', body: 'panel-editor-body' }"
     :close="false"
     @after:leave="emit('closed')"
   >
@@ -140,6 +140,7 @@ useErrorToast(() => open.value ? error.value : '', 'Panel query failed')
                 <div class="flex flex-wrap items-center justify-between gap-space-md">
                   <div class="flex min-w-none max-w-full flex-wrap items-center gap-space-sm">
                     <span class="text-xs text-muted">Data source</span><USelect
+                      placeholder="Select a data source"
                       size="sm"
                       :model-value="effectiveSourceId || '@none'"
                       :items="sourceItems"
@@ -171,7 +172,6 @@ useErrorToast(() => open.value ? error.value : '', 'Panel query failed')
                 <UFormField label="Hide fields">
                   <USelectMenu
                     v-model="options.hiddenFields"
-                    size="sm"
                     :items="textFields"
                     multiple
                     class="w-full"

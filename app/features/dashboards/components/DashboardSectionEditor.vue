@@ -10,7 +10,6 @@ const schema = z.object({ title: name })
   <UModal
     v-model:open="sectionOpen"
     :title="sectionId ? 'Rename row' : 'Add row'"
-    description="Group related panels in a row that can be collapsed."
   >
     <template #body>
       <UForm
@@ -34,12 +33,14 @@ const schema = z.object({ title: name })
         <div class="flex justify-end gap-space-sm">
           <UButton
             label="Cancel"
+            size="sm"
             color="neutral"
-            variant="ghost"
+            variant="outline"
             @click="sectionOpen = false"
           />
           <UButton
             :label="sectionId ? 'Save row' : 'Add row'"
+            size="sm"
             type="submit"
           />
         </div>

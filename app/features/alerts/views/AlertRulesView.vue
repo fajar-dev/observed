@@ -28,7 +28,7 @@ useErrorToast(() => loadError.value || sourcesError.value || destinationsError.v
 useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value === 'success' && destinationsStatus.value === 'success'
   ? {
       title: 'Connect your alert sources',
-      description: 'Connect an InfluxDB source to create sensor alert rules. In-app notifications are automatic; Telegram is optional.',
+      description: 'Connect InfluxDB to create sensor alerts.',
       color: 'warning',
       actions: isAdmin.value ? [{ label: 'Open Configuration', to: '/configuration' }] : undefined
     }
@@ -62,6 +62,7 @@ useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value =
         class="w-full sm:max-w-search"
       /><USelect
         v-model="stateFilter"
+        placeholder="Filter by state"
         size="sm"
         :items="[{ label: 'All states', value: 'all' }, { label: 'Firing', value: 'firing' }, { label: 'Normal', value: 'normal' }, { label: 'Pending', value: 'pending' }, { label: 'No data', value: 'no_data' }, { label: 'Error', value: 'error' }, { label: 'Paused', value: 'paused' }]"
         aria-label="Filter alert state"

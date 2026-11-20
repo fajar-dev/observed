@@ -16,7 +16,6 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
   <UModal
     v-model:open="open"
     title="Import dashboard"
-    description="Upload or paste dashboard JSON, review its panels, and map each InfluxDB data source."
     :ui="{ content: 'sm:max-w-modal' }"
     :dismissible="!busy"
   >
@@ -25,7 +24,8 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
         <div class="space-y-space-sm">
           <UFormField label="JSON file">
             <UInput
-              size="sm"
+              placeholder="Choose a dashboard JSON file"
+              class="w-full"
               type="file"
               accept=".json,application/json"
               @change="readFile"
@@ -34,6 +34,7 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
           <UFormField label="Dashboard JSON">
             <UTextarea
               v-model="json"
+              placeholder="Paste dashboard JSON here"
               :rows="5"
               class="w-full font-mono"
             />
@@ -42,7 +43,7 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
         <UFormField label="Default data source">
           <USelect
             v-model="dataSourceId"
-            size="sm"
+            placeholder="Select a default data source"
             :items="sourceOptions"
             class="w-full"
           />
@@ -54,7 +55,7 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
           <UFormField label="Dashboard name">
             <UInput
               v-model="preview.dashboard.name"
-              size="sm"
+              placeholder="Dashboard name"
               class="w-full"
             />
           </UFormField>
@@ -100,9 +101,9 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
             >
               <div class="flex items-center justify-between gap-space-md">
                 <span class="min-w-none truncate text-xs text-highlighted">{{ panel.title }}</span><USelect
+                  placeholder="Select a data source"
                   :model-value="panel.dataSourceId ?? '@none'"
                   :items="sourceOptions"
-                  size="xs"
                   class="max-w-field-sm"
                   :aria-label="'Map source for ' + panel.title"
                   @update:model-value="panel.dataSourceId = $event === '@none' ? null : $event; panel.dataSourceVariable = undefined"

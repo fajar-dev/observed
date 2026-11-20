@@ -36,7 +36,6 @@ useErrorToast(error, 'Could not load query fields')
           <div class="flex gap-space-xs">
             <USelectMenu
               v-model="measurement"
-              size="sm"
               :items="measurements"
               create-item
               class="min-w-none flex-fill"
@@ -62,7 +61,6 @@ useErrorToast(error, 'Could not load query fields')
           <div class="flex gap-space-xs">
             <USelectMenu
               v-model="field"
-              size="sm"
               :items="fields"
               create-item
               class="min-w-none flex-fill"
@@ -87,7 +85,7 @@ useErrorToast(error, 'Could not load query fields')
         >
           <USelect
             v-model="aggregation"
-            size="sm"
+            placeholder="Select aggregation"
             :items="['raw', 'mean', 'min', 'max', 'sum', 'count', 'last']"
             class="w-full"
           />
@@ -147,7 +145,7 @@ useErrorToast(error, 'Could not load query fields')
         />
       </div>
       <p class="text-xs text-dimmed">
-        Select a measurement and field to build your query automatically.
+        Choose a measurement and field.
       </p>
     </template>
     <div

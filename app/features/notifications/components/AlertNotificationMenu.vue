@@ -53,7 +53,7 @@ const number = (value: number | null) => value === null ? '—' : new Intl.Numbe
             v-else-if="!snapshot.items.length"
             class="p-space-lg text-sm text-muted"
           >
-            No notifications yet. Firing and recovery events appear automatically for your sensor alert rules.
+            No notifications yet.
           </p>
           <ul
             v-else

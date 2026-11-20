@@ -18,7 +18,7 @@ const { draft, sources, variables, variablesLoading, selectVariable } = useDashb
       >
         <USelectMenu
           v-if="variable.multi"
-          size="sm"
+          :placeholder="'Select ' + (variable.label || variable.name).toLowerCase()"
           :model-value="Array.isArray(variables[variable.name]) ? variables[variable.name] as string[] : [String(variables[variable.name] ?? variable.current)].filter(Boolean)"
           :items="[{ label: 'All', value: allVariableValue }, ...variable.values.map(value => ({ label: value, value }))].filter(item => variable.includeAll || item.value !== allVariableValue)"
           value-key="value"
@@ -30,7 +30,7 @@ const { draft, sources, variables, variablesLoading, selectVariable } = useDashb
         />
         <UInput
           v-else-if="variable.type === 'textbox'"
-          size="sm"
+          :placeholder="'Enter ' + (variable.label || variable.name).toLowerCase()"
           :model-value="String(variables[variable.name] ?? variable.current)"
           :aria-label="variable.label || variable.name"
           class="w-field-sm max-w-full"
@@ -38,7 +38,7 @@ const { draft, sources, variables, variablesLoading, selectVariable } = useDashb
         />
         <USelect
           v-else
-          size="sm"
+          :placeholder="'Select ' + (variable.label || variable.name).toLowerCase()"
           :model-value="String(variables[variable.name] ?? variable.current)"
           :items="variable.values.map(value => ({ label: variable.type === 'datasource' ? sources.find(source => source.id === value)?.name ?? value : value, value }))"
           :aria-label="variable.label || variable.name"

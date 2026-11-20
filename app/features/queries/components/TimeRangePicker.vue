@@ -72,7 +72,7 @@ function absolute() {
             <UFormField label="From">
               <UInput
                 v-model="start"
-                size="sm"
+                placeholder="Start date and time"
                 type="datetime-local"
                 step="1"
                 class="w-full"
@@ -81,7 +81,7 @@ function absolute() {
             <UFormField label="To">
               <UInput
                 v-model="stop"
-                size="sm"
+                placeholder="End date and time"
                 type="datetime-local"
                 step="1"
                 class="w-full"

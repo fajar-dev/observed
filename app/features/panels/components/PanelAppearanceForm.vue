@@ -60,7 +60,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         <UFormField label="Title">
           <UInput
             v-model="draft.title"
-            size="sm"
+            placeholder="Sensor measurements"
             aria-label="Panel title"
             class="w-full"
           />
@@ -68,6 +68,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         <UFormField label="Description">
           <UTextarea
             v-model="draft.note"
+            placeholder="Describe this panel"
             class="w-full"
             :rows="2"
           />
@@ -78,6 +79,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         >
           <UTextarea
             v-model="options.text"
+            placeholder="Add notes about this structure or sensor."
             :rows="8"
             class="w-full"
           />
@@ -93,7 +95,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         <UFormField label="Unit">
           <USelect
             v-model="options.unit"
-            size="sm"
+            placeholder="Select a unit"
             :items="[...(options.unit && !['none', 'percent', 'percentRatio', 'decimalBytes', 'gigabytes', 'bytesPerSecond', 'bytes', 'seconds', 'milliseconds', 'celsius', 'requests'].includes(options.unit) ? [{ label: options.unit, value: options.unit }] : []), { label: 'None', value: 'none' }, { label: 'Percent (0–100)', value: 'percent' }, { label: 'Percent (0–1)', value: 'percentRatio' }, { label: 'Bytes (decimal)', value: 'decimalBytes' }, { label: 'GiB', value: 'gigabytes' }, { label: 'Bytes / second', value: 'bytesPerSecond' }, { label: 'Bytes (IEC)', value: 'bytes' }, { label: 'Seconds', value: 'seconds' }, { label: 'Milliseconds', value: 'milliseconds' }, { label: 'Celsius', value: 'celsius' }, { label: 'Requests / second', value: 'requests' }]"
             class="w-full"
           />
@@ -101,7 +103,6 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         <div class="grid grid-cols-pair gap-space-sm">
           <UFormField label="Min">
             <UInput
-              size="sm"
               :model-value="options.min"
               type="number"
               placeholder="Auto"
@@ -110,7 +111,6 @@ function numberOption(key: 'min' | 'max', value: unknown) {
             />
           </UFormField><UFormField label="Max">
             <UInput
-              size="sm"
               :model-value="options.max"
               type="number"
               placeholder="Auto"
@@ -122,7 +122,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         <UFormField label="Decimals">
           <UInput
             v-model.number="options.decimals"
-            size="sm"
+            placeholder="2"
             type="number"
             :min="0"
             :max="8"
@@ -132,7 +132,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         <UFormField label="Calculation">
           <USelect
             v-model="options.reducer"
-            size="sm"
+            placeholder="Select a calculation"
             :items="['last', 'mean', 'min', 'max', 'sum', 'count']"
             class="w-full"
           />
@@ -155,7 +155,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
           <UFormField label="Legend placement">
             <USelect
               v-model="options.legendPlacement"
-              size="sm"
+              placeholder="Select legend placement"
               :items="['bottom', 'right']"
               class="w-full"
             />
@@ -163,7 +163,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
           <UFormField label="Legend display">
             <USelect
               v-model="options.legendMode"
-              size="sm"
+              placeholder="Select legend display"
               :items="['list', 'table']"
               class="w-full"
             />
@@ -174,7 +174,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
           >
             <USelect
               v-model="options.legendCalculations"
-              size="sm"
+              placeholder="Select legend calculations"
               :items="['last', 'mean', 'min', 'max', 'sum', 'count']"
               multiple
               class="w-full"

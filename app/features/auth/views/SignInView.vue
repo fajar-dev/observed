@@ -48,7 +48,6 @@ useNotice(() => route.query.error === 'oauth'
         >
           <UInput
             v-model="form.name"
-            size="md"
             placeholder="Your name"
             autocomplete="name"
             class="w-full"
@@ -61,7 +60,6 @@ useNotice(() => route.query.error === 'oauth'
         >
           <UInput
             v-model="form.email"
-            size="md"
             placeholder="you@company.com"
             type="email"
             autocomplete="username"
@@ -77,7 +75,6 @@ useNotice(() => route.query.error === 'oauth'
         >
           <UInput
             v-model="form.password"
-            size="md"
             placeholder="Enter your password"
             :type="showPassword ? 'text' : 'password'"
             :autocomplete="settingUp ? 'new-password' : 'current-password'"

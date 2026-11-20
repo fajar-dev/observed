@@ -24,7 +24,7 @@ useNotice(() => open.value && preview.value?.message
     description="Query sensor measurements and preview a threshold. In-app alerts are automatic; Telegram is optional."
     :close="false"
     :dismissible="!busy"
-    :ui="{ content: 'rounded-none', header: 'hidden', body: 'panel-editor-body', overlay: 'bg-muted' }"
+    :ui="{ content: 'rounded-none', header: 'hidden', body: 'panel-editor-body' }"
   >
     <template #body>
       <UForm
@@ -100,7 +100,7 @@ useNotice(() => open.value && preview.value?.message
                   >
                     <USelect
                       v-model="form.dataSourceId"
-                      size="sm"
+                      placeholder="Select a data source"
                       :items="sourceOptions"
                       class="w-full"
                     />
@@ -112,7 +112,7 @@ useNotice(() => open.value && preview.value?.message
                   >
                     <USelect
                       v-model="form.range"
-                      size="sm"
+                      placeholder="Select a time range"
                       :items="[...ranges]"
                       class="w-full"
                     />
@@ -150,7 +150,6 @@ useNotice(() => open.value && preview.value?.message
                   >
                     <UInput
                       v-model="form.field"
-                      size="sm"
                       placeholder="Auto"
                       class="w-full"
                     />
@@ -161,7 +160,7 @@ useNotice(() => open.value && preview.value?.message
                   >
                     <USelect
                       v-model="form.reducer"
-                      size="sm"
+                      placeholder="Select a calculation"
                       :items="['last', 'mean', 'min', 'max']"
                       class="w-full"
                     />
@@ -172,7 +171,7 @@ useNotice(() => open.value && preview.value?.message
                   >
                     <USelect
                       v-model="form.operator"
-                      size="sm"
+                      placeholder="Select a condition"
                       :items="operators"
                       class="w-full"
                     />
@@ -183,7 +182,7 @@ useNotice(() => open.value && preview.value?.message
                   >
                     <UInput
                       v-model.number="form.threshold"
-                      size="sm"
+                      placeholder="e.g. 0.5"
                       type="number"
                       step="any"
                       class="w-full"
@@ -192,7 +191,7 @@ useNotice(() => open.value && preview.value?.message
                 </div>
               </ContentPanel>
               <p class="text-xs text-muted">
-                Preview evaluates your query and threshold without sending Telegram notifications.
+                Preview does not send notifications.
               </p>
             </div>
           </div>

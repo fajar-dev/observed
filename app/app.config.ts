@@ -6,6 +6,14 @@ const controls = {
   xl: { base: 'h-control-xl px-space-xl py-space-sm text-base gap-space-md', leadingIcon: 'size-icon-lg', trailingIcon: 'size-icon-lg' }
 }
 const field = { slots: { base: 'rounded-md font-normal' }, variants: { size: controls }, compoundVariants: [{ size: 'md' as const, class: 'md:text-sm' }], defaultVariants: { size: 'md' as const } }
+const dialogOverlay = 'bg-overlay backdrop-blur-subtle'
+const dialogSlots = {
+  header: 'min-h-none px-space-lg pt-space-lg pb-space-sm pe-space-page sm:px-space-lg sm:pe-space-page',
+  body: 'px-space-lg pt-space-sm pb-space-lg sm:px-space-lg sm:pt-space-sm sm:pb-space-lg',
+  footer: 'justify-end gap-space-sm px-space-lg pt-none pb-space-lg sm:px-space-lg sm:pt-none sm:pb-space-lg',
+  title: 'font-heading text-heading font-semibold',
+  close: 'top-space-md end-space-md'
+}
 export default defineAppConfig({
   ui: {
     colors: { primary: 'blue', neutral: 'neutral' },
@@ -21,8 +29,8 @@ export default defineAppConfig({
     formField: { slots: { label: 'text-sm font-medium', description: 'text-sm', hint: 'text-xs', help: 'text-xs', error: 'text-xs', container: 'mt-space-sm' }, defaultVariants: { size: 'md' } },
     card: { slots: { root: 'rounded-sm bg-default shadow-none', header: 'p-space-lg', body: 'p-space-lg sm:p-space-lg', footer: 'p-space-md sm:p-space-md', title: 'font-heading text-heading font-semibold', description: 'text-sm text-muted' } },
     pageHeader: { slots: { root: 'border-none py-space-sm', title: 'font-heading text-title sm:text-title font-semibold tracking-tight', description: 'mt-space-sm text-sm sm:text-sm leading-relaxed text-muted', links: 'flex flex-wrap items-center gap-space-sm' } },
-    modal: { slots: { content: 'rounded-xl shadow-xl', header: 'p-space-xl', body: 'p-space-xl sm:p-space-xl', footer: 'justify-end gap-space-sm p-space-lg sm:p-space-lg', title: 'font-heading text-heading font-semibold', description: 'mt-space-xs text-sm text-muted' } },
-    slideover: { slots: { header: 'p-space-xl', body: 'p-space-xl sm:p-space-xl', footer: 'justify-end gap-space-sm p-space-lg sm:p-space-lg', title: 'font-heading text-heading font-semibold', description: 'mt-space-xs text-sm text-muted' } },
+    modal: { variants: { fullscreen: { false: { content: 'divide-none' } }, overlay: { true: { overlay: dialogOverlay } } }, slots: { ...dialogSlots, content: 'rounded-xl shadow-xl' } },
+    slideover: { slots: { ...dialogSlots, overlay: dialogOverlay, content: 'divide-none' } },
     tabs: { variants: { orientation: { horizontal: { list: 'w-full max-w-full' } } }, slots: { root: 'min-w-none max-w-full items-start', list: 'w-full max-w-full rounded-none p-none', trigger: 'rounded-none px-space-md py-space-sm text-sm font-medium sm:px-space-lg', indicator: 'rounded-none' }, defaultVariants: { size: 'md', variant: 'link' } },
     popover: { slots: { content: 'rounded-lg' } },
     empty: { slots: { root: 'rounded-xl p-space-xxl', title: 'font-heading text-heading font-semibold', description: 'text-sm leading-relaxed text-muted' } },

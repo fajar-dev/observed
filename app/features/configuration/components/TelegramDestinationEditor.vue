@@ -15,7 +15,6 @@ useErrorToast(() => open.value ? props.error : '')
   <FormDialog
     v-model:open="open"
     :title="destination ? 'Edit Telegram destination' : 'Add Telegram destination'"
-    description="Choose the Telegram bot and chat for your monitoring team."
     save-label="Save destination"
     :schema="schema"
     :state="state"
@@ -29,7 +28,6 @@ useErrorToast(() => open.value ? props.error : '')
     >
       <UInput
         :model-value="state.name"
-        size="sm"
         class="w-full"
         placeholder="Bridge monitoring team"
         @update:model-value="$emit('change', { name: String($event) })"
@@ -43,7 +41,6 @@ useErrorToast(() => open.value ? props.error : '')
     >
       <UInput
         :model-value="state.chatId"
-        size="sm"
         class="w-full"
         placeholder="-1001234567890"
         @update:model-value="$emit('change', { chatId: String($event) })"
@@ -54,11 +51,11 @@ useErrorToast(() => open.value ? props.error : '')
       label="Bot token"
       :required="!destination?.hasToken"
       :hint="destination?.hasToken ? 'Token stored' : undefined"
-      :help="destination?.hasToken ? 'Leave blank to keep the current bot token.' : 'Enter the token provided by BotFather.'"
+      :help="destination?.hasToken ? undefined : 'Get a token from BotFather.'"
     >
       <UInput
+        :placeholder="destination?.hasToken ? 'Leave blank to keep saved token' : 'Enter your bot token'"
         :model-value="state.token"
-        size="sm"
         class="w-full"
         type="password"
         autocomplete="new-password"

@@ -38,6 +38,7 @@ useNotice(() => route.query.error === 'oauth'
         >
           <UFormField label="Email">
             <UInput
+              placeholder="Your email address"
               :model-value="auth.user.value?.email"
               disabled
               class="w-full"
@@ -50,6 +51,7 @@ useNotice(() => route.query.error === 'oauth'
           >
             <UInput
               v-model="form.name"
+              placeholder="Your full name"
               autocomplete="name"
               class="w-full"
             />
@@ -61,6 +63,7 @@ useNotice(() => route.query.error === 'oauth'
             >
               <UInput
                 v-model="form.currentPassword"
+                placeholder="Enter your current password"
                 type="password"
                 autocomplete="current-password"
                 class="w-full"
@@ -69,10 +72,11 @@ useNotice(() => route.query.error === 'oauth'
             <UFormField
               name="password"
               label="New password"
-              help="At least 12 characters. Changing your password signs out all sessions."
+              help="Changing your password signs out all sessions."
             >
               <UInput
                 v-model="form.password"
+                placeholder="At least 12 characters"
                 type="password"
                 autocomplete="new-password"
                 class="w-full"

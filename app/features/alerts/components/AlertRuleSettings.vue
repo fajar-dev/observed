@@ -16,7 +16,6 @@ const { form, destinationOptions } = useAlertRules()
         >
           <UInput
             v-model="form.name"
-            size="sm"
             placeholder="Pier tilt above threshold"
             class="w-full"
           />
@@ -38,7 +37,7 @@ const { form, destinationOptions } = useAlertRules()
         >
           <USelect
             v-model="form.severity"
-            size="sm"
+            placeholder="Select severity"
             :items="['critical', 'warning', 'info']"
             class="w-full"
           />
@@ -54,7 +53,7 @@ const { form, destinationOptions } = useAlertRules()
         >
           <UInput
             v-model.number="form.interval"
-            size="sm"
+            placeholder="60"
             type="number"
             :min="30"
             class="w-full"
@@ -67,7 +66,7 @@ const { form, destinationOptions } = useAlertRules()
         >
           <UInput
             v-model.number="form.pendingFor"
-            size="sm"
+            placeholder="0"
             type="number"
             :min="0"
             class="w-full"
@@ -83,7 +82,7 @@ const { form, destinationOptions } = useAlertRules()
           Notifications
         </h2>
         <p class="text-xs text-muted">
-          In-app notifications are automatic. Add Telegram destinations if your team also needs messages in a chat.
+          In-app alerts are automatic. Telegram is optional.
         </p>
         <UFormField
           name="telegramDestinationIds"
@@ -91,7 +90,6 @@ const { form, destinationOptions } = useAlertRules()
         >
           <USelectMenu
             v-model="form.telegramDestinationIds"
-            size="sm"
             :items="destinationOptions"
             value-key="value"
             multiple

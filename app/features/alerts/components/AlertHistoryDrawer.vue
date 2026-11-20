@@ -6,7 +6,6 @@ const { historyOpen, editing } = useAlertRules()
   <USlideover
     v-model:open="historyOpen"
     :title="editing?.name ?? 'Evaluation history'"
-    description="The latest 50 evaluations of this rule."
   >
     <template #body>
       <UEmpty

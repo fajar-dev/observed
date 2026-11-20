@@ -25,20 +25,21 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
           >
             <UInput
               v-model="draft.name"
-              size="sm"
+              placeholder="Structure monitoring"
               class="w-full"
             />
           </UFormField>
           <UFormField label="Description">
             <UTextarea
               v-model="draft.description"
+              placeholder="Describe the structure and sensor measurements"
               :rows="3"
               class="w-full"
             />
           </UFormField>
           <UFormField label="Folder">
             <USelect
-              size="sm"
+              placeholder="Select a folder"
               :model-value="draft.folder ? 'folder:' + draft.folder : '@general'"
               :items="[{ label: 'General', value: '@general' }, ...[...new Set([...folders.map(item => item.name), ...(draft.folder ? [draft.folder] : [])])].map(name => ({ label: name, value: 'folder:' + name }))]"
               class="w-full"
@@ -50,7 +51,6 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
             hint="Comma separated"
           >
             <UInput
-              size="sm"
               :model-value="tagText"
               class="w-full"
               placeholder="bridge, north-span, structural"
@@ -81,7 +81,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
         </template>
         <template v-else-if="settingsTab === 'variables'">
           <p class="text-sm leading-relaxed text-muted">
-            Create a custom dropdown or load values from an InfluxDB query. Use <code class="text-primary">$variableName</code> in a query. Values are escaped for the selected query language.
+            Use <code class="text-primary">$variableName</code> in panel queries.
           </p>
           <UCard
             v-for="(variable, index) in draft.variables"
@@ -95,7 +95,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
               >
                 <UInput
                   v-model="variable.name"
-                  size="sm"
+                  placeholder="sensor"
                   class="w-full"
                 />
               </UFormField><UButton
@@ -110,13 +110,13 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
             <UFormField label="Display label">
               <UInput
                 v-model="variable.label"
-                size="sm"
+                placeholder="Sensor"
                 class="w-full"
               />
             </UFormField>
             <UFormField label="Variable type">
               <USelect
-                size="sm"
+                placeholder="Select variable type"
                 :model-value="variable.type ?? 'custom'"
                 :items="[...variableTypes]"
                 class="w-full"
@@ -126,7 +126,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
             <template v-if="variable.type === 'query'">
               <UFormField label="Data source">
                 <USelect
-                  size="sm"
+                  placeholder="Select a data source"
                   :model-value="variable.dataSourceId || sources[0]?.id"
                   :items="sources.map(source => ({ label: source.name, value: source.id }))"
                   class="w-full"
@@ -159,7 +159,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
               hint="Comma separated"
             >
               <UInput
-                size="sm"
+                placeholder="sensor-a, sensor-b"
                 :model-value="variable.values.join(', ')"
                 class="w-full"
                 @change="updateVariable(variable, ($event.target as HTMLInputElement).value)"
@@ -168,7 +168,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
             <UFormField label="Default value">
               <USelect
                 v-model="variable.current"
-                size="sm"
+                placeholder="Select a default value"
                 :items="variable.values"
                 class="w-full"
               />
@@ -222,6 +222,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
         <template v-else>
           <UTextarea
             v-model="jsonDocument"
+            placeholder="Paste dashboard JSON here"
             class="w-full font-mono"
             :rows="24"
             aria-label="Dashboard JSON"

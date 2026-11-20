@@ -12,7 +12,6 @@ useErrorToast(() => open.value ? error.value : '')
   <FormDialog
     v-model:open="open"
     :title="editing ? 'Edit data source' : 'Add data source'"
-    description="Connect an InfluxDB source containing your sensor measurements."
     save-label="Save data source"
     :schema="dataSourceSchema"
     :state="form"
@@ -26,7 +25,6 @@ useErrorToast(() => open.value ? error.value : '')
     >
       <UInput
         v-model="form.name"
-        size="sm"
         class="w-full"
         placeholder="Bridge sensor data"
       />
@@ -38,7 +36,6 @@ useErrorToast(() => open.value ? error.value : '')
     >
       <UInput
         v-model="form.url"
-        size="sm"
         class="w-full"
         placeholder="http://localhost:8086"
       />
@@ -49,12 +46,15 @@ useErrorToast(() => open.value ? error.value : '')
     >
       <USelect
         v-model="form.queryLanguage"
-        size="sm"
+        placeholder="Select query language"
         :items="languageOptions"
         class="w-full"
       />
     </UFormField>
-    <div class="grid gap-space-lg sm:grid-cols-pair">
+    <div
+      class="grid gap-space-lg"
+      :class="form.queryLanguage === 'flux' ? 'sm:grid-cols-pair' : undefined"
+    >
       <UFormField
         v-if="form.queryLanguage === 'flux'"
         name="organization"
@@ -63,7 +63,7 @@ useErrorToast(() => open.value ? error.value : '')
       >
         <UInput
           v-model="form.organization"
-          size="sm"
+          placeholder="Your InfluxDB organization"
           class="w-full"
         />
       </UFormField>
@@ -74,7 +74,7 @@ useErrorToast(() => open.value ? error.value : '')
       >
         <UInput
           v-model="form.database"
-          size="sm"
+          :placeholder="form.queryLanguage === 'flux' ? 'bridge-sensors' : 'sensor_metrics'"
           class="w-full"
         />
       </UFormField>
@@ -91,7 +91,7 @@ useErrorToast(() => open.value ? error.value : '')
       >
         <UInput
           v-model="form.username"
-          size="sm"
+          placeholder="InfluxDB username"
           class="w-full"
           autocomplete="off"
         />
@@ -100,11 +100,10 @@ useErrorToast(() => open.value ? error.value : '')
         name="secret"
         :label="form.queryLanguage === 'influxql' && form.username ? 'Password' : 'API token'"
         :hint="editing?.hasSecret ? 'Saved credential' : undefined"
-        :help="editing?.hasSecret ? 'Leave blank to keep the current credential.' : undefined"
       >
         <UInput
           v-model="form.secret"
-          size="sm"
+          :placeholder="editing?.hasSecret ? 'Leave blank to keep saved credential' : 'Enter API token or password'"
           class="w-full"
           type="password"
           autocomplete="new-password"
