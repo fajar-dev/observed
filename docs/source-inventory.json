@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 226,
+  "runtimeModules": 227,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -53,7 +53,7 @@
     },
     {
       "path": "shared/domain/dashboard.ts",
-      "lines": 46,
+      "lines": 47,
       "reachable": true
     },
     {
@@ -608,7 +608,7 @@
     },
     {
       "path": "app/features/dashboards/composables/useDashboardTimeState.ts",
-      "lines": 66,
+      "lines": 68,
       "reachable": true
     },
     {
@@ -1174,6 +1174,11 @@
     {
       "path": "server/features/permissions/infrastructure/permission.repository.ts",
       "lines": 38,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/dashboard-refresh.ts",
+      "lines": 41,
       "reachable": true
     }
   ]
