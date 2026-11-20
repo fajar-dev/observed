@@ -2,7 +2,7 @@ import { defineWorkspaceHandler } from '~~/server/http/workspace-handler'
 import { getWorkspace } from '~~/server/bootstrap/workspace'
 import type { AuthProvider } from '#shared/domain/auth'
 import type { OAuthFlow } from '~~/server/features/auth/domain/authentication.ports'
-import { cookieOptions, oauthCookie, publicOrigin, writeSession } from '~~/server/http/authentication'
+import { cookieOptions, oauthCallbackUrl, oauthCookie, writeSession } from '~~/server/http/authentication'
 
 export default defineWorkspaceHandler(async (event) => {
   const provider = getRouterParam(event, 'provider') as AuthProvider
@@ -16,7 +16,7 @@ export default defineWorkspaceHandler(async (event) => {
     const flow = JSON.parse(vault.decrypt(stored)) as OAuthFlow
     linking = !!flow.linkUserId
     if (flow.linkUserId && (!flow.linkSessionId || !await auth.sessionUser(flow.linkUserId, flow.linkSessionId))) throw new Error('Linking session expired')
-    const callback = publicOrigin(event) + `/api/observe/auth/oauth/${provider}/callback`
+    const callback = oauthCallbackUrl(event, provider)
     const url = new URL(callback)
     url.search = getRequestURL(event).search
     const identity = await oidc.finish(provider, url, flow, callback)

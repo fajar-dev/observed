@@ -1,19 +1,14 @@
+import { AlertScheduler } from '~~/server/features/alerts/application/alert-scheduler'
 import { closeWorkspace, getWorkspace } from '~~/server/bootstrap/workspace'
 
 export default defineNitroPlugin((app) => {
-  let running: Promise<void> | undefined
-  let timer: ReturnType<typeof setInterval> | undefined
-  if (process.env.DATABASE_URL && process.env.OBSERVE_SECRET_KEY && process.env.OBSERVE_ALERTS_ENABLED !== 'false') {
-    timer = setInterval(() => {
-      running ??= getWorkspace().alerts.evaluateDueAlerts()
-        .catch(error => console.error('Alert evaluation failed', error.message))
-        .finally(() => { running = undefined })
-    }, 10_000)
-    timer.unref()
-  }
+  const scheduler = new AlertScheduler(
+    () => getWorkspace().alerts.evaluateDueAlerts(),
+    error => console.error('Alert evaluation failed', error instanceof Error ? error.message : 'Unknown error')
+  )
+  scheduler.start()
   app.hooks.hook('close', async () => {
-    if (timer) clearInterval(timer)
-    await running
+    await scheduler.stop()
     await closeWorkspace()
   })
 })

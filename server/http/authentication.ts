@@ -1,17 +1,16 @@
+import { createError, deleteCookie, getCookie, getHeader, getRequestIP, getRequestURL, setCookie } from 'h3'
 import type { H3Event } from 'h3'
-import type { AuthUser } from '#shared/domain/auth'
+import type { AuthProvider, AuthUser } from '#shared/domain/auth'
 import type { SessionCredentials } from '~~/server/features/auth/domain/authentication.ports'
 
 const accessCookie = 'observe_access'
 export const refreshCookie = 'observe_refresh'
 export const oauthCookie = 'observe_oauth'
-export function publicOrigin(event: H3Event) {
-  const url = new URL(process.env.OBSERVE_ORIGIN || getRequestURL(event).origin)
-  if (!['http:', 'https:'].includes(url.protocol)) throw createError({ statusCode: 503, statusMessage: 'Invalid OBSERVE_ORIGIN' })
-  return url.origin
+export function oauthCallbackUrl(event: H3Event, provider: AuthProvider) {
+  return getRequestURL(event).origin + `/api/observe/auth/oauth/${provider}/callback`
 }
 export function cookieOptions(event: H3Event) {
-  return { httpOnly: true, secure: publicOrigin(event).startsWith('https:'), sameSite: 'lax' as const }
+  return { httpOnly: true, secure: getRequestURL(event).protocol === 'https:', sameSite: 'lax' as const }
 }
 export function clearSessionCookies(event: H3Event) {
   deleteCookie(event, oauthCookie, { ...cookieOptions(event), path: '/api/observe/auth/oauth' })
@@ -32,6 +31,5 @@ export function requirePrincipal(event: H3Event): { user: AuthUser, sessionId: s
   return event.context.principal
 }
 export function clientIp(event: H3Event) {
-  // Trust forwarded IPs only behind an explicitly trusted proxy.
-  return getRequestIP(event, { xForwardedFor: process.env.OBSERVE_TRUST_PROXY === 'true' }) || 'unknown'
+  return getRequestIP(event) || 'unknown'
 }
