@@ -1,3 +1,4 @@
+import { HealthService } from '~~/server/features/health/application/health.service'
 import { PermissionService } from '~~/server/features/permissions/application/permission.service'
 import { PostgresPermissionRepository } from '~~/server/features/permissions/infrastructure/permission.repository'
 import { NotificationService } from '~~/server/features/notifications/application/notification.service'
@@ -25,6 +26,7 @@ import { TelegramService } from '~~/server/features/telegram/application/telegra
 
 export function createWorkspace(configuration: WorkspaceConfiguration) {
   const database = new PostgresDatabase(configuration.databaseUrl)
+  const health = new HealthService(() => database.query('SELECT 1'))
   const repository = new PostgresWorkspaceRepository(database)
   const vault = new CredentialVault(configuration.secretKey)
   const dataSources = new DataSourceService(repository, vault, new InfluxClient())
@@ -38,7 +40,7 @@ export function createWorkspace(configuration: WorkspaceConfiguration) {
   const authenticationRepository = new PostgresAuthenticationRepository(database)
   const auth = new AuthService(authenticationRepository, new ScryptPasswordHasher(), new JwtAccessTokens(configuration.secretKey), configuration.allowOAuthSignup, permissions)
   const oidc = new OidcProviders(configuration.environment)
-  return { database, dataSources, telegram, dashboards, alerts, notifications, permissions, auth, oidc, vault }
+  return { database, health, dataSources, telegram, dashboards, alerts, notifications, permissions, auth, oidc, vault }
 }
 export type Workspace = ReturnType<typeof createWorkspace>
 let workspace: Workspace | undefined
