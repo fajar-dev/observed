@@ -21,7 +21,7 @@ useNotice(() => open.value && preview.value?.message
     v-model:open="open"
     fullscreen
     :title="editing ? 'Edit alert rule' : 'New alert rule'"
-    description="Query sensor measurements, preview a threshold, and configure Telegram notifications."
+    description="Query sensor measurements and preview a threshold. In-app alerts are automatic; Telegram is optional."
     :close="false"
     :dismissible="!busy"
     :ui="{ content: 'rounded-none', header: 'hidden', body: 'panel-editor-body', overlay: 'bg-muted' }"

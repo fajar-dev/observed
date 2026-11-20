@@ -6,7 +6,7 @@ import type { AlertRulePreview, AlertRuleInput, AlertRule } from '#shared/domain
 function createAlertRules() {
   const apiRequest = useApiRequest()
   const { canWrite } = useAuthentication()
-  usePageSeo('Alerts', 'Configure sensor threshold rules and keep your monitoring team informed through Telegram.')
+  usePageSeo('Alerts', 'Configure sensor threshold rules with automatic in-app alerts and optional Telegram notifications in Observed.')
   const { data: alerts, error: loadError, status, refresh } = useAlertRuleRecords()
   const { data: sources, status: sourcesStatus, error: sourcesError } = useDataSources()
   const { data: destinations, status: destinationsStatus, error: destinationsError } = useTelegramDestinations()
@@ -128,7 +128,7 @@ function createAlertRules() {
   })
   let openedFromRoute = false
   watch(() => [route.query.new, sources.value.length, destinations.value.length], () => {
-    if (canWrite.value && !openedFromRoute && route.query.new && sources.value.length && destinations.value.length) {
+    if (canWrite.value && !openedFromRoute && route.query.new && sources.value.length) {
       openedFromRoute = true
       edit()
     }

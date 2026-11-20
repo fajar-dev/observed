@@ -29,7 +29,7 @@
       <ul class="auth-features">
         <li><UIcon name="i-lucide-activity" />Sensor metrics</li>
         <li><UIcon name="i-lucide-layout-dashboard" />Custom dashboards</li>
-        <li><UIcon name="i-lucide-bell" />Telegram alerts</li>
+        <li><UIcon name="i-lucide-bell" />Realtime alerts</li>
       </ul>
     </aside>
     <section

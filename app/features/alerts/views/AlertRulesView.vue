@@ -3,7 +3,7 @@ import type { TableColumn } from '@nuxt/ui'
 import type { AlertRule } from '#shared/domain/alert-rule'
 
 const { canWrite, isAdmin } = useAuthentication()
-const { alerts, loadError, status, sources, sourcesStatus, sourcesError, destinations, destinationsStatus, destinationsError, busy, error, search, stateFilter, open, removeOpen, editing, evaluating, destinationName, filtered, edit, indicator, evaluate, remove, menu } = provideAlertRules()
+const { alerts, loadError, status, sources, sourcesStatus, sourcesError, destinationsStatus, destinationsError, busy, error, search, stateFilter, open, removeOpen, editing, evaluating, destinationName, filtered, edit, indicator, evaluate, remove, menu } = provideAlertRules()
 const columns: TableColumn<AlertRule>[] = [
   { id: 'state', header: 'State', meta: { class: { th: 'w-compact', td: 'whitespace-nowrap' } } },
   { accessorKey: 'name', header: 'Alert rule', meta: { class: { th: 'w-full', td: 'min-w-field' } } },
@@ -24,10 +24,10 @@ function destinationLabels(rule: AlertRule) {
 }
 useErrorToast(() => loadError.value || sourcesError.value || destinationsError.value || (!open.value && !removeOpen.value ? error.value : ''))
 
-useNotice(() => canWrite.value && (!sources.value.length || !destinations.value.length) && sourcesStatus.value === 'success' && destinationsStatus.value === 'success'
+useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value === 'success' && destinationsStatus.value === 'success'
   ? {
       title: 'Connect your alert sources',
-      description: 'An InfluxDB data source and Telegram destination are required to create alert rules.',
+      description: 'Connect an InfluxDB source to create sensor alert rules. In-app notifications are automatic; Telegram is optional.',
       color: 'warning',
       actions: isAdmin.value ? [{ label: 'Open Configuration', to: '/configuration' }] : undefined
     }
@@ -39,7 +39,7 @@ useNotice(() => canWrite.value && (!sources.value.length || !destinations.value.
     compact
     icon="i-lucide-bell"
     title="Alerts"
-    description="Monitor sensor thresholds and notify your team through Telegram."
+    description="Monitor sensor thresholds with in-app alerts and optional Telegram notifications."
   >
     <template #actions>
       <UButton
@@ -47,7 +47,7 @@ useNotice(() => canWrite.value && (!sources.value.length || !destinations.value.
         size="sm"
         label="New alert rule"
         icon="i-lucide-plus"
-        :disabled="!sources.length || !destinations.length"
+        :disabled="!sources.length"
         @click="edit()"
       />
     </template>

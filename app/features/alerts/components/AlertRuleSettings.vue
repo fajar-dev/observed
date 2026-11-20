@@ -80,12 +80,14 @@ const { form, destinationOptions } = useAlertRules()
       </section>
       <section class="space-y-space-md border-t border-default pt-space-lg">
         <h2 class="text-sm font-semibold text-highlighted">
-          Telegram notifications
+          Notifications
         </h2>
+        <p class="text-xs text-muted">
+          In-app notifications are automatic. Add Telegram destinations if your team also needs messages in a chat.
+        </p>
         <UFormField
           name="telegramDestinationIds"
           label="Telegram destinations"
-          required
         >
           <USelectMenu
             v-model="form.telegramDestinationIds"
@@ -93,7 +95,7 @@ const { form, destinationOptions } = useAlertRules()
             :items="destinationOptions"
             value-key="value"
             multiple
-            placeholder="Select Telegram destinations"
+            placeholder="Optional Telegram destinations"
             class="w-full"
           />
         </UFormField>
