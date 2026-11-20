@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 215,
+  "runtimeModules": 226,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -10,6 +10,7 @@
     "notifications",
     "overview",
     "panels",
+    "permissions",
     "queries",
     "telegram"
   ],
@@ -17,7 +18,7 @@
   "files": [
     {
       "path": "shared/domain/auth.ts",
-      "lines": 21,
+      "lines": 22,
       "reachable": true
     },
     {
@@ -157,7 +158,7 @@
     },
     {
       "path": "server/bootstrap/workspace.ts",
-      "lines": 49,
+      "lines": 52,
       "reachable": true
     },
     {
@@ -167,7 +168,7 @@
     },
     {
       "path": "server/middleware/authorization.ts",
-      "lines": 29,
+      "lines": 30,
       "reachable": true
     },
     {
@@ -177,7 +178,7 @@
     },
     {
       "path": "app/assets/styles/tokens.css",
-      "lines": 137,
+      "lines": 139,
       "reachable": null
     },
     {
@@ -192,7 +193,7 @@
     },
     {
       "path": "server/api/observe/alert-rules/preview.post.ts",
-      "lines": 6,
+      "lines": 9,
       "reachable": true
     },
     {
@@ -202,7 +203,7 @@
     },
     {
       "path": "app/error.vue",
-      "lines": 33,
+      "lines": 34,
       "reachable": true
     },
     {
@@ -212,22 +213,22 @@
     },
     {
       "path": "server/api/observe/alert-rules/[id].put.ts",
-      "lines": 6,
+      "lines": 9,
       "reachable": true
     },
     {
       "path": "server/api/observe/alert-rules/index.post.ts",
-      "lines": 6,
+      "lines": 10,
       "reachable": true
     },
     {
       "path": "server/api/observe/alert-rules/index.get.ts",
-      "lines": 4,
+      "lines": 5,
       "reachable": true
     },
     {
       "path": "server/api/observe/alert-rules/[id].delete.ts",
-      "lines": 5,
+      "lines": 10,
       "reachable": true
     },
     {
@@ -237,7 +238,7 @@
     },
     {
       "path": "app/app.config.ts",
-      "lines": 41,
+      "lines": 49,
       "reachable": true
     },
     {
@@ -257,7 +258,7 @@
     },
     {
       "path": "server/api/observe/telegram-destinations/index.get.ts",
-      "lines": 8,
+      "lines": 12,
       "reachable": true
     },
     {
@@ -302,7 +303,7 @@
     },
     {
       "path": "server/api/observe/dashboard-folders/index.get.ts",
-      "lines": 4,
+      "lines": 12,
       "reachable": true
     },
     {
@@ -362,12 +363,12 @@
     },
     {
       "path": "app/components/ui/ConfirmDeleteDialog.vue",
-      "lines": 33,
+      "lines": 32,
       "reachable": true
     },
     {
       "path": "app/components/ui/FormDialog.vue",
-      "lines": 48,
+      "lines": 47,
       "reachable": true
     },
     {
@@ -467,7 +468,7 @@
     },
     {
       "path": "app/features/overview/views/OverviewView.vue",
-      "lines": 150,
+      "lines": 164,
       "reachable": true
     },
     {
@@ -502,7 +503,7 @@
     },
     {
       "path": "server/api/observe/dashboards/[id].put.ts",
-      "lines": 6,
+      "lines": 9,
       "reachable": true
     },
     {
@@ -512,22 +513,22 @@
     },
     {
       "path": "server/api/observe/dashboards/index.post.ts",
-      "lines": 6,
+      "lines": 10,
       "reachable": true
     },
     {
       "path": "server/api/observe/dashboards/index.get.ts",
-      "lines": 4,
-      "reachable": true
-    },
-    {
-      "path": "server/api/observe/dashboards/[id].delete.ts",
       "lines": 5,
       "reachable": true
     },
     {
+      "path": "server/api/observe/dashboards/[id].delete.ts",
+      "lines": 10,
+      "reachable": true
+    },
+    {
       "path": "app/features/dashboards/views/DashboardLibraryView.vue",
-      "lines": 213,
+      "lines": 216,
       "reachable": true
     },
     {
@@ -547,7 +548,7 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardSettingsDrawer.vue",
-      "lines": 260,
+      "lines": 263,
       "reachable": true
     },
     {
@@ -562,12 +563,12 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardEditorHeader.vue",
-      "lines": 145,
+      "lines": 146,
       "reachable": true
     },
     {
       "path": "app/features/dashboards/components/DashboardDiagnostics.vue",
-      "lines": 142,
+      "lines": 141,
       "reachable": true
     },
     {
@@ -577,32 +578,32 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardImportDialog.vue",
-      "lines": 147,
+      "lines": 148,
       "reachable": true
     },
     {
       "path": "app/features/auth/views/SignInView.vue",
-      "lines": 122,
+      "lines": 119,
       "reachable": true
     },
     {
       "path": "app/features/auth/views/UsersView.vue",
-      "lines": 162,
+      "lines": 169,
       "reachable": true
     },
     {
       "path": "app/features/auth/views/ProfileView.vue",
-      "lines": 155,
+      "lines": 159,
       "reachable": true
     },
     {
       "path": "app/features/dashboards/composables/useDashboardLibrary.ts",
-      "lines": 80,
+      "lines": 84,
       "reachable": true
     },
     {
       "path": "app/features/dashboards/composables/useDashboardImport.ts",
-      "lines": 86,
+      "lines": 88,
       "reachable": true
     },
     {
@@ -627,7 +628,7 @@
     },
     {
       "path": "app/features/dashboards/composables/useDashboardEditor.ts",
-      "lines": 100,
+      "lines": 102,
       "reachable": true
     },
     {
@@ -672,12 +673,12 @@
     },
     {
       "path": "app/features/auth/composables/useUsers.ts",
-      "lines": 55,
+      "lines": 65,
       "reachable": true
     },
     {
       "path": "app/features/auth/composables/useAuthentication.ts",
-      "lines": 47,
+      "lines": 51,
       "reachable": true
     },
     {
@@ -692,12 +693,12 @@
     },
     {
       "path": "app/features/alerts/views/AlertRulesView.vue",
-      "lines": 206,
+      "lines": 209,
       "reachable": true
     },
     {
       "path": "app/middleware/auth.global.ts",
-      "lines": 15,
+      "lines": 20,
       "reachable": true
     },
     {
@@ -707,17 +708,17 @@
     },
     {
       "path": "app/features/alerts/components/AlertRuleEditor.vue",
-      "lines": 204,
+      "lines": 203,
       "reachable": true
     },
     {
       "path": "app/features/alerts/components/AlertRuleSettings.vue",
-      "lines": 113,
+      "lines": 111,
       "reachable": true
     },
     {
       "path": "app/features/alerts/components/AlertHistoryDrawer.vue",
-      "lines": 44,
+      "lines": 43,
       "reachable": true
     },
     {
@@ -737,7 +738,7 @@
     },
     {
       "path": "app/features/alerts/composables/useAlertRules.ts",
-      "lines": 147,
+      "lines": 151,
       "reachable": true
     },
     {
@@ -747,12 +748,12 @@
     },
     {
       "path": "app/features/configuration/components/DataSourceEditor.vue",
-      "lines": 121,
+      "lines": 120,
       "reachable": true
     },
     {
       "path": "app/features/configuration/components/TelegramDestinationEditor.vue",
-      "lines": 69,
+      "lines": 66,
       "reachable": true
     },
     {
@@ -827,7 +828,7 @@
     },
     {
       "path": "app/features/queries/components/QueryInspector.vue",
-      "lines": 81,
+      "lines": 80,
       "reachable": true
     },
     {
@@ -847,7 +848,7 @@
     },
     {
       "path": "app/features/queries/components/QueryEditor.vue",
-      "lines": 196,
+      "lines": 194,
       "reachable": true
     },
     {
@@ -872,7 +873,7 @@
     },
     {
       "path": "app/core/composables/useAppNavigation.ts",
-      "lines": 20,
+      "lines": 21,
       "reachable": true
     },
     {
@@ -907,7 +908,7 @@
     },
     {
       "path": "server/features/dashboards/application/dashboard.service.ts",
-      "lines": 83,
+      "lines": 82,
       "reachable": true
     },
     {
@@ -932,12 +933,12 @@
     },
     {
       "path": "server/features/alerts/application/alert.service.ts",
-      "lines": 113,
+      "lines": 115,
       "reachable": true
     },
     {
       "path": "server/features/auth/application/auth.service.ts",
-      "lines": 102,
+      "lines": 108,
       "reachable": true
     },
     {
@@ -992,7 +993,7 @@
     },
     {
       "path": "server/platform/database/database.ts",
-      "lines": 89,
+      "lines": 91,
       "reachable": true
     },
     {
@@ -1002,7 +1003,7 @@
     },
     {
       "path": "server/platform/database/workspace.repository.ts",
-      "lines": 136,
+      "lines": 156,
       "reachable": true
     },
     {
@@ -1037,7 +1038,7 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardSectionEditor.vue",
-      "lines": 49,
+      "lines": 50,
       "reachable": true
     },
     {
@@ -1067,7 +1068,7 @@
     },
     {
       "path": "server/features/notifications/infrastructure/notification.repository.ts",
-      "lines": 36,
+      "lines": 43,
       "reachable": true
     },
     {
@@ -1097,7 +1098,7 @@
     },
     {
       "path": "server/api/observe/notifications/stream.get.ts",
-      "lines": 59,
+      "lines": 57,
       "reachable": true
     },
     {
@@ -1112,12 +1113,67 @@
     },
     {
       "path": "app/plugins/alert-notifications.client.ts",
-      "lines": 38,
+      "lines": 46,
       "reachable": true
     },
     {
       "path": "server/platform/database/migrations/notifications.ts",
       "lines": 17,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/permissions.ts",
+      "lines": 44,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/alert-rules/[id].get.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/users/[id]/permissions.get.ts",
+      "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/users/[id]/permissions.put.ts",
+      "lines": 6,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/database/migrations/permissions.ts",
+      "lines": 47,
+      "reachable": true
+    },
+    {
+      "path": "app/core/composables/useAccessPermissions.ts",
+      "lines": 21,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/components/ResourcePermissionFields.vue",
+      "lines": 71,
+      "reachable": true
+    },
+    {
+      "path": "app/features/auth/components/UserPermissionsEditor.vue",
+      "lines": 102,
+      "reachable": true
+    },
+    {
+      "path": "server/features/permissions/domain/permission.repository.ts",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "server/features/permissions/application/permission.service.ts",
+      "lines": 69,
+      "reachable": true
+    },
+    {
+      "path": "server/features/permissions/infrastructure/permission.repository.ts",
+      "lines": 38,
       "reachable": true
     }
   ]
