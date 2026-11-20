@@ -1,3 +1,4 @@
+import type { AlertNotificationInput } from '#shared/domain/notification'
 import { WorkspaceError } from '~~/server/domain/workspace-error'
 import type { AlertEvaluation, AlertRuleInput, AlertRule, AlertRulePreview } from '#shared/domain/alert-rule'
 
@@ -53,7 +54,18 @@ export class AlertService {
       const notified = new Set(rule.notifiedDestinations ?? [])
       const firing = evaluation.state === 'firing'
       const destinations = rule.telegramDestinationIds ?? []
+      let notification: AlertNotificationInput | undefined
+      let notificationFiring = rule.notificationFiring ?? false
       if (rule.enabled && (!rule.muteUntil || Date.parse(rule.muteUntil) <= this.clock.now().getTime()) && (firing || evaluation.state === 'normal')) {
+        if (firing !== notificationFiring) {
+          const source = (await this.dataSources.listSources()).find(source => source.id === rule.dataSourceId)
+          notification = {
+            alertRuleId: id, alertName: rule.name, sourceName: source?.name ?? rule.dataSourceId,
+            state: firing ? 'firing' : 'recovered', value: evaluation.value, threshold: rule.threshold,
+            operator: rule.operator, severity: rule.severity, summary: rule.summary, occurredAt: evaluation.time
+          }
+          notificationFiring = firing
+        }
         const pending = destinations.filter(destination => firing !== notified.has(destination))
         if (pending.length) {
           const source = (await this.dataSources.listSources()).find(source => source.id === rule.dataSourceId)
@@ -69,9 +81,9 @@ export class AlertService {
           if (failed) evaluation.deliveryError = `Telegram delivery failed for ${failed} destination(s). Check Configuration.`
         }
       }
-      await this.repository.update('alertRules', id, {
-        evaluation, pendingSince, evaluationHistory: [evaluation, ...(rule.evaluationHistory ?? [])].slice(0, 50), notifiedDestinations: destinations.filter(destination => notified.has(destination))
-      })
+      await this.repository.saveAlertEvaluation(id, {
+        notificationFiring, evaluation, pendingSince, evaluationHistory: [evaluation, ...(rule.evaluationHistory ?? [])].slice(0, 50), notifiedDestinations: destinations.filter(destination => notified.has(destination))
+      }, notification)
       return evaluation
     })
     if (!result && !scheduled) throw new WorkspaceError({ statusCode: 409, statusMessage: 'Alert is already being evaluated' })

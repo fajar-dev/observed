@@ -1,3 +1,4 @@
+import type { AlertNotificationInput } from '#shared/domain/notification'
 import { randomUUID } from 'node:crypto'
 import type { PoolClient } from 'pg'
 import type { DashboardDefinition } from '#shared/domain/dashboard'
@@ -77,6 +78,19 @@ export class PostgresWorkspaceRepository implements WorkspaceRepository {
       const value = { ...decodeResource<ResourceValues[K]>(mapping, rows[0]), ...patch }
       for (const field of remove) Reflect.deleteProperty(value, field)
       return this.write(client, resource, id, value, false)
+    })
+  }
+
+  async saveAlertEvaluation(id: string, patch: Partial<ResourceValues['alertRules']>, notification?: AlertNotificationInput) {
+    await this.database.transaction(async (client) => {
+      const { rows } = await client.query<DatabaseRow>('SELECT * FROM observe.alert_rules WHERE id=$1 FOR UPDATE', [id])
+      if (!rows[0]) throw new WorkspaceError({ statusCode: 404, statusMessage: 'Alert rule not found' })
+      await this.write(client, 'alertRules', id, { ...decodeResource<ResourceValues['alertRules']>(resourceMappings.alertRules, rows[0]), ...patch }, false)
+      if (notification) {
+        // Commit order must match sequence order so reconnect cursors cannot skip events.
+        await client.query('SELECT pg_advisory_xact_lock(hashtextextended(\'observe:notification-order\',0))')
+        await client.query('INSERT INTO observe.alert_notifications(id,alert_rule_id,occurred_at,payload) VALUES($1,$2,$3,$4::jsonb)', [randomUUID(), id, notification.occurredAt, JSON.stringify(notification)])
+      }
     })
   }
 

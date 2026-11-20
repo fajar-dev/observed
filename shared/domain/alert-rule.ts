@@ -11,7 +11,7 @@ export const alertRuleSchema = querySchema.extend({
   pendingFor: z.number().int().min(0).max(86400).optional(),
   muteUntil: z.iso.datetime().nullable().optional(),
   enabled: z.boolean(),
-  telegramDestinationIds: z.array(z.uuid()).min(1).max(20).refine(ids => new Set(ids).size === ids.length),
+  telegramDestinationIds: z.array(z.uuid()).max(20).default([]).refine(ids => new Set(ids).size === ids.length),
   operator: z.enum(['gt', 'lt', 'gte', 'lte']),
   reducer: z.enum(['last', 'mean', 'min', 'max']),
   field: z.string().trim().max(200).default(''),
@@ -30,4 +30,4 @@ export type AlertEvaluation = { state: AlertState, value: number | null, time: s
 
 export type AlertRulePreview = AlertEvaluation & { queryResult: QueryResponse }
 
-export type AlertRule = AlertRuleInput & { id: string, evaluation?: AlertEvaluation, notifiedDestinations?: string[], pendingSince?: string | null, evaluationHistory?: AlertEvaluation[] }
+export type AlertRule = AlertRuleInput & { id: string, evaluation?: AlertEvaluation, notifiedDestinations?: string[], notificationFiring?: boolean, pendingSince?: string | null, evaluationHistory?: AlertEvaluation[] }

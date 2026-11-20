@@ -20,7 +20,7 @@ export const resourceMappings: Record<Resource, ResourceMapping> = {
   alertRules: { table: 'alert_rules', fields: {
     name: { column: 'name' }, dataSourceId: { column: 'data_source_id' }, folder: { column: 'folder_name', fallback: '' },
     enabled: { column: 'enabled' }, interval: { column: 'evaluation_interval' }
-  }, payload: 'configuration', runtime: ['evaluation', 'evaluationHistory', 'pendingSince', 'notifiedDestinations'] }
+  }, payload: 'configuration', runtime: ['evaluation', 'evaluationHistory', 'pendingSince', 'notifiedDestinations', 'notificationFiring'] }
 }
 export type DatabaseRow = { id: string, created_at: Date, updated_at: Date, [column: string]: unknown }
 

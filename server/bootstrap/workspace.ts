@@ -1,3 +1,5 @@
+import { NotificationService } from '~~/server/features/notifications/application/notification.service'
+import { PostgresNotificationRepository } from '~~/server/features/notifications/infrastructure/notification.repository'
 import { readWorkspaceConfiguration } from './configuration'
 import type { WorkspaceConfiguration } from './configuration'
 import { VariableResolver } from '~~/server/features/queries/application/variable-resolver'
@@ -28,11 +30,12 @@ export function createWorkspace(configuration: WorkspaceConfiguration) {
   const variables = new VariableResolver(input => dataSources.query(input), () => dataSources.listSources())
   const diagnostics = new DashboardDiagnostics(input => dataSources.query(input), input => variables.resolve(input))
   const dashboards = new DashboardService(repository, dataSources, new DashboardJsonImporter(), variables, diagnostics)
+  const notifications = new NotificationService(new PostgresNotificationRepository(database))
   const alerts = new AlertService(repository, dataSources, telegram, new SystemClock())
   const authenticationRepository = new PostgresAuthenticationRepository(database)
   const auth = new AuthService(authenticationRepository, new ScryptPasswordHasher(), new JwtAccessTokens(configuration.secretKey), configuration.allowOAuthSignup)
   const oidc = new OidcProviders(configuration.environment)
-  return { database, dataSources, telegram, dashboards, alerts, auth, oidc, vault }
+  return { database, dataSources, telegram, dashboards, alerts, notifications, auth, oidc, vault }
 }
 export type Workspace = ReturnType<typeof createWorkspace>
 let workspace: Workspace | undefined

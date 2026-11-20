@@ -1,3 +1,4 @@
+import type { AlertNotificationInput } from '#shared/domain/notification'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { randomBytes, randomUUID } from 'node:crypto'
@@ -10,6 +11,7 @@ import { DataSourceService } from '~~/server/features/data-sources/application/d
 import { AlertService } from '~~/server/features/alerts/application/alert.service'
 
 class MemoryStore implements WorkspaceRepository {
+  notifications: AlertNotificationInput[] = []
   private records = new Map<string, StoredEntity<unknown>>()
   async list<K extends Resource>(resource: K) { return [...this.records].filter(([key]) => key.startsWith(resource + ':')).map(([, record]) => record as StoredEntity<ResourceValues[K]>) }
   async find<K extends Resource>(resource: K, id: string) { return this.records.get(resource + ':' + id) as StoredEntity<ResourceValues[K]> | undefined }
@@ -30,6 +32,11 @@ class MemoryStore implements WorkspaceRepository {
     for (const key of remove) Reflect.deleteProperty(record, key)
     this.records.set(resource + ':' + id, record)
     return record
+  }
+
+  async saveAlertEvaluation(id: string, patch: Partial<ResourceValues['alertRules']>, notification?: AlertNotificationInput) {
+    await this.update('alertRules', id, patch)
+    if (notification) this.notifications.push(notification)
   }
 
   async delete(resource: Resource, id: string) { this.records.delete(resource + ':' + id) }
@@ -124,4 +131,45 @@ test('alert preview returns its query data from one execution without sending no
   assert.equal(preview.state, 'firing')
   assert.equal(preview.value, 90)
   assert.deepEqual(preview.queryResult, queryResult)
+})
+
+test('in-app alerts work without Telegram, deduplicate episodes and honor pending, mute and pause', async () => {
+  const store = new MemoryStore(), sourceId = randomUUID()
+  let value = 0.7, now = new Date('2026-11-20T00:00:00Z'), queryFails = false
+  const sources: DataSourceAccess = { listSources: async () => [{ id: sourceId, name: 'Bridge sensors', url: 'http://influx.test', queryLanguage: 'flux', organization: 'test', database: 'sensors', hasSecret: true }], validateSources: async () => {}, query: async () => {
+    if (queryFails) throw new Error('offline')
+    return { columns: ['_value'], rows: [{ _value: value }], duration: 1, truncated: false }
+  } }
+  const service = new AlertService(store, sources, { list: async () => [], send: async () => assert.fail('No Telegram destinations') }, { now: () => now })
+  const input = { name: 'Pier tilt', dataSourceId: sourceId, query: 'tilt', range: '1h' as const, telegramDestinationIds: [], enabled: true, operator: 'gt' as const, reducer: 'last' as const, field: '_value', threshold: 0.5, interval: 60, pendingFor: 60 }
+  const rule = await service.saveAlert(input)
+  assert.equal((await service.evaluateAlert(rule.id))?.state, 'pending')
+  assert.equal(store.notifications.length, 0)
+  now = new Date(now.getTime() + 60000)
+  await service.evaluateAlert(rule.id)
+  await service.evaluateAlert(rule.id)
+  assert.deepEqual(store.notifications.map(item => item.state), ['firing'])
+  assert.equal(store.notifications[0]?.sourceName, 'Bridge sensors')
+  queryFails = true
+  await service.evaluateAlert(rule.id)
+  assert.equal(store.notifications.length, 1)
+  queryFails = false
+  await service.evaluateAlert(rule.id)
+  now = new Date(now.getTime() + 60000)
+  await service.evaluateAlert(rule.id)
+  assert.equal(store.notifications.length, 1, 'Query errors must not create a second firing episode')
+  value = 0.2
+  await service.evaluateAlert(rule.id)
+  await service.evaluateAlert(rule.id)
+  assert.deepEqual(store.notifications.map(item => item.state), ['firing', 'recovered'])
+  await service.saveAlert({ ...input, pendingFor: 0, muteUntil: '2026-11-21T00:00:00Z' }, rule.id)
+  value = 0.8
+  await service.evaluateAlert(rule.id)
+  assert.equal(store.notifications.length, 2)
+  await service.saveAlert({ ...input, pendingFor: 0, enabled: false }, rule.id)
+  await service.evaluateAlert(rule.id)
+  assert.equal(store.notifications.length, 2)
+  await service.saveAlert({ ...input, pendingFor: 0, muteUntil: null }, rule.id)
+  await service.evaluateAlert(rule.id)
+  assert.deepEqual(store.notifications.map(item => item.state), ['firing', 'recovered', 'firing'])
 })

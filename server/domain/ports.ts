@@ -1,3 +1,4 @@
+import type { AlertNotificationInput } from '#shared/domain/notification'
 import type { VariableResolution, VariableResolutionInput } from '#shared/domain/variable'
 import type { DashboardDiagnostic, DashboardDefinition } from '#shared/domain/dashboard'
 import type { DataSource, DataSourceInput } from '#shared/domain/data-source'
@@ -14,6 +15,7 @@ export interface WorkspaceRepository {
   get<K extends Resource>(resource: K, id: string): Promise<StoredEntity<ResourceValues[K]>>
   create<K extends Resource>(resource: K, value: ResourceValues[K]): Promise<StoredEntity<ResourceValues[K]>>
   update<K extends Resource>(resource: K, id: string, patch: Partial<ResourceValues[K]>, remove?: string[]): Promise<StoredEntity<ResourceValues[K]>>
+  saveAlertEvaluation(id: string, patch: Partial<ResourceValues['alertRules']>, notification?: AlertNotificationInput): Promise<void>
   delete(resource: Resource, id: string): Promise<void>
   saveDashboard(id: string, value: DashboardDefinition): Promise<StoredEntity<DashboardDefinition>>
   isReferenced(resource: 'dataSources' | 'telegramDestinations' | 'dashboardFolders', id: string): Promise<boolean>

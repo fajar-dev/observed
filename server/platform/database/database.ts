@@ -1,4 +1,5 @@
 import pg from 'pg'
+import { notificationsMigration } from './migrations/notifications'
 import type { QueryResultRow } from 'pg'
 import { WorkspaceError } from '~~/server/domain/workspace-error'
 import { authenticationMigration } from './migrations/authentication'
@@ -21,6 +22,7 @@ export class PostgresDatabase {
       await client.query('CREATE SCHEMA IF NOT EXISTS observe; CREATE TABLE IF NOT EXISTS observe.schema_migrations(version integer PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())')
       await normalizeWorkspace(client)
       await client.query(authenticationMigration)
+      await client.query(notificationsMigration)
       await client.query('INSERT INTO observe.schema_migrations(version) VALUES(4) ON CONFLICT DO NOTHING')
     }, false)
   }

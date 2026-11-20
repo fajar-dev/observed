@@ -7,6 +7,8 @@ export function isPublicAuthRoute(path: string, method: string) {
 
 export function isAllowed(role: Role, path: string, method: string) {
   if (path.startsWith('auth/')) return ['auth/me', 'auth/profile', 'auth/providers', 'auth/sessions'].includes(path)
+  if (path === 'notifications' || path === 'notifications/stream') return method === 'GET'
+  if (path === 'notifications/read') return method === 'POST'
   if (role === 'admin') return true
   if (path === 'users' || path.startsWith('users/')) return false
   if (method === 'GET') return /^(dashboards|dashboard-folders|data-sources|telegram-destinations|alert-rules)(\/|$)/.test(path)
