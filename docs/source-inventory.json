@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 203,
+  "runtimeModules": 215,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -7,6 +7,7 @@
     "configuration",
     "dashboards",
     "data-sources",
+    "notifications",
     "overview",
     "panels",
     "queries",
@@ -71,7 +72,7 @@
     },
     {
       "path": "server/domain/ports.ts",
-      "lines": 37,
+      "lines": 39,
       "reachable": true
     },
     {
@@ -156,7 +157,7 @@
     },
     {
       "path": "server/bootstrap/workspace.ts",
-      "lines": 46,
+      "lines": 49,
       "reachable": true
     },
     {
@@ -176,7 +177,7 @@
     },
     {
       "path": "app/assets/styles/tokens.css",
-      "lines": 135,
+      "lines": 137,
       "reachable": null
     },
     {
@@ -291,7 +292,7 @@
     },
     {
       "path": "app/components/layout/WorkspaceHeader.vue",
-      "lines": 59,
+      "lines": 49,
       "reachable": true
     },
     {
@@ -646,7 +647,7 @@
     },
     {
       "path": "app/features/auth/components/AccountMenu.vue",
-      "lines": 28,
+      "lines": 30,
       "reachable": true
     },
     {
@@ -711,7 +712,7 @@
     },
     {
       "path": "app/features/alerts/components/AlertRuleSettings.vue",
-      "lines": 111,
+      "lines": 113,
       "reachable": true
     },
     {
@@ -931,7 +932,7 @@
     },
     {
       "path": "server/features/alerts/application/alert.service.ts",
-      "lines": 101,
+      "lines": 113,
       "reachable": true
     },
     {
@@ -946,7 +947,7 @@
     },
     {
       "path": "server/features/auth/domain/access-policy.ts",
-      "lines": 16,
+      "lines": 18,
       "reachable": true
     },
     {
@@ -991,7 +992,7 @@
     },
     {
       "path": "server/platform/database/database.ts",
-      "lines": 87,
+      "lines": 89,
       "reachable": true
     },
     {
@@ -1001,7 +1002,7 @@
     },
     {
       "path": "server/platform/database/workspace.repository.ts",
-      "lines": 122,
+      "lines": 136,
       "reachable": true
     },
     {
@@ -1057,6 +1058,66 @@
     {
       "path": "server/features/telegram/application/format-test-notification.ts",
       "lines": 5,
+      "reachable": true
+    },
+    {
+      "path": "server/features/notifications/domain/notification.repository.ts",
+      "lines": 7,
+      "reachable": true
+    },
+    {
+      "path": "server/features/notifications/infrastructure/notification.repository.ts",
+      "lines": 36,
+      "reachable": true
+    },
+    {
+      "path": "server/features/notifications/application/notification.service.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "app/features/notifications/components/AlertNotificationMenu.vue",
+      "lines": 115,
+      "reachable": true
+    },
+    {
+      "path": "app/features/notifications/utils/notification-stream.ts",
+      "lines": 59,
+      "reachable": true
+    },
+    {
+      "path": "app/features/notifications/composables/useAlertNotifications.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "shared/domain/notification.ts",
+      "lines": 23,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/notifications/stream.get.ts",
+      "lines": 59,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/notifications/read.post.ts",
+      "lines": 10,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/notifications/index.get.ts",
+      "lines": 11,
+      "reachable": true
+    },
+    {
+      "path": "app/plugins/alert-notifications.client.ts",
+      "lines": 38,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/database/migrations/notifications.ts",
+      "lines": 17,
       "reachable": true
     }
   ]
