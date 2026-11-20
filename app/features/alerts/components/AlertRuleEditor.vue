@@ -34,7 +34,7 @@ useNotice(() => open.value && preview.value?.message
         @submit="save"
       >
         <header class="flex shrink-none flex-wrap items-center justify-between gap-space-md border-b border-default bg-default px-space-lg py-space-md">
-          <h1 class="min-w-none flex-fill truncate text-sm font-medium text-highlighted">
+          <h1 class="min-w-none flex-fill truncate text-sm font-semibold text-highlighted">
             {{ editing ? 'Edit alert rule' : 'New alert rule' }}
           </h1>
           <div class="toolbar">
@@ -61,7 +61,7 @@ useNotice(() => open.value && preview.value?.message
             <div class="border-b border-default p-space-lg">
               <div class="surface flex h-placeholder flex-col p-space-lg">
                 <div class="toolbar mb-space-md justify-between">
-                  <h2 class="text-sm font-medium text-highlighted">
+                  <h2 class="text-sm font-semibold text-highlighted">
                     Query preview
                   </h2>
                   <UBadge

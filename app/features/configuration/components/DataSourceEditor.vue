@@ -80,7 +80,7 @@ useErrorToast(() => open.value ? error.value : '')
       </UFormField>
     </div>
     <section class="space-y-space-md border-t border-default pt-space-lg">
-      <h2 class="text-sm font-medium text-highlighted">
+      <h2 class="text-sm font-semibold text-highlighted">
         Authentication
       </h2>
       <UFormField

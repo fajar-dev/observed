@@ -13,7 +13,7 @@ const groups = computed(() => [
 <template>
   <UDashboardNavbar
     :toggle="false"
-    :ui="{ root: 'h-header min-h-header shrink-none bg-default ps-space-md pe-space-md sm:ps-space-lg sm:pe-space-xl', left: 'min-w-none flex-fill gap-space-sm', right: 'gap-space-sm' }"
+    :ui="{ root: 'font-heading h-header min-h-header shrink-none bg-default ps-space-md pe-space-md sm:ps-space-lg sm:pe-space-xl', left: 'min-w-none flex-fill gap-space-sm', right: 'gap-space-sm' }"
   >
     <template #left>
       <UDashboardSidebarToggle aria-label="Open navigation" />

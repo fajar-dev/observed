@@ -11,7 +11,7 @@ const navigation = useAppNavigation()
     :toggle="false"
     :default-size="15"
     :collapsed-size="3.5"
-    :ui="{ root: 'group/sidebar min-h-none min-w-sidebar-rail max-w-sidebar bg-default lg:data-[collapsed=false]:min-w-sidebar', header: 'hidden', body: 'p-space-sm lg:overflow-hidden', content: 'max-w-sidebar border-e border-default', footer: 'border-t border-default p-space-sm pb-safe' }"
+    :ui="{ root: 'font-heading group/sidebar min-h-none min-w-sidebar-rail max-w-sidebar bg-default lg:data-[collapsed=false]:min-w-sidebar', header: 'hidden', body: 'p-space-sm lg:overflow-hidden', content: 'max-w-sidebar border-e border-default', footer: 'border-t border-default p-space-sm pb-safe' }"
   >
     <template #default="{ collapsed: isCollapsed }">
       <UNavigationMenu

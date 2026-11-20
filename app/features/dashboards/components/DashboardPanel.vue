@@ -51,7 +51,7 @@ useErrorToast(() => failures.value.join(' · '), props.panel.title + ' · Query 
           class="size-icon-xs shrink-none text-dimmed"
         />
         <h2
-          class="truncate text-sm font-medium text-highlighted"
+          class="truncate text-sm font-semibold text-highlighted"
           :title="panel.title"
         >
           {{ panel.title }}

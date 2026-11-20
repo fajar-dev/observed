@@ -44,8 +44,11 @@ test('authentication controls fit all supported viewport sizes', async () => {
       const tokens = await page.locator('input[name="email"]').evaluate(el => ({ height: el.getBoundingClientRect().height, radius: getComputedStyle(el).borderRadius, font: getComputedStyle(el).fontFamily, fontSize: getComputedStyle(el).fontSize }))
       assert.equal(tokens.height, 36)
       assert.equal(tokens.radius, '8px')
-      assert.ok(tokens.font.includes('Manrope'))
+      assert.ok(tokens.font.includes('Inter'))
       assert.equal(tokens.fontSize, '14px')
+      const title = await page.locator('#auth-title').evaluate(element => ({ font: getComputedStyle(element).fontFamily, weight: getComputedStyle(element).fontWeight }))
+      assert.ok(title.font.includes('Manrope'))
+      assert.equal(title.weight, '600')
       assert.deepEqual(errors, [])
       await ctx.close()
     }

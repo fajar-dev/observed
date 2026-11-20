@@ -6,7 +6,7 @@ const { form, destinationOptions } = useAlertRules()
   <aside class="min-w-none border-l border-default bg-default">
     <div class="space-y-space-lg p-space-lg">
       <section class="space-y-space-md">
-        <h2 class="text-sm font-medium text-highlighted">
+        <h2 class="text-sm font-semibold text-highlighted">
           Rule settings
         </h2>
         <UFormField
@@ -45,7 +45,7 @@ const { form, destinationOptions } = useAlertRules()
         </UFormField>
       </section>
       <section class="space-y-space-md border-t border-default pt-space-lg">
-        <h2 class="text-sm font-medium text-highlighted">
+        <h2 class="text-sm font-semibold text-highlighted">
           Evaluation
         </h2>
         <UFormField
@@ -79,7 +79,7 @@ const { form, destinationOptions } = useAlertRules()
         />
       </section>
       <section class="space-y-space-md border-t border-default pt-space-lg">
-        <h2 class="text-sm font-medium text-highlighted">
+        <h2 class="text-sm font-semibold text-highlighted">
           Telegram notifications
         </h2>
         <UFormField

@@ -26,5 +26,6 @@
   --ui-text-dimmed: #8a8a8a;
 }
 body { font-family: var(--font-sans); font-size: var(--text-body); line-height: 1.5; -webkit-font-smoothing: antialiased; background: var(--ui-bg); }
+h1, h2, h3 { font-family: var(--font-heading); }
 button:not(:disabled), [role='button']:not(:disabled) { cursor: pointer; }
 button, a, input, textarea { -webkit-tap-highlight-color: transparent; }

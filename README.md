@@ -136,7 +136,7 @@ Use Nuxt UI components and their semantic `xs`, `sm`, `md`, `lg`, `xl` size prop
 
 Spacing uses `space-xs`, `space-sm`, `space-md`, `space-lg`, `space-xl`, `space-xxl`, `space-section` and `space-page`. Role sizes include `control-md`, `icon-md`, `field`, `drawer`, `modal` and `chart`. Values are centralized in `app/assets/styles/tokens.css`; avoid numeric or arbitrary utility classes. The local `semantic-ui/semantic-sizes` ESLint rule enforces this convention. Do not override Tailwind container namespaces with spacing tokens: Nuxt UI uses those for overlay widths.
 
-Manrope is the interface font; JetBrains Mono is for query text. Theme colors and typography apply in light and dark modes. The shell uses a compact sidebar rail and a full-width top header. Dense data stays scrollable inside its panel rather than expanding the dashboard.
+Inter is the interface and form font; Manrope gives headings and metrics a distinct shape, and preserves the established shell typography. JetBrains Mono is for query text. Titles use semibold weight, labels and controls use medium, and descriptions and input values use regular weight. Theme colors and typography apply in light and dark modes. The shell uses a compact sidebar rail and a full-width top header. Dense data stays scrollable inside its panel rather than expanding the dashboard.
 
 Reference: [Nuxt UI documentation](https://ui.nuxt.com/docs/getting-started), [design system](https://ui.nuxt.com/docs/getting-started/theme/design-system), [components](https://ui.nuxt.com/docs/components).
 

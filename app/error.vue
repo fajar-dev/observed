@@ -13,7 +13,7 @@ useHead({ title: () => `${missing.value ? 'Page not found' : 'Unable to load pag
         <p class="font-mono text-sm text-dimmed">
           {{ error.statusCode || 500 }}
         </p>
-        <h1 class="mt-space-sm text-title font-medium tracking-tight text-highlighted">
+        <h1 class="mt-space-sm text-title font-semibold tracking-tight text-highlighted">
           {{ missing ? 'Page not found' : 'Unable to load this page' }}
         </h1>
         <p class="mt-space-sm text-sm text-muted">

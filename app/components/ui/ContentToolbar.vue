@@ -12,7 +12,7 @@ defineProps<{ title: string, description?: string, icon?: string }>()
       />
       <div class="min-w-none">
         <h1
-          class="truncate text-lg font-medium text-highlighted"
+          class="truncate text-lg font-semibold text-highlighted"
           :title="title"
         >
           {{ title }}

@@ -76,7 +76,7 @@ useErrorToast(() => open.value ? error.value : '', 'Panel query failed')
   >
     <template #body>
       <header class="flex shrink-none flex-wrap items-center justify-between gap-space-md border-b border-default bg-default px-space-lg py-space-md">
-        <h1 class="min-w-none flex-fill truncate text-sm font-medium text-highlighted">
+        <h1 class="min-w-none flex-fill truncate text-sm font-semibold text-highlighted">
           Edit panel
         </h1>
         <div class="toolbar">
@@ -99,7 +99,7 @@ useErrorToast(() => open.value ? error.value : '', 'Panel query failed')
           <div class="border-b border-default p-space-lg">
             <div class="surface flex h-placeholder flex-col p-space-lg">
               <div class="mb-space-lg flex items-center justify-between">
-                <h2 class="text-sm font-medium text-highlighted">
+                <h2 class="text-sm font-semibold text-highlighted">
                   {{ draft.title || 'New panel' }}
                 </h2><span
                   v-if="loading"

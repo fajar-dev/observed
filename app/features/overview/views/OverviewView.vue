@@ -44,7 +44,7 @@ useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.v
     <div class="grid min-w-none items-start gap-space-lg xl:grid-cols-overview">
       <ContentPanel list>
         <template #header>
-          <h2 class="text-sm font-medium text-highlighted">
+          <h2 class="text-sm font-semibold text-highlighted">
             Recent dashboards
           </h2>
         </template>
@@ -90,7 +90,7 @@ useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.v
       </ContentPanel>
       <ContentPanel list>
         <template #header>
-          <h2 class="text-sm font-medium text-highlighted">
+          <h2 class="text-sm font-semibold text-highlighted">
             Alerts
           </h2>
         </template>

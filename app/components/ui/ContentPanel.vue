@@ -9,7 +9,7 @@ defineProps<{ title?: string, list?: boolean }>()
       #header
     >
       <slot name="header">
-        <h2 class="text-sm font-medium text-highlighted">
+        <h2 class="text-sm font-semibold text-highlighted">
           {{ title }}
         </h2>
       </slot>

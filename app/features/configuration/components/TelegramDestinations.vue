@@ -56,7 +56,7 @@ useErrorToast(() => loadError.value || (!open.value && !disconnect.value ? error
           />
         </div>
         <h3
-          class="min-w-none truncate text-sm font-medium text-highlighted"
+          class="min-w-none truncate text-sm font-semibold text-highlighted"
           :title="destination.name"
         >
           {{ destination.name }}

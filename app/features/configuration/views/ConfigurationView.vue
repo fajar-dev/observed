@@ -99,7 +99,7 @@ useErrorToast(loadError, 'Could not load configuration')
             @click="edit(source)"
           >
             <h2
-              class="truncate text-sm font-medium text-highlighted hover:text-primary"
+              class="truncate text-sm font-semibold text-highlighted hover:text-primary"
               :title="source.name"
             >
               {{ source.name }}

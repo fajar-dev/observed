@@ -107,7 +107,7 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
           v-if="dashboard.importMetadata?.sourceDocument"
           class="surface space-y-space-lg p-space-lg"
         >
-          <h2 class="font-medium text-highlighted">
+          <h2 class="font-semibold text-highlighted">
             Repair a Grafana import
           </h2>
           <p class="text-xs leading-normal text-muted">

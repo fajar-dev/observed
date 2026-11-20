@@ -1,6 +1,7 @@
 @theme static {
   --container-page: 96rem;
-  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Manrope', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --spacing-none: 0;
   --spacing-space-xxs: 0.125rem;

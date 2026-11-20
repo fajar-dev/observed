@@ -117,7 +117,7 @@ function sparklinePoints(item: TimeSeries) {
           </svg>
           <p
             v-if="configuration.statTextMode !== 'name' && configuration.statTextMode !== 'none'"
-            class="relative font-semibold leading-tight tracking-tight"
+            class="relative font-heading font-semibold leading-tight tracking-tight tabular-nums"
             :class="compact ? (statistics.length === 1 ? 'metric-value whitespace-nowrap' : 'text-title whitespace-nowrap') : 'text-display'"
             :style="{ 'color': configuration.statColorMode === 'none' ? 'var(--ui-text-highlighted)' : metricColor(item.value, item.settings), '--metric-length': Math.max(1, formatMetric(item.value, item.settings).length) }"
           >

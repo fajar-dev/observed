@@ -40,7 +40,7 @@
 .auth-form-container { width: 100%; max-width: var(--spacing-summary); min-height: 0; }
 .auth-form-content, .auth-form { display: flex; flex-direction: column; gap: var(--spacing-space-xl); }
 .auth-providers { display: grid; gap: var(--spacing-space-sm); }
-.auth-form-title { margin-block-start: var(--spacing-space-lg); font-size: var(--text-title); font-weight: 500; letter-spacing: -0.025em; line-height: 1.25; color: var(--ui-text-highlighted); }
+.auth-form-title { font-family: var(--font-heading); margin-block-start: var(--spacing-space-lg); font-size: var(--text-title); font-weight: 600; letter-spacing: -0.025em; line-height: 1.25; color: var(--ui-text-highlighted); }
 .auth-form-description { margin-block-start: var(--spacing-space-md); font-size: var(--text-sm); line-height: 1.8; color: var(--ui-text-muted); }
 @media (min-width: 80rem) { .auth-story-content { padding-inline: var(--spacing-space-lg); } }
 @media (max-width: 64rem) {

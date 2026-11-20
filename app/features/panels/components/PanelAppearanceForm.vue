@@ -54,7 +54,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         </template>
       </UPopover>
       <section class="space-y-space-md border-t border-default pt-space-lg">
-        <h3 class="text-sm font-medium text-highlighted">
+        <h3 class="text-sm font-semibold text-highlighted">
           Panel options
         </h3>
         <UFormField label="Title">
@@ -87,7 +87,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         v-if="draft.type !== 'text'"
         class="space-y-space-md border-t border-default pt-space-lg"
       >
-        <h3 class="text-sm font-medium text-highlighted">
+        <h3 class="text-sm font-semibold text-highlighted">
           Standard options
         </h3>
         <UFormField label="Unit">
@@ -206,7 +206,7 @@ function numberOption(key: 'min' | 'max', value: unknown) {
         v-if="['stat', 'gauge', 'bargauge'].includes(draft.type)"
         class="space-y-space-md border-t border-default pt-space-lg"
       >
-        <h3 class="text-sm font-medium text-highlighted">
+        <h3 class="text-sm font-semibold text-highlighted">
           Thresholds
         </h3>
         <div
