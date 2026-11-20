@@ -3,7 +3,7 @@ import { panelDataSourceId } from '#shared/utils/dashboard-variables'
 import type { Panel } from '#shared/domain/panel'
 import type { QueryRequest } from '#shared/domain/query'
 
-const props = defineProps<{ panel: Panel, sections?: import('#shared/domain/dashboard').DashboardSection[], sectionId?: string | null, range: QueryRequest['range'], from?: string, to?: string, variables?: import('#shared/domain/variable').VariableValues, refresh: number, editing: boolean, kiosk?: boolean }>()
+const props = defineProps<{ panel: Panel, sections?: import('#shared/domain/dashboard').DashboardSection[], sectionId?: string | null, draggable?: boolean, range: QueryRequest['range'], from?: string, to?: string, variables?: import('#shared/domain/variable').VariableValues, refresh: number, editing: boolean, kiosk?: boolean }>()
 const { canWrite } = useAuthentication()
 const emit = defineEmits<{ edit: [], remove: [], duplicate: [], move: [sectionId: string | null] }>()
 const { results, failures, loading, run } = useQueryRunner()
@@ -46,7 +46,7 @@ useErrorToast(() => failures.value.join(' · '), props.panel.title + ' · Query 
     <template #header>
       <div class="flex min-w-none items-center gap-space-sm">
         <UIcon
-          v-if="editing"
+          v-if="editing && draggable !== false"
           name="i-lucide-grip-vertical"
           class="size-icon-xs shrink-none text-dimmed"
         />

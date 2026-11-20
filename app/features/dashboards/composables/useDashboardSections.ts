@@ -48,7 +48,10 @@ export function useDashboardSections(draft: Ref<DashboardDefinition>, editing: R
   function movePanel(panel: Panel, sectionId: string | null) {
     draft.value = new DashboardLayout(draft.value).withPanelMoved(panel.id, sectionId)
     const target = draft.value.sections?.find(section => section.id === sectionId)
-    if (target) target.collapsed = false
+    if (target) {
+      target.collapsed = false
+      collapsedRows.value[target.id] = false
+    }
   }
   function compactLayout() {
     draft.value = new DashboardLayout(draft.value).compacted()

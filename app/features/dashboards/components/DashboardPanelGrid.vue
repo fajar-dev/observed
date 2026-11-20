@@ -10,6 +10,8 @@ let grid: GridStack | undefined
 let alive = true
 let synchronizing = false
 let resizeObserver: ResizeObserver | undefined
+let previousColumn: number | undefined
+const layoutEditable = ref(false)
 const positions = computed(() => props.panels.map(panel => ({ x: panel.x ?? 0, y: panel.y ?? 0, w: panel.span, h: panel.height ?? 5 })))
 
 onMounted(async () => {
@@ -22,9 +24,12 @@ onMounted(async () => {
     alwaysShowResizeHandle: false, resizable: { handles: 'se' }, acceptWidgets: false
   }, element.value) ?? undefined
   const updateEditing = () => {
-    const enabled = props.editing && grid?.getColumn() === (props.columns ?? 12)
-    grid?.enableMove(enabled)
-    grid?.enableResize(enabled)
+    const column = grid?.getColumn()
+    layoutEditable.value = props.editing && column === (props.columns ?? 12)
+    grid?.enableMove(layoutEditable.value)
+    grid?.enableResize(layoutEditable.value)
+    if (previousColumn !== undefined && previousColumn !== column) void synchronize()
+    previousColumn = column
   }
   resizeObserver = new ResizeObserver(updateEditing)
   resizeObserver.observe(element.value)
@@ -36,12 +41,13 @@ onMounted(async () => {
 })
 watch(() => props.editing, (value) => {
   const enabled = value && grid?.getColumn() === (props.columns ?? 12)
+  layoutEditable.value = enabled
   grid?.enableMove(enabled)
   grid?.enableResize(enabled)
 })
-watch(() => props.panels.map(panel => [panel.id, panel.x, panel.y, panel.span, panel.height]), async () => {
+async function synchronize() {
   await nextTick()
-  if (!grid || !element.value) return
+  if (!alive || !grid || !element.value) return
   synchronizing = true
   grid.batchUpdate()
   const ids = new Set([...props.panels.map(panel => panel.id)])
@@ -55,11 +61,16 @@ watch(() => props.panels.map(panel => [panel.id, panel.x, panel.y, panel.span, p
       return
     }
     const position = positions.value[props.panels.findIndex(panel => panel.id === node.id)]
-    if (grid?.getColumn() === (props.columns ?? 12) && position && (node.x !== position.x || node.y !== position.y || node.w !== position.w || node.h !== position.h)) grid.update(element, position)
+    if (!position) return
+    if (grid?.getColumn() === (props.columns ?? 12)) {
+      if (node.x !== position.x || node.y !== position.y || node.w !== position.w || node.h !== position.h) grid.update(element, position)
+    } else if (node.h !== position.h) grid?.update(element, { h: position.h })
   })
+  if (grid.getColumn() !== (props.columns ?? 12)) grid.compact('list')
   grid.batchUpdate(false)
   synchronizing = false
-})
+}
+watch(() => props.panels.map(panel => [panel.id, panel.x, panel.y, panel.span, panel.height]), synchronize)
 onBeforeUnmount(() => {
   alive = false
   resizeObserver?.disconnect()
@@ -71,7 +82,7 @@ onBeforeUnmount(() => {
   <div
     ref="element"
     class="grid-stack min-h-compact"
-    :data-editing="editing"
+    :data-editing="layoutEditable"
   >
     <div
       v-for="(panel, index) in panels"
@@ -97,6 +108,7 @@ onBeforeUnmount(() => {
           :variables="variables"
           :refresh="refresh"
           :editing="editing"
+          :draggable="layoutEditable"
           :kiosk="kiosk"
           :sections="sections"
           :section-id="sectionId"

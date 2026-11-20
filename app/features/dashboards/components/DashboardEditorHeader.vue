@@ -62,6 +62,9 @@ const editItems = [
       <UButton
         size="sm"
         label="Discard"
+        icon="i-lucide-x"
+        aria-label="Discard changes"
+        :ui="{ label: 'hidden sm:inline', leadingIcon: 'sm:hidden' }"
         color="neutral"
         variant="ghost"
         @click="discard"
@@ -82,6 +85,8 @@ const editItems = [
       <UButton
         size="sm"
         :label="kiosk ? 'Exit kiosk' : 'Kiosk mode'"
+        :aria-label="kiosk ? 'Exit kiosk' : 'Kiosk mode'"
+        :ui="{ label: kiosk ? '' : 'hidden sm:inline' }"
         :icon="kiosk ? 'i-lucide-minimize' : 'i-lucide-maximize'"
         :aria-keyshortcuts="kiosk ? 'Escape' : undefined"
         color="neutral"
@@ -111,7 +116,7 @@ const editItems = [
         />
       </UDropdownMenu>
     </div>
-    <div class="flex shrink-none items-center gap-space-sm">
+    <div class="flex min-w-none max-w-full items-center gap-space-sm">
       <USeparator
         orientation="vertical"
         class="hidden h-control-sm shrink-none md:block"

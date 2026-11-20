@@ -3,6 +3,8 @@ const { canWrite } = useAuthentication()
 const { kiosk, exitKiosk } = useDashboardKiosk()
 function handleEscape(event: KeyboardEvent) {
   if (event.key === 'Escape' && kiosk.value) {
+    // Let the topmost popup consume Escape before leaving kiosk.
+    if (event.defaultPrevented || document.querySelector('[role="dialog"][data-state="open"], [role="menu"][data-state="open"], [role="listbox"]')) return
     event.preventDefault()
     void exitKiosk()
   }

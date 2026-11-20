@@ -60,7 +60,7 @@ function absolute() {
       color="neutral"
       variant="outline"
       aria-label="Time range"
-      class="max-w-placeholder truncate"
+      class="min-w-none max-w-field flex-fill truncate"
     />
     <template #content>
       <div class="grid w-time-picker gap-none sm:grid-cols-pair">
