@@ -76,7 +76,7 @@ export class DashboardJsonImporter {
       }
     }
     collectRows(model.panels)
-    const sections = rowPanels.slice(0, 100).map(row => ({ id: randomUUID(), title: string(row.title).slice(0, 120), y: Math.max(0, Math.floor(Number(object(row.gridPos).y) || 0)) }))
+    const sections = rowPanels.slice(0, 100).map(row => ({ id: randomUUID(), title: (string(row.title).trim() || 'Row').slice(0, 120), collapsed: row.collapsed === true, y: Math.max(0, Math.floor(Number(object(row.gridPos).y) || 0)) }))
     const inputPanels = flattenPanels(model.panels)
     if (inputPanels.length > 100) warnings.push('Only the first 100 panels were imported.')
     const panels = inputPanels.slice(0, 100).map((item, index): Panel => {

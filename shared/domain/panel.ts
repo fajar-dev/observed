@@ -69,6 +69,7 @@ export const panelSchema = z.object({
   x: z.number().int().min(0).max(23).optional(),
   y: z.number().int().min(0).max(10000).optional(),
   height: z.number().int().min(2).max(100).optional(),
+  sectionId: z.uuid().nullable().optional(),
   options: panelOptionsSchema.optional()
 })
 
