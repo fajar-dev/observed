@@ -21,7 +21,7 @@ useErrorToast(loadError, 'Could not load configuration')
     compact
     icon="i-lucide-settings-2"
     title="Configuration"
-    description="InfluxDB data sources and Telegram destinations."
+    description="Connect sensor data and manage Telegram destinations."
   >
     <template #actions>
       <UButton
@@ -64,7 +64,7 @@ useErrorToast(loadError, 'Could not load configuration')
         variant="naked"
         icon="i-lucide-database"
         title="Connect your first InfluxDB"
-        description="Add an InfluxDB data source to query metrics and build dashboards."
+        description="Connect InfluxDB to query sensor measurements and build dashboards."
         size="sm"
         class="surface py-space-lg"
         :actions="[{ label: 'Add data source', icon: 'i-lucide-plus', size: 'sm', onClick: () => edit() }]"

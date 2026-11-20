@@ -16,7 +16,7 @@ const { kiosk } = useDashboardKiosk()
       >
         <main
           id="workspace-main"
-          aria-label="Workspace content"
+          aria-label="Main content"
           tabindex="0"
           class="min-h-none min-w-none flex-fill overflow-y-auto overscroll-y-contain focus-visible:outline-primary"
         >

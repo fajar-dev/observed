@@ -14,7 +14,7 @@ useErrorToast(() => loadError.value || (!open.value && !removeOpen.value ? error
     compact
     icon="i-lucide-panels-top-left"
     title="Dashboards"
-    description="Browse, organize, and build your metric dashboards."
+    description="Build and organize sensor dashboards for your structures."
   >
     <template #actions>
       <UButton
@@ -72,7 +72,7 @@ useErrorToast(() => loadError.value || (!open.value && !removeOpen.value ? error
       size="sm"
       class="surface py-space-lg"
       :title="dashboards.length ? 'No matching dashboards' : 'Create your first dashboard'"
-      :description="dashboards.length ? 'Try a different search or filter.' : 'Start with a panel or import dashboard JSON.'"
+      :description="dashboards.length ? 'Try a different search or filter.' : 'Visualize your sensor data or import dashboard JSON.'"
       :actions="dashboards.length || !canWrite ? [] : [{ label: 'Create dashboard', to: '/dashboards/new', icon: 'i-lucide-plus', size: 'sm' }]"
     />
     <ContentPanel v-else-if="view === 'list'">

@@ -39,7 +39,7 @@ useNotice(() => canWrite.value && (!sources.value.length || !destinations.value.
     compact
     icon="i-lucide-bell"
     title="Alerts"
-    description="InfluxDB alert rules and Telegram notifications."
+    description="Monitor sensor thresholds and notify your team through Telegram."
   >
     <template #actions>
       <UButton
@@ -73,7 +73,7 @@ useNotice(() => canWrite.value && (!sources.value.length || !destinations.value.
     <UEmpty
       v-else-if="!filtered.length && !loadError"
       variant="naked"
-      :title="alerts.length ? 'No matching rules' : 'Keep an eye on what matters'"
+      :title="alerts.length ? 'No matching rules' : 'Create your first sensor alert'"
       description="Create a threshold rule, preview the condition, and choose the Telegram destinations to notify."
       icon="i-lucide-bell-ring"
       size="sm"

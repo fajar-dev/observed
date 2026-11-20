@@ -15,7 +15,7 @@ useErrorToast(() => open.value ? props.error : '')
   <FormDialog
     v-model:open="open"
     :title="destination ? 'Edit Telegram destination' : 'Add Telegram destination'"
-    description="Configure a bot and the chat receiving notifications."
+    description="Choose the Telegram bot and chat for your monitoring team."
     save-label="Save destination"
     :schema="schema"
     :state="state"
@@ -31,7 +31,7 @@ useErrorToast(() => open.value ? props.error : '')
         :model-value="state.name"
         size="sm"
         class="w-full"
-        placeholder="Operations on-call"
+        placeholder="Bridge monitoring team"
         @update:model-value="$emit('change', { name: String($event) })"
       />
     </UFormField>

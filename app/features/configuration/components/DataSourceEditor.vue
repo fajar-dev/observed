@@ -12,7 +12,7 @@ useErrorToast(() => open.value ? error.value : '')
   <FormDialog
     v-model:open="open"
     :title="editing ? 'Edit data source' : 'Add data source'"
-    description="Configure an InfluxDB connection."
+    description="Connect an InfluxDB source containing your sensor measurements."
     save-label="Save data source"
     :schema="dataSourceSchema"
     :state="form"
@@ -28,7 +28,7 @@ useErrorToast(() => open.value ? error.value : '')
         v-model="form.name"
         size="sm"
         class="w-full"
-        placeholder="Production InfluxDB"
+        placeholder="Bridge sensor data"
       />
     </UFormField>
     <UFormField

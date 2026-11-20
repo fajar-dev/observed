@@ -28,7 +28,7 @@ useErrorToast(() => loadError.value || (!open.value && !disconnect.value ? error
       variant="naked"
       icon="i-lucide-send"
       title="No Telegram destinations"
-      description="Add a bot token and chat ID to receive alert notifications."
+      description="Add a bot token and chat ID to send sensor alerts to your team."
       class="surface py-space-lg"
       size="sm"
     />

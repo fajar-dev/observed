@@ -15,7 +15,7 @@ export class AuthService {
   }
 
   async assertSetupOpen() {
-    if (await this.repository.isSetupComplete()) throw new WorkspaceError({ statusCode: 409, statusMessage: 'Workspace setup is already complete. Sign in with your account.' })
+    if (await this.repository.isSetupComplete()) throw new WorkspaceError({ statusCode: 409, statusMessage: 'Initial setup is already complete. Sign in with your account.' })
   }
 
   async setup(input: { email: string, name: string, password: string }, ip: string, userAgent: string) {

@@ -51,7 +51,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
               size="sm"
               :model-value="tagText"
               class="w-full"
-              placeholder="production, infrastructure"
+              placeholder="bridge, north-span, structural"
               @update:model-value="tagText = String($event); draft.tags = tagText.split(',').map(tag => tag.trim()).filter(Boolean)"
             />
           </UFormField>

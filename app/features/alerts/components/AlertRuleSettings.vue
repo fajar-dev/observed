@@ -17,7 +17,7 @@ const { form, destinationOptions } = useAlertRules()
           <UInput
             v-model="form.name"
             size="sm"
-            placeholder="High CPU usage"
+            placeholder="Pier tilt above threshold"
             class="w-full"
           />
         </UFormField>
@@ -28,7 +28,7 @@ const { form, destinationOptions } = useAlertRules()
           <UTextarea
             v-model="form.summary"
             :rows="3"
-            placeholder="What happened and what to check."
+            placeholder="Describe the sensor location and what your team should check."
             class="w-full"
           />
         </UFormField>

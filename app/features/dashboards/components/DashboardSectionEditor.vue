@@ -28,7 +28,7 @@ const schema = z.object({ title: name })
             v-model="sectionForm.title"
             class="w-full"
             autofocus
-            placeholder="CPU and memory"
+            placeholder="Strain and displacement"
           />
         </UFormField>
         <div class="flex justify-end gap-space-sm">

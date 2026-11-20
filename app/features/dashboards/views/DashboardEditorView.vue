@@ -67,7 +67,7 @@ useNotice(() => Object.keys(variableErrors.value).length
         v-else-if="!draft.panels.length"
         icon="i-lucide-panels-top-left"
         :title="kiosk ? 'No panels' : 'Add your first panel'"
-        description="Choose a data source, build a query, and select a visualization."
+        description="Choose a sensor data source, build a query, and select a visualization."
         :actions="kiosk || !canWrite ? [] : [{ label: 'Add panel', icon: 'i-lucide-plus', onClick: () => editPanel() }]"
       />
       <UEmpty

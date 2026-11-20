@@ -37,7 +37,7 @@ export class PostgresAuthenticationRepository implements AuthenticationRepositor
       await client.query('SELECT pg_advisory_xact_lock(hashtextextended(\'observe:users\', 0))')
       if (first) {
         const { rows } = await client.query('SELECT EXISTS(SELECT 1 FROM observe.auth_setup) OR EXISTS(SELECT 1 FROM observe.users) AS complete')
-        if (rows[0].complete) throw conflict('Workspace setup is already complete. Sign in with your account.')
+        if (rows[0].complete) throw conflict('Initial setup is already complete. Sign in with your account.')
       }
       if (id) {
         const { rows } = await client.query<UserRow>('SELECT * FROM observe.users WHERE id = $1 FOR UPDATE', [id])
@@ -154,7 +154,7 @@ export class PostgresAuthenticationRepository implements AuthenticationRepositor
       else if (allowSignup) {
         if ((await client.query('SELECT 1 FROM observe.users WHERE email=$1', [email])).rowCount) throw conflict('Sign in to your existing account and link this provider from your profile')
         // Only local setup may create the first administrator.
-        if (!(await client.query('SELECT 1 FROM observe.users LIMIT 1')).rowCount) throw conflict('An administrator must complete workspace setup first')
+        if (!(await client.query('SELECT 1 FROM observe.users LIMIT 1')).rowCount) throw conflict('An administrator must complete initial setup first')
         user = (await client.query<UserRow>('INSERT INTO observe.users(id,email,name,role) VALUES($1,$2,$3,\'viewer\') RETURNING *', [randomUUID(), email, name])).rows[0]
       }
       if (!user) throw new WorkspaceError({ statusCode: 403, statusMessage: 'Ask an administrator for an account, then link your provider from your profile' })
