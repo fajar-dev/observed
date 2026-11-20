@@ -74,8 +74,9 @@ useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value =
     <UEmpty
       v-else-if="!filtered.length && !loadError"
       variant="naked"
-      :title="alerts.length ? 'No matching rules' : 'Create your first sensor alert'"
-      description="Create a threshold rule, preview the condition, and choose the Telegram destinations to notify."
+      :title="alerts.length ? 'No matching rules' : 'Create your first alert'"
+      :description="alerts.length ? 'Try a different search or filter.' : 'Monitor sensor thresholds and receive notifications.'"
+      :actions="alerts.length || !canWrite ? [] : [{ label: 'Create alert rule', icon: 'i-lucide-plus', size: 'sm', disabled: !sources.length, onClick: () => edit() }]"
       icon="i-lucide-bell-ring"
       size="sm"
       class="surface py-space-lg"
