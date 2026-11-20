@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 200,
+  "runtimeModules": 202,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -176,7 +176,7 @@
     },
     {
       "path": "app/assets/styles/tokens.css",
-      "lines": 133,
+      "lines": 135,
       "reachable": null
     },
     {
@@ -241,7 +241,7 @@
     },
     {
       "path": "server/api/observe/telegram-destinations/[id]/test.post.ts",
-      "lines": 5,
+      "lines": 6,
       "reachable": true
     },
     {
@@ -531,7 +531,7 @@
     },
     {
       "path": "app/features/dashboards/views/DashboardEditorView.vue",
-      "lines": 106,
+      "lines": 108,
       "reachable": true
     },
     {
@@ -561,7 +561,7 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardEditorHeader.vue",
-      "lines": 140,
+      "lines": 145,
       "reachable": true
     },
     {
@@ -586,12 +586,12 @@
     },
     {
       "path": "app/features/auth/views/UsersView.vue",
-      "lines": 160,
+      "lines": 162,
       "reachable": true
     },
     {
       "path": "app/features/auth/views/ProfileView.vue",
-      "lines": 153,
+      "lines": 155,
       "reachable": true
     },
     {
@@ -701,7 +701,7 @@
     },
     {
       "path": "app/app.vue",
-      "lines": 7,
+      "lines": 14,
       "reachable": true
     },
     {
@@ -871,7 +871,7 @@
     },
     {
       "path": "app/core/composables/useAppNavigation.ts",
-      "lines": 16,
+      "lines": 20,
       "reachable": true
     },
     {
@@ -1021,7 +1021,7 @@
     },
     {
       "path": "server/features/alerts/application/format-alert-notification.ts",
-      "lines": 42,
+      "lines": 43,
       "reachable": true
     },
     {
@@ -1031,7 +1031,7 @@
     },
     {
       "path": "app/features/dashboards/components/DashboardPanelGrid.vue",
-      "lines": 111,
+      "lines": 123,
       "reachable": true
     },
     {
@@ -1041,7 +1041,17 @@
     },
     {
       "path": "app/features/dashboards/composables/useDashboardSections.ts",
-      "lines": 57,
+      "lines": 60,
+      "reachable": true
+    },
+    {
+      "path": "shared/config/product.ts",
+      "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "app/core/composables/usePageSeo.ts",
+      "lines": 16,
       "reachable": true
     }
   ]

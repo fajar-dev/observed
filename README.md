@@ -1,6 +1,8 @@
-# Observe workspace
+# Observed
 
-A Nuxt 4 application for InfluxDB dashboards and Telegram alerts. It uses Nuxt UI 4, PostgreSQL, Flux and InfluxQL. There is no separate query playground: queries are built and previewed in the panel editor.
+A structural health monitoring application for IoT sensor data from buildings, bridges, and other structures. Observed helps civil engineers, contractors, and asset owners build custom sensor dashboards, review measurement trends, and receive threshold alerts through Telegram. It uses Nuxt UI 4, PostgreSQL, Flux and InfluxQL. There is no separate query playground: queries are built and previewed in the panel editor.
+
+Product terminology, metadata, and the retained AMTI identity are documented in [brand guidelines](docs/brand.md).
 
 ## Run locally
 
@@ -39,7 +41,7 @@ The browser renews expired access tokens automatically, sharing renewal across t
 | Manage users and roles | No | No | Yes |
 | Update own profile/password; manage own sessions | Yes | Yes | Yes |
 
-Users are workspace-wide; per-dashboard ACLs and organizations are not implemented. Configure InfluxDB connections with read-only credentials scoped to the intended buckets. Telegram chat IDs are omitted from metadata responses for non-admin users. All protected endpoints enforce role checks on the server. Cookie-authenticated mutations validate the request origin. Password sign-in is rate-limited by account and client IP. The old Basic authentication and trusted-auth-proxy bypass are no longer supported.
+User permissions apply across the application; per-dashboard ACLs and organizations are not implemented. Configure InfluxDB connections with read-only credentials scoped to the intended buckets. Telegram chat IDs are omitted from metadata responses for non-admin users. All protected endpoints enforce role checks on the server. Cookie-authenticated mutations validate the request origin. Password sign-in is rate-limited by account and client IP. The old Basic authentication and trusted-auth-proxy bypass are no longer supported.
 
 Use **Users → Add user** to provision accounts. New local accounts require a password of at least 12 characters; share initial credentials securely. There is no public local registration, email delivery or forgotten-password flow. An administrator can reset another user's password.
 
@@ -68,14 +70,14 @@ bun run build
 bun --env-file=.env .output/server/index.mjs
 ```
 
-Use HTTPS and persistent PostgreSQL in production. Operators can configure private InfluxDB endpoints and execute queries, so restrict workspace and network access to the intended operators and services.
+Use HTTPS and persistent PostgreSQL in production. Operators can configure private InfluxDB endpoints and execute queries, so restrict application and network access to the intended operators and services.
 
 ## Features
 
 - **Configuration:** multiple named InfluxDB sources and Telegram destinations. Credentials stay encrypted on the server. Flux needs an organization and bucket; InfluxQL needs a database and token or username/password. InfluxDB 2 InfluxQL also needs a DBRP mapping.
-- **Dashboards:** folders, tags, list/grid browsing, duplication, JSON export, version history, conflict detection, and draggable/resizable panels. Dashboard variables live within dashboard content. Kiosk mode hides workspace navigation, editing actions and panel menus. The dashboard toolbar, variables, time picker and refresh controls remain available; exit with Escape or **Exit kiosk** in the toolbar. A saved dashboard can open directly with `?kiosk=1`, preserving time range and variable selections. Relative/absolute ranges and auto-refresh control queries.
+- **Dashboards:** folders, tags, list/grid browsing, duplication, JSON export, version history, conflict detection, and draggable/resizable panels. Dashboard variables live within dashboard content. Kiosk mode hides application navigation, editing actions and panel menus. The dashboard toolbar, variables, time picker and refresh controls remain available; exit with Escape or **Exit kiosk** in the toolbar. A saved dashboard can open directly with `?kiosk=1`, preserving time range and variable selections. Relative/absolute ranges and auto-refresh control queries.
 - **Panel editor:** metadata discovery, a visual query builder, raw Flux/InfluxQL, multiple queries, result inspection and CSV export. Visualization options include units, decimals, colors, thresholds, bounds, legends and field appearance. Supported types are line, area, bar, pie, stat, gauge, bar gauge, table and text.
-- **JSON import:** native workspace JSON and supported Grafana Classic JSON. Review source mappings and query checks before saving. Supported panel layout, units, colors, legends, table options and variables are converted. Plugin-specific panels, advanced transformations and schema v2 require manual conversion. Remote Grafana ID/URL import is deliberately absent.
+- **JSON import:** native dashboard JSON and supported Grafana Classic JSON. Review source mappings and query checks before saving. Supported panel layout, units, colors, legends, table options and variables are converted. Plugin-specific panels, advanced transformations and schema v2 require manual conversion. Remote Grafana ID/URL import is deliberately absent.
 - **Telegram alerts:** query preview, thresholds, reducers, evaluation intervals, pending periods, pause/mute, evaluation history and multiple destinations per rule. The scheduler checks due rules every ten seconds. PostgreSQL advisory locks prevent concurrent evaluation of the same rule. Firing and recovery notifications are tracked per destination, with retry on a later evaluation after failed delivery. Manual evaluation of enabled rules may send notifications.
 
 Dashboard rows are real collapsible sections: click a row heading to hide or reveal its panels. In **Edit dashboard**, use **Add → Add row**, the row menu to rename/reorder/remove a row while keeping its panels, and **Panel actions → Move to row** to change membership. On desktop, drag a panel header to reposition it, drag its bottom-right corner to resize it, or use **Dashboard actions → Compact layout** to remove gaps. Save stores row order, default collapse state and panel geometry; mobile stacking does not overwrite the desktop layout. Collapsing in view mode is temporary and does not mark the dashboard as modified. Mobile touch menus support row and panel operations while the grid presents a single column. See the [desktop/mobile dashboard audit](docs/dashboard-audit.md) for regression coverage.
@@ -89,7 +91,7 @@ Flux queries support `v.defaultBucket`, `v.timeRangeStart`, `v.timeRangeStop` an
 ```text
 app/
   pages/                       Route entry points
-  layouts/                     Workspace shell
+  layouts/                     Application shell
   components/layout/           Sidebar, header and brand
   components/ui/               Shared presentation components
   core/http/                   Injected API client
