@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { name } from './common'
 import { rangeSchema } from './query'
+import { dashboardRefreshSchema } from './dashboard-refresh'
 import { panelSchema } from './panel'
 import { variableSchema } from './variable'
 import type { VariableResolution } from './variable'
@@ -14,7 +15,7 @@ export const dashboardSchema = z.object({
   name,
   description: z.string().max(1000),
   range: rangeSchema,
-  refresh: z.number().int().min(0).max(3600).refine(value => value === 0 || value >= 15),
+  refresh: dashboardRefreshSchema,
   panels: z.array(panelSchema).max(100),
   columns: z.union([z.literal(12), z.literal(24)]).optional(),
   sections: z.array(dashboardSectionSchema).max(100).optional(),

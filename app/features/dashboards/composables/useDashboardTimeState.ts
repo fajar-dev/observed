@@ -3,6 +3,7 @@ import type { LocationQueryRaw } from 'vue-router'
 import type { Dashboard, DashboardDefinition } from '#shared/domain/dashboard'
 import type { DashboardVariable, VariableValues } from '#shared/domain/variable'
 import type { QueryRequest } from '#shared/domain/query'
+import { dashboardRefreshSeconds, refreshOptionsFor } from '#shared/domain/dashboard-refresh'
 import { dashboardSchema } from '#shared/domain/dashboard'
 import { allVariableValue, variableSelection } from '#shared/utils/dashboard-variables'
 
@@ -15,7 +16,8 @@ export function useDashboardTimeState(draft: Ref<DashboardDefinition>, ready: Re
   const variables = ref<VariableValues>({})
   const { loading: variablesLoading, errors: variableErrors, resolved: resolvedVariables, refresh: refreshVariables } = useDashboardVariables(draft, variables, range, from, to)
   const refreshKey = ref(0)
-  const refreshOptions = [{ label: 'Refresh off', value: 0 }, { label: '15s', value: 15 }, { label: '30s', value: 30 }, { label: '1m', value: 60 }, { label: '5m', value: 300 }]
+  const refreshOptions = computed(() => refreshOptionsFor(draft.value.refresh))
+  const refreshSeconds = computed(() => dashboardRefreshSeconds(draft.value.refresh, { range: range.value, from: from.value, to: to.value }))
   function selectVariable(variable: DashboardVariable, selection: string | string[]) {
     const previous = variables.value[variable.name]
     if (Array.isArray(selection) && selection.includes(allVariableValue)) {
@@ -54,13 +56,13 @@ export function useDashboardTimeState(draft: Ref<DashboardDefinition>, ready: Re
     for (const [key, value] of Object.entries(variables.value)) query['var-' + key] = value
     void router.replace({ path: route.path, query })
   }, { deep: true })
-  watch(() => draft.value.refresh, (seconds, _previous, cleanup) => {
+  onMounted(() => watch(refreshSeconds, (seconds, _previous, cleanup) => {
     if (!seconds) return
     const timer = setInterval(() => {
       if (!editing.value && document.visibilityState === 'visible') refreshKey.value++
     }, seconds * 1000)
     cleanup(() => clearInterval(timer))
-  }, { immediate: true })
+  }, { immediate: true }))
 
   return { range, from, to, variables, variablesLoading, variableErrors, resolvedVariables, refreshVariables, refreshKey, refreshOptions, selectVariable, hydrateTime }
 }
