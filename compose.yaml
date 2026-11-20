@@ -1,0 +1,77 @@
+name: observed
+
+services:
+  app:
+    image: ${OBSERVE_IMAGE:-observed:local}
+    build:
+      context: .
+      args:
+        BUN_VERSION: ${BUN_VERSION:-1.4.4}
+    init: true
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: database
+      POSTGRES_PORT: '5432'
+      POSTGRES_DB: ${POSTGRES_DB:-observed}
+      POSTGRES_USER: ${POSTGRES_USER:-observed}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Generate .env.docker with sh docker/setup.sh}
+      OBSERVE_SECRET_KEY: ${OBSERVE_SECRET_KEY:?Generate .env.docker with sh docker/setup.sh}
+      OBSERVE_ORIGIN: ${OBSERVE_ORIGIN:-http://localhost:3000}
+      OBSERVE_TRUST_PROXY: ${OBSERVE_TRUST_PROXY:-false}
+      OBSERVE_ALERTS_ENABLED: ${OBSERVE_ALERTS_ENABLED:-true}
+      OBSERVE_GOOGLE_ENABLED: ${OBSERVE_GOOGLE_ENABLED:-false}
+      OBSERVE_GOOGLE_CLIENT_ID: ${OBSERVE_GOOGLE_CLIENT_ID:-}
+      OBSERVE_GOOGLE_CLIENT_SECRET: ${OBSERVE_GOOGLE_CLIENT_SECRET:-}
+      OBSERVE_MICROSOFT_ENABLED: ${OBSERVE_MICROSOFT_ENABLED:-false}
+      OBSERVE_MICROSOFT_CLIENT_ID: ${OBSERVE_MICROSOFT_CLIENT_ID:-}
+      OBSERVE_MICROSOFT_CLIENT_SECRET: ${OBSERVE_MICROSOFT_CLIENT_SECRET:-}
+      OBSERVE_MICROSOFT_TENANT_ID: ${OBSERVE_MICROSOFT_TENANT_ID:-}
+      OBSERVE_OAUTH_ALLOW_SIGNUP: ${OBSERVE_OAUTH_ALLOW_SIGNUP:-false}
+    ports:
+      - '${OBSERVE_BIND_ADDRESS:-127.0.0.1}:${OBSERVE_HTTP_PORT:-3000}:3000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 45s
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+
+  database:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-observed}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Generate .env.docker with sh docker/setup.sh}
+      OBSERVE_DB_USER: ${POSTGRES_USER:-observed}
+      OBSERVE_DB_PASSWORD: ${POSTGRES_PASSWORD:?Generate .env.docker with sh docker/setup.sh}
+      OBSERVE_DB_NAME: ${POSTGRES_DB:-observed}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./docker/init-database.sh:/docker-entrypoint-initdb.d/observed.sh:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 45s
+    logging: *logging
+
+volumes:
+  postgres_data:
