@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 202,
+  "runtimeModules": 203,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -1052,6 +1052,11 @@
     {
       "path": "app/core/composables/usePageSeo.ts",
       "lines": 16,
+      "reachable": true
+    },
+    {
+      "path": "server/features/telegram/application/format-test-notification.ts",
+      "lines": 5,
       "reachable": true
     }
   ]
