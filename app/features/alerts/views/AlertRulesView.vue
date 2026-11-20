@@ -2,7 +2,8 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { AlertRule } from '#shared/domain/alert-rule'
 
-const { canWrite, isAdmin } = useAuthentication()
+const { isAdmin } = useAuthentication()
+const { canCreateAlert: canWrite, canEditAlert } = useAccessPermissions()
 const { alerts, loadError, status, sources, sourcesStatus, sourcesError, destinationsStatus, destinationsError, busy, error, search, stateFilter, open, removeOpen, editing, evaluating, destinationName, filtered, edit, indicator, evaluate, remove, menu } = provideAlertRules()
 const columns: TableColumn<AlertRule>[] = [
   { id: 'state', header: 'State', meta: { class: { th: 'w-compact', td: 'whitespace-nowrap' } } },
@@ -95,7 +96,7 @@ useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value =
           <button
             class="block max-w-summary truncate text-left text-sm font-medium text-highlighted hover:text-primary"
             :title="row.original.summary || row.original.name"
-            @click="canWrite ? edit(row.original) : undefined"
+            @click="canEditAlert(row.original.id) ? edit(row.original) : undefined"
           >
             {{ row.original.name }}
           </button>
@@ -163,7 +164,7 @@ useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value =
         <template #actions-cell="{ row }">
           <div class="flex items-center justify-end gap-space-xs">
             <UTooltip
-              v-if="canWrite"
+              v-if="canEditAlert(row.original.id)"
               text="Evaluate now"
             >
               <UButton

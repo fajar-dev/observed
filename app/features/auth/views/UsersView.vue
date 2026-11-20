@@ -5,7 +5,7 @@ import { userInputSchema } from '#shared/domain/auth'
 
 usePageSeo('Users', 'Manage team access and monitoring permissions in Observed.')
 
-const { current, users, status, loadError, busy, error, search, open, deleting, selected, form, password, filtered, edit, save, menu, remove } = useUsers()
+const { permissionsOpen, permissionsUser, current, users, status, loadError, busy, error, search, open, deleting, selected, form, password, filtered, edit, save, menu, remove } = useUsers()
 const columns: TableColumn<AuthUser>[] = [
   { accessorKey: 'name', header: 'User' }, { accessorKey: 'role', header: 'Role' }, { accessorKey: 'enabled', header: 'Status' },
   { accessorKey: 'lastSignInAt', header: 'Last sign in' },
@@ -151,6 +151,10 @@ useErrorToast(() => loadError.value || (!deleting.value ? error.value : ''))
         :disabled="selected?.id === current?.id"
       />
     </FormDialog>
+    <UserPermissionsEditor
+      v-model:open="permissionsOpen"
+      :user="permissionsUser"
+    />
     <ConfirmDeleteDialog
       v-model:open="deleting"
       :label="selected?.name || 'user'"

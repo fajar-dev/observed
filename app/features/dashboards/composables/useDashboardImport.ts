@@ -5,6 +5,7 @@ import type { DashboardDefinition, DashboardDiagnostic } from '#shared/domain/da
 export function useDashboardImport(sources: Ref<DataSource[]>, refresh: () => Promise<unknown>) {
   const router = useRouter()
   const apiRequest = useApiRequest()
+  const { refreshAccess } = useAuthentication()
   const { busy, perform, error } = useAsyncAction()
   const open = ref(false)
   const json = ref('')
@@ -72,6 +73,7 @@ export function useDashboardImport(sources: Ref<DataSource[]>, refresh: () => Pr
         throw new Error('The dashboard queries could not run. Review the errors and data source mappings before importing.')
       }
       const saved = await apiRequest<{ id: string }>('dashboards', { method: 'POST', body: dashboard })
+      await refreshAccess()
       open.value = false
       await refresh()
       await router.push(`/dashboards/${saved.id}?edit=1`)

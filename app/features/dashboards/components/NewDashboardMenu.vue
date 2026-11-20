@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { canWrite } = useAuthentication()
+const { canCreateDashboard: canWrite } = useAccessPermissions()
 const props = defineProps<{ importAction?: () => void }>()
 const items = [
   { label: 'Create new', icon: 'i-lucide-plus', to: '/dashboards/new' },

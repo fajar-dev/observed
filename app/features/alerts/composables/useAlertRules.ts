@@ -5,7 +5,8 @@ import type { AlertRulePreview, AlertRuleInput, AlertRule } from '#shared/domain
 
 function createAlertRules() {
   const apiRequest = useApiRequest()
-  const { canWrite } = useAuthentication()
+  const { refreshAccess } = useAuthentication()
+  const { canCreateAlert: canWrite, canEditAlert, canDeleteAlert } = useAccessPermissions()
   usePageSeo('Alerts', 'Configure sensor threshold rules with automatic in-app alerts and optional Telegram notifications in Observed.')
   const { data: alerts, error: loadError, status, refresh } = useAlertRuleRecords()
   const { data: sources, status: sourcesStatus, error: sourcesError } = useDataSources()
@@ -49,6 +50,7 @@ function createAlertRules() {
     await perform(async () => {
       const id = editing.value?.id
       await apiRequest(id ? 'alert-rules/' + id : 'alert-rules', { method: id ? 'PUT' : 'POST', body: alertRuleSchema.parse(form) })
+      if (!id) await refreshAccess()
       open.value = false
       await refresh()
       toast.add({ title: 'Alert rule saved', color: 'success' })
@@ -97,7 +99,7 @@ function createAlertRules() {
   }
   function menu(rule: AlertRule) {
     const muted = rule.muteUntil && Date.parse(rule.muteUntil) > Date.now()
-    if (!canWrite.value) return [{ label: 'Evaluation history', icon: 'i-lucide-history', onSelect: () => {
+    if (!canEditAlert(rule.id)) return [{ label: 'Evaluation history', icon: 'i-lucide-history', onSelect: () => {
       editing.value = rule
       historyOpen.value = true
     } }]
@@ -109,11 +111,13 @@ function createAlertRules() {
         editing.value = rule
         historyOpen.value = true
       } },
-      { label: 'Delete', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => {
-        editing.value = rule
-        error.value = ''
-        removeOpen.value = true
-      } }
+      ...(canDeleteAlert(rule)
+        ? [{ label: 'Delete', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => {
+            editing.value = rule
+            error.value = ''
+            removeOpen.value = true
+          } }]
+        : [])
     ]
   }
   watch(() => [form.query, form.field, form.threshold, form.operator, form.reducer, form.dataSourceId, form.range], () => {

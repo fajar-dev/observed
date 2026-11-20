@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { canWrite } = useAuthentication()
+const canWrite = useDashboardWriteAccess()
 const { kiosk, exitKiosk } = useDashboardKiosk()
 function handleEscape(event: KeyboardEvent) {
   if (event.key === 'Escape' && kiosk.value) {

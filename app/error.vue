@@ -3,7 +3,8 @@ import type { NuxtError } from '#app'
 
 const props = defineProps<{ error: NuxtError }>()
 const missing = computed(() => props.error.statusCode === 404)
-usePageSeo(() => missing.value ? 'Page not found' : 'Unable to load page')
+const forbidden = computed(() => props.error.statusCode === 403)
+usePageSeo(() => missing.value ? 'Page not found' : forbidden.value ? 'Access denied' : 'Unable to load page')
 </script>
 
 <template>
@@ -14,10 +15,10 @@ usePageSeo(() => missing.value ? 'Page not found' : 'Unable to load page')
           {{ error.statusCode || 500 }}
         </p>
         <h1 class="mt-space-sm text-title font-semibold tracking-tight text-highlighted">
-          {{ missing ? 'Page not found' : 'Unable to load this page' }}
+          {{ missing ? 'Page not found' : forbidden ? 'Access denied' : 'Unable to load this page' }}
         </h1>
         <p class="mt-space-sm text-sm text-muted">
-          {{ missing ? 'The page you are looking for does not exist.' : 'Please try again or return to the overview.' }}
+          {{ missing ? 'The page you are looking for does not exist.' : forbidden ? 'You do not have permission to view this page. Ask an administrator for access.' : 'Please try again or return to the overview.' }}
         </p>
         <UButton
           size="sm"

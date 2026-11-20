@@ -8,6 +8,8 @@ export function useUsers() {
   const search = ref('')
   const open = ref(false)
   const deleting = ref(false)
+  const permissionsOpen = ref(false)
+  const permissionsUser = ref<AuthUser>()
   const selected = ref<AuthUser>()
   const form = reactive<UserInput>({ name: '', email: '', role: 'viewer', enabled: true, password: undefined })
   const password = ref('')
@@ -31,10 +33,18 @@ export function useUsers() {
       password.value = ''
       if (saved.id === current.value?.id) current.value = saved
       await refresh()
+      if (!id && saved.role !== 'admin') {
+        permissionsUser.value = saved
+        permissionsOpen.value = true
+      }
     })
   }
   function menu(user: AuthUser) {
     return [
+      { label: 'Permissions', icon: 'i-lucide-shield-check', disabled: user.role === 'admin', onSelect: () => {
+        permissionsUser.value = user
+        permissionsOpen.value = true
+      } },
       { label: 'Edit', icon: 'i-lucide-pencil', onSelect: () => edit(user) },
       { label: 'Delete', icon: 'i-lucide-trash-2', color: 'error' as const, disabled: user.id === current.value?.id, onSelect: () => {
         selected.value = user
@@ -51,5 +61,5 @@ export function useUsers() {
     })
   }
 
-  return { current, users, status, loadError, refresh, busy, error, search, open, deleting, selected, form, password, filtered, edit, save, menu, remove }
+  return { permissionsOpen, permissionsUser, current, users, status, loadError, refresh, busy, error, search, open, deleting, selected, form, password, filtered, edit, save, menu, remove }
 }

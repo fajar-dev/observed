@@ -3,7 +3,8 @@ import type { Dashboard } from '#shared/domain/dashboard'
 function createDashboardLibrary() {
   const router = useRouter()
   const apiRequest = useApiRequest()
-  const { canWrite } = useAuthentication()
+  const { refreshAccess } = useAuthentication()
+  const { canCreateDashboard: canWrite, canEditDashboard, canDeleteDashboard } = useAccessPermissions()
   usePageSeo('Dashboards', 'Build and organize custom sensor dashboards for buildings, bridges, and other structures.')
   const { data: dashboards, error: loadError, status, refresh } = useDashboards()
   const { data: sources, error: sourcesError } = useDataSources()
@@ -44,6 +45,7 @@ function createDashboardLibrary() {
   async function duplicate(item: Dashboard) {
     await perform(async () => {
       const saved = await apiRequest<Dashboard>('dashboards', { method: 'POST', body: { ...item, name: (item.name + ' copy').slice(0, 120) } })
+      await refreshAccess()
       await refresh()
       await router.push('/dashboards/' + saved.id)
     })
@@ -57,19 +59,21 @@ function createDashboardLibrary() {
     })
   }
   function rowMenu(item: Dashboard) {
-    if (!canWrite.value) return [
+    if (!canEditDashboard(item.id)) return [
       { label: 'Open dashboard', icon: 'i-lucide-layout-dashboard', to: '/dashboards/' + item.id },
       { label: 'Export JSON', icon: 'i-lucide-download', onSelect: () => downloadFile(item.name + '.json', JSON.stringify(item, null, 2)) }
     ]
     return [
       { label: 'Open dashboard', icon: 'i-lucide-layout-dashboard', to: '/dashboards/' + item.id },
-      { label: 'Duplicate', icon: 'i-lucide-copy', onSelect: () => duplicate(item) },
+      ...(canWrite.value ? [{ label: 'Duplicate', icon: 'i-lucide-copy', onSelect: () => duplicate(item) }] : []),
       { label: 'Export JSON', icon: 'i-lucide-download', onSelect: () => downloadFile(item.name + '.json', JSON.stringify(item, null, 2)) },
-      { label: 'Delete', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => {
-        selected.value = item
-        error.value = ''
-        removeOpen.value = true
-      } }
+      ...(canDeleteDashboard(item)
+        ? [{ label: 'Delete', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => {
+            selected.value = item
+            error.value = ''
+            removeOpen.value = true
+          } }]
+        : [])
     ]
   }
   return { dashboards, loadError, status, refresh, sources, sourcesError, busy, perform, error, importer, filter, folder, view, sort, tag, folderOpen, folderName, removeOpen, selected, folders, refreshFolders, allTags, folderNames, route, filtered, createFolder, duplicate, remove, rowMenu, startImport: importer.startImport }

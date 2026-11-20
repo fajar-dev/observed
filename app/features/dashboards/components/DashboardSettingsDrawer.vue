@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { isNew, sources, folders, busy, error, toast, draft, original, editing, range, settings, settingsTab, removeOpen, tagText, jsonDocument, versionLoading, versions, settingsError, variableTypes, save, addVariable, updateVariable, exportDashboard, applyJson, cloneValue } = useDashboardEditor()
+const { data: sources } = useDataSources()
+const { canDeleteDashboard } = useAccessPermissions()
+const { isNew, folders, busy, error, toast, draft, original, editing, range, settings, settingsTab, removeOpen, tagText, jsonDocument, versionLoading, versions, settingsError, variableTypes, save, addVariable, updateVariable, exportDashboard, applyJson, cloneValue } = useDashboardEditor()
 useErrorToast(() => settings.value ? error.value || settingsError.value : '')
 </script>
 
@@ -64,7 +66,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
             @click="draft.range = range; toast.add({ title: 'Default time range updated' })"
           />
           <div
-            v-if="!isNew"
+            v-if="!isNew && original && canDeleteDashboard(original)"
             class="border-t border-default pt-space-lg"
           >
             <UButton

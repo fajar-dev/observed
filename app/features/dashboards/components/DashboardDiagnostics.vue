@@ -2,6 +2,7 @@
 import type { Dashboard, DashboardDiagnostic, DashboardDefinition } from '#shared/domain/dashboard'
 
 const apiRequest = useApiRequest()
+const { canEditDashboard } = useAccessPermissions()
 
 const props = defineProps<{ dashboard: DashboardDefinition & { id: string } }>()
 const open = defineModel<boolean>('open', { required: true })
@@ -104,7 +105,7 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
           </div>
         </template>
         <section
-          v-if="dashboard.importMetadata?.sourceDocument"
+          v-if="dashboard.importMetadata?.sourceDocument && canEditDashboard(dashboard.id)"
           class="surface space-y-space-lg p-space-lg"
         >
           <h2 class="font-semibold text-highlighted">

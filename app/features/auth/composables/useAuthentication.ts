@@ -42,6 +42,10 @@ export function useAuthentication() {
     clearNuxtData()
     await router.push('/sign-in')
   }
+  async function refreshAccess() {
+    const current = await apiRequest<AuthUser>('auth/me')
+    if (current?.id === user.value?.id) user.value = current
+  }
   const configuration = () => apiRequest<AuthConfiguration>('auth/config')
-  return { user, initialized, isAdmin, canWrite, initialize, signIn, setup, signOut, configuration }
+  return { user, initialized, isAdmin, canWrite, initialize, signIn, setup, signOut, refreshAccess, configuration }
 }

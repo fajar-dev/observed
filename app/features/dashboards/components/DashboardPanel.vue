@@ -4,7 +4,7 @@ import type { Panel } from '#shared/domain/panel'
 import type { QueryRequest } from '#shared/domain/query'
 
 const props = defineProps<{ panel: Panel, sections?: import('#shared/domain/dashboard').DashboardSection[], sectionId?: string | null, draggable?: boolean, range: QueryRequest['range'], from?: string, to?: string, variables?: import('#shared/domain/variable').VariableValues, refresh: number, editing: boolean, kiosk?: boolean }>()
-const { canWrite } = useAuthentication()
+const canWrite = useDashboardWriteAccess()
 const emit = defineEmits<{ edit: [], remove: [], duplicate: [], move: [sectionId: string | null] }>()
 const { results, failures, loading, run } = useQueryRunner()
 const inspector = ref(false)

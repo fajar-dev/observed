@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { canWrite } = useAuthentication()
+const canWrite = useDashboardWriteAccess()
 const { kiosk, enterKiosk, exitKiosk } = useDashboardKiosk()
 const { draft, editing, dirty, busy, refreshKey, range, from, to, refreshOptions, editPanel, editSection, compactLayout, openSettings, save, discard, healthOpen, exportDashboard } = useDashboardEditor()
 const addItems = computed(() => [

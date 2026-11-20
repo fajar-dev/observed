@@ -6,7 +6,8 @@ import type { Dashboard, DashboardDefinition } from '#shared/domain/dashboard'
 function createDashboardEditor() {
   const router = useRouter()
   const apiRequest = useApiRequest()
-  const { canWrite } = useAuthentication()
+  const { refreshAccess } = useAuthentication()
+  const canWrite = useDashboardWriteAccess()
   const route = useRoute()
   const { kiosk } = useDashboardKiosk()
   const id = String(route.params.id)
@@ -53,6 +54,7 @@ function createDashboardEditor() {
       const parsed = dashboardSchema.safeParse(draft.value)
       if (!parsed.success) throw new Error(parsed.error.issues.map(issue => `${issue.path.join('.')} · ${issue.message}`).join('\n'))
       const saved = await apiRequest<Dashboard>(isNew ? 'dashboards' : 'dashboards/' + id, { method: isNew ? 'POST' : 'PUT', body: parsed.data })
+      if (isNew) await refreshAccess()
       setDashboard(saved)
       editing.value = false
       settings.value = false

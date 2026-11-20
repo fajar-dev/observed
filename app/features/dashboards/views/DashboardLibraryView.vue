@@ -2,7 +2,8 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { Dashboard } from '#shared/domain/dashboard'
 
-const { canWrite } = useAuthentication()
+const { canCreateDashboard: canWrite } = useAccessPermissions()
+const { isAdmin } = useAuthentication()
 const { dashboards, loadError, status, busy, error, importer, filter, folder, view, sort, tag, folderOpen, folderName, removeOpen, selected, folderNames, allTags, filtered, startImport, rowMenu, createFolder, remove } = provideDashboardLibrary()
 const { open } = importer
 const columns: TableColumn<Dashboard>[] = [{ accessorKey: 'name', header: 'Name' }, { accessorKey: 'folder', header: 'Folder' }, { accessorKey: 'tags', header: 'Tags' }, { accessorKey: 'updatedAt', header: 'Updated' }, { id: 'actions', header: 'Actions', meta: { class: { th: 'w-control-md text-right', td: 'w-control-md text-right' } } }]
@@ -18,7 +19,7 @@ useErrorToast(() => loadError.value || (!open.value && !removeOpen.value ? error
   >
     <template #actions>
       <UButton
-        v-if="canWrite"
+        v-if="isAdmin"
         size="sm"
         label="New folder"
         icon="i-lucide-folder-plus"

@@ -65,6 +65,7 @@ export async function exerciseSensorAlertFlow(browser) {
     await entries.first().waitFor()
     assert.equal(await entries.count(), 2)
     await entries.first().getByRole('button', { name: 'Mark as read', exact: true }).click()
+    await entries.first().getByRole('button', { name: 'Mark as read', exact: true }).waitFor({ state: 'hidden' })
     const read = await api('notifications', undefined, 'GET')
     assert.equal(read.items.filter(item => item.alertRuleId === rule.id && item.readAt).length, 1)
     assert.deepEqual(errors, [])

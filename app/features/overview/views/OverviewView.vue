@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { canWrite, isAdmin } = useAuthentication()
+const { isAdmin } = useAuthentication()
+const { canCreateDashboard: canWrite, canViewDashboards, canViewAlerts } = useAccessPermissions()
 usePageSeo('Overview', 'Review sensor dashboards, structural trends, and configured threshold alerts in Observed.')
 const { data: sources, error: sourcesError } = useDataSources()
 const { data: dashboards, error: dashboardsError, status } = useDashboards()
@@ -8,9 +9,9 @@ const { data: destinations, error: destinationsError } = useTelegramDestinations
 const firing = computed(() => alerts.value.filter(rule => rule.enabled && rule.evaluation?.state === 'firing'))
 const recent = computed(() => [...dashboards.value].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 6))
 const summaries = computed(() => [
-  { title: 'Data sources', count: sources.value.length, to: isAdmin.value ? '/configuration' : '/dashboards', icon: 'i-lucide-database' },
-  { title: 'Dashboards', count: dashboards.value.length, to: '/dashboards', icon: 'i-lucide-panels-top-left' },
-  { title: 'Firing alerts', count: firing.value.length, to: '/alerts', icon: 'i-lucide-bell-ring' }
+  ...(isAdmin.value || canViewDashboards.value || canViewAlerts.value ? [{ title: 'Data sources', count: sources.value.length, to: isAdmin.value ? '/configuration' : canViewDashboards.value ? '/dashboards' : '/alerts', icon: 'i-lucide-database' }] : []),
+  ...(canViewDashboards.value ? [{ title: 'Dashboards', count: dashboards.value.length, to: '/dashboards', icon: 'i-lucide-panels-top-left' }] : []),
+  ...(canViewAlerts.value ? [{ title: 'Firing alerts', count: firing.value.length, to: '/alerts', icon: 'i-lucide-bell-ring' }] : [])
 ])
 useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.value || destinationsError.value, 'Could not load overview')
 </script>
@@ -41,8 +42,18 @@ useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.v
         variant="ghost"
       />
     </div>
+    <UEmpty
+      v-if="!canViewDashboards && !canViewAlerts"
+      title="No monitoring access assigned"
+      description="Ask an administrator to grant access to your sensor dashboards and alert rules."
+      icon="i-lucide-shield"
+      variant="naked"
+    />
     <div class="grid min-w-none items-start gap-space-lg xl:grid-cols-overview">
-      <ContentPanel list>
+      <ContentPanel
+        v-if="canViewDashboards"
+        list
+      >
         <template #header>
           <h2 class="text-sm font-semibold text-highlighted">
             Recent dashboards
@@ -88,7 +99,10 @@ useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.v
           <span class="shrink-none text-xs text-dimmed">{{ new Date(dashboard.updatedAt).toLocaleDateString() }}</span>
         </NuxtLink>
       </ContentPanel>
-      <ContentPanel list>
+      <ContentPanel
+        v-if="canViewAlerts"
+        list
+      >
         <template #header>
           <h2 class="text-sm font-semibold text-highlighted">
             Alerts
