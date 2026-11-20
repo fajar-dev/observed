@@ -28,6 +28,8 @@
   --spacing-gauge-item: 8rem;
   --spacing-placeholder: 20rem;
   --spacing-popover: 20rem;
+  --spacing-notification-panel: min(var(--spacing-summary), calc(100vw - var(--spacing-space-xl)));
+  --spacing-notification-list: min(var(--spacing-drawer), 60dvh);
   --spacing-content: 64rem;
   --spacing-drawer: 36rem;
   --spacing-modal: 32rem;

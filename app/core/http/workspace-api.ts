@@ -1,6 +1,6 @@
 import { apiErrorStatus } from './api-error'
 
-export type RequestOptions = { method?: 'GET' | 'POST' | 'PUT' | 'DELETE', body?: Record<string, unknown>, signal?: AbortSignal }
+export type RequestOptions = { method?: 'GET' | 'POST' | 'PUT' | 'DELETE', body?: Record<string, unknown>, signal?: AbortSignal, responseType?: 'stream' }
 export type ApiFetcher = <T>(path: string, options?: RequestOptions) => Promise<T>
 const publicAuthPaths = new Set(['auth/session', 'auth/config', 'auth/refresh', 'auth/sign-in', 'auth/setup', 'auth/sign-out'])
 

@@ -2,8 +2,6 @@
 const items = useAppBreadcrumb()
 const navigation = useAppNavigation()
 const { data: dashboards } = useDashboards()
-const { data: alerts } = useAlertRuleRecords()
-const firing = computed(() => alerts.value.filter(rule => rule.enabled && rule.evaluation?.state === 'firing').length)
 const groups = computed(() => [
   { id: 'pages', label: 'Monitoring', items: navigation.value.map(item => ({ label: item.label, to: item.to, icon: item.icon })) },
   { id: 'dashboards', label: 'Dashboards', items: dashboards.value.map(item => ({ label: item.name, to: '/dashboards/' + item.id, icon: 'i-lucide-panels-top-left' })) }
@@ -38,15 +36,7 @@ const groups = computed(() => [
         collapsed
         class="md:hidden"
       />
-      <UButton
-        v-if="firing"
-        :label="String(firing)"
-        to="/alerts"
-        icon="i-lucide-bell-ring"
-        aria-label="Firing alerts"
-        color="error"
-        variant="subtle"
-      />
+      <AlertNotificationMenu />
       <AccountMenu />
     </template>
   </UDashboardNavbar>
