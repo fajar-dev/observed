@@ -2,6 +2,7 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 
 export function useAppNavigation() {
   const { isAdmin } = useAuthentication()
+  const route = useRoute()
   return computed<NavigationMenuItem[]>(() => [
     { label: 'Overview', icon: 'i-lucide-house', to: '/', exact: true },
     { label: 'Dashboards', icon: 'i-lucide-layout-dashboard', to: '/dashboards' },
@@ -12,5 +13,8 @@ export function useAppNavigation() {
           { label: 'Users', icon: 'i-lucide-users', to: '/users' }
         ]
       : [])
-  ])
+  ].map(item => ({
+    ...item,
+    active: route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to + '/'))
+  })))
 }
