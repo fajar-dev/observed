@@ -30,4 +30,4 @@ export type AlertEvaluation = { state: AlertState, value: number | null, time: s
 
 export type AlertRulePreview = AlertEvaluation & { queryResult: QueryResponse }
 
-export type AlertRule = AlertRuleInput & { id: string, evaluation?: AlertEvaluation, notifiedDestinations?: string[], notificationFiring?: boolean, pendingSince?: string | null, evaluationHistory?: AlertEvaluation[] }
+export type AlertRule = AlertRuleInput & { id: string, createdBy?: string, evaluation?: AlertEvaluation, notifiedDestinations?: string[], notificationFiring?: boolean, pendingSince?: string | null, evaluationHistory?: AlertEvaluation[] }

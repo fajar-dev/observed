@@ -11,9 +11,10 @@ import type { DatabaseRow } from './resource-mapping'
 export class PostgresWorkspaceRepository implements WorkspaceRepository {
   constructor(private readonly database: PostgresDatabase) {}
 
-  async list<K extends Resource>(resource: K) {
+  async list<K extends Resource>(resource: K, ids?: string[]) {
+    if (ids?.length === 0) return []
     const mapping = resourceMappings[resource]
-    const { rows } = await this.database.query<DatabaseRow>(`SELECT * FROM observe.${mapping.table} ORDER BY updated_at DESC,id`)
+    const { rows } = await this.database.query<DatabaseRow>(`SELECT * FROM observe.${mapping.table}${ids ? ' WHERE id=ANY($1::uuid[])' : ''} ORDER BY updated_at DESC,id`, ids ? [ids] : undefined)
     return rows.map(row => decodeResource<ResourceValues[K]>(mapping, row))
   }
 
@@ -66,8 +67,27 @@ export class PostgresWorkspaceRepository implements WorkspaceRepository {
     }
   }
 
-  create<K extends Resource>(resource: K, value: ResourceValues[K]) {
-    return this.database.transaction(client => this.write(client, resource, randomUUID(), value, true))
+  create<K extends Resource>(resource: K, value: ResourceValues[K], creatorId?: string) {
+    return this.database.transaction(async (client) => {
+      const owned = creatorId && (resource === 'dashboards' || resource === 'alertRules')
+      if (owned) {
+        await client.query('SELECT pg_advisory_xact_lock(hashtextextended(\'observe:users\',0))')
+        const { rows } = await client.query('SELECT role FROM observe.users WHERE id=$1 AND enabled', [creatorId])
+        if (!rows[0] || !['admin', 'editor'].includes(rows[0].role)) throw new WorkspaceError({ statusCode: 403, statusMessage: 'Only administrators and editors can create monitoring resources' })
+      }
+      const saved = await this.write(client, resource, randomUUID(), value, true)
+      if (owned) {
+        await client.query(`UPDATE observe.${resourceMappings[resource].table} SET created_by=$2 WHERE id=$1`, [saved.id, creatorId])
+        const dashboard = resource === 'dashboards'
+        const scope = dashboard ? 'dashboard_scope' : 'alert_scope'
+        await client.query(`INSERT INTO observe.user_access(user_id,${scope}) VALUES($1,'selected') ON CONFLICT(user_id) DO UPDATE SET ${scope}=CASE WHEN observe.user_access.${scope}='none' THEN 'selected' ELSE observe.user_access.${scope} END`, [creatorId])
+        const table = dashboard ? 'user_dashboard_permissions' : 'user_alert_permissions'
+        const column = dashboard ? 'dashboard_id' : 'alert_rule_id'
+        await client.query(`INSERT INTO observe.${table}(user_id,${column},access) VALUES($1,$2,'edit')`, [creatorId, saved.id])
+        return { ...saved, createdBy: creatorId }
+      }
+      return saved
+    })
   }
 
   update<K extends Resource>(resource: K, id: string, patch: Partial<ResourceValues[K]>, remove: string[] = []) {

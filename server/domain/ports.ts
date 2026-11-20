@@ -10,10 +10,10 @@ import type { Resource, ResourceValues, StoredEntity, DashboardVersion } from '.
 export type { Resource, ResourceValues, StoredEntity } from './workspace-entities'
 
 export interface WorkspaceRepository {
-  list<K extends Resource>(resource: K): Promise<StoredEntity<ResourceValues[K]>[]>
+  list<K extends Resource>(resource: K, ids?: string[]): Promise<StoredEntity<ResourceValues[K]>[]>
   find<K extends Resource>(resource: K, id: string): Promise<StoredEntity<ResourceValues[K]> | undefined>
   get<K extends Resource>(resource: K, id: string): Promise<StoredEntity<ResourceValues[K]>>
-  create<K extends Resource>(resource: K, value: ResourceValues[K]): Promise<StoredEntity<ResourceValues[K]>>
+  create<K extends Resource>(resource: K, value: ResourceValues[K], creatorId?: string): Promise<StoredEntity<ResourceValues[K]>>
   update<K extends Resource>(resource: K, id: string, patch: Partial<ResourceValues[K]>, remove?: string[]): Promise<StoredEntity<ResourceValues[K]>>
   saveAlertEvaluation(id: string, patch: Partial<ResourceValues['alertRules']>, notification?: AlertNotificationInput): Promise<void>
   delete(resource: Resource, id: string): Promise<void>

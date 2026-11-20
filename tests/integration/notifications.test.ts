@@ -20,6 +20,7 @@ test('PostgreSQL notifications persist transitions atomically with per-user read
     await database.ready()
     const users = [randomUUID(), randomUUID()]
     for (const id of users) await pool.query('INSERT INTO observe.users(id,email,name,role,enabled) VALUES($1,$2,\'Engineer\',\'viewer\',true)', [id, id + '@example.test'])
+    for (const id of users) await pool.query('INSERT INTO observe.user_access(user_id,alert_scope) VALUES($1,\'all\')', [id])
     const store = new PostgresWorkspaceRepository(database)
     const source = await store.create('dataSources', { name: 'Bridge sensors', url: 'http://influx.example.test', queryLanguage: 'flux', organization: 'sensors', database: 'bridge', username: '' })
     let value = 0.7

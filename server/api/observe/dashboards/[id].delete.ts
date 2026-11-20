@@ -1,5 +1,10 @@
+import { requirePrincipal } from '~~/server/http/authentication'
 import { defineWorkspaceHandler } from '~~/server/http/workspace-handler'
 import { getWorkspace } from '~~/server/bootstrap/workspace'
 import { resourceId } from '~~/server/http/request-validation'
 
-export default defineWorkspaceHandler(async event => getWorkspace().dashboards.delete(resourceId(event)))
+export default defineWorkspaceHandler(async (event) => {
+  const id = resourceId(event)
+  await getWorkspace().permissions.assertDelete(requirePrincipal(event).user, 'dashboards', id)
+  return getWorkspace().dashboards.delete(id)
+})

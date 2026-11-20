@@ -9,11 +9,13 @@ import { formatAlertNotification } from './format-alert-notification'
 export class AlertService {
   constructor(private readonly repository: WorkspaceRepository, private readonly dataSources: DataSourceAccess, private readonly telegram: TelegramAccess, private readonly clock: Clock) {}
 
-  async saveAlert(input: AlertRuleInput, id?: string) {
+  get(id: string) { return this.repository.get('alertRules', id) }
+
+  async saveAlert(input: AlertRuleInput, id?: string, creatorId?: string) {
     await this.dataSources.validateSources([input.dataSourceId])
     const destinations = new Set((await this.telegram.list()).map(destination => destination.id))
     if (input.telegramDestinationIds.some(id => !destinations.has(id))) throw new WorkspaceError({ statusCode: 422, statusMessage: 'Select existing Telegram destinations' })
-    if (!id) return this.repository.create('alertRules', input)
+    if (!id) return this.repository.create('alertRules', input, creatorId)
     const result = await this.repository.withLock('alert:' + id, async () => {
       const previous = await this.repository.get('alertRules', id)
       const changed = ['query', 'dataSourceId', 'range', 'field', 'reducer', 'operator', 'threshold', 'pendingFor']

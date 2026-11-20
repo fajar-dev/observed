@@ -24,13 +24,13 @@ export const resourceMappings: Record<Resource, ResourceMapping> = {
 }
 export type DatabaseRow = { id: string, created_at: Date, updated_at: Date, [column: string]: unknown }
 
-export function decodeResource<T>(mapping: ResourceMapping, row: DatabaseRow): T & { id: string, updatedAt: string } {
+export function decodeResource<T>(mapping: ResourceMapping, row: DatabaseRow): T & { id: string, updatedAt: string, createdBy?: string } {
   const value: Record<string, unknown> = { ...(mapping.payload ? row[mapping.payload] as object : {}), ...(mapping.runtime ? row.runtime as object : {}) }
   for (const [property, field] of Object.entries(mapping.fields)) {
     const stored = row[field.column] ?? field.fallback
     if (stored !== undefined && stored !== null) value[property] = stored
   }
-  return { ...value, id: row.id, updatedAt: row.updated_at.toISOString() } as T & { id: string, updatedAt: string }
+  return { ...value, ...(typeof row.created_by === 'string' ? { createdBy: row.created_by } : {}), id: row.id, updatedAt: row.updated_at.toISOString() } as T & { id: string, updatedAt: string, createdBy?: string }
 }
 
 export function encodeResource(mapping: ResourceMapping, value: object) {
@@ -40,7 +40,7 @@ export function encodeResource(mapping: ResourceMapping, value: object) {
     row[field.column] = input[property] ?? field.fallback ?? null
     if (field.column === 'folder_name' && !input[property]) row[field.column] = null
   }
-  const omitted = new Set(['id', 'updatedAt', 'createdAt', ...Object.keys(mapping.fields), ...(mapping.runtime ?? [])])
+  const omitted = new Set(['id', 'updatedAt', 'createdAt', 'createdBy', ...Object.keys(mapping.fields), ...(mapping.runtime ?? [])])
   if (mapping.payload) row[mapping.payload] = Object.fromEntries(Object.entries(input).filter(([key]) => !omitted.has(key)))
   if (mapping.runtime) row.runtime = Object.fromEntries(mapping.runtime.filter(key => input[key] !== undefined).map(key => [key, input[key]]))
   return row

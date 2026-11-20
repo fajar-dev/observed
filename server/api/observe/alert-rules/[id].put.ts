@@ -3,4 +3,7 @@ import { getWorkspace } from '~~/server/bootstrap/workspace'
 import { resourceId, validateBody } from '~~/server/http/request-validation'
 import { alertRuleSchema } from '#shared/domain/alert-rule'
 
-export default defineWorkspaceHandler(async event => getWorkspace().alerts.saveAlert(await validateBody(event, alertRuleSchema), resourceId(event)))
+export default defineWorkspaceHandler(async (event) => {
+  const input = await validateBody(event, alertRuleSchema)
+  return getWorkspace().alerts.saveAlert(input, resourceId(event))
+})

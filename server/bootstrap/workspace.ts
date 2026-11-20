@@ -1,9 +1,11 @@
+import { PermissionService } from '~~/server/features/permissions/application/permission.service'
+import { PostgresPermissionRepository } from '~~/server/features/permissions/infrastructure/permission.repository'
 import { NotificationService } from '~~/server/features/notifications/application/notification.service'
 import { PostgresNotificationRepository } from '~~/server/features/notifications/infrastructure/notification.repository'
 import { readWorkspaceConfiguration } from './configuration'
 import type { WorkspaceConfiguration } from './configuration'
-import { VariableResolver } from '~~/server/features/queries/application/variable-resolver'
 import { DashboardDiagnostics } from '~~/server/features/dashboards/application/dashboard-diagnostics'
+import { VariableResolver } from '~~/server/features/queries/application/variable-resolver'
 import { PostgresDatabase } from '~~/server/platform/database/database'
 import { AuthService } from '~~/server/features/auth/application/auth.service'
 import { PostgresAuthenticationRepository } from '~~/server/features/auth/infrastructure/authentication.repository'
@@ -32,10 +34,11 @@ export function createWorkspace(configuration: WorkspaceConfiguration) {
   const dashboards = new DashboardService(repository, dataSources, new DashboardJsonImporter(), variables, diagnostics)
   const notifications = new NotificationService(new PostgresNotificationRepository(database))
   const alerts = new AlertService(repository, dataSources, telegram, new SystemClock())
+  const permissions = new PermissionService(new PostgresPermissionRepository(database), repository)
   const authenticationRepository = new PostgresAuthenticationRepository(database)
-  const auth = new AuthService(authenticationRepository, new ScryptPasswordHasher(), new JwtAccessTokens(configuration.secretKey), configuration.allowOAuthSignup)
+  const auth = new AuthService(authenticationRepository, new ScryptPasswordHasher(), new JwtAccessTokens(configuration.secretKey), configuration.allowOAuthSignup, permissions)
   const oidc = new OidcProviders(configuration.environment)
-  return { database, dataSources, telegram, dashboards, alerts, notifications, auth, oidc, vault }
+  return { database, dataSources, telegram, dashboards, alerts, notifications, permissions, auth, oidc, vault }
 }
 export type Workspace = ReturnType<typeof createWorkspace>
 let workspace: Workspace | undefined

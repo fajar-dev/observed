@@ -25,5 +25,6 @@ export default defineWorkspaceHandler(async (event) => {
   if (!token) throw createError({ statusCode: 401, statusMessage: 'Authentication required' })
   const principal = await getWorkspace().auth.authenticate(token)
   if (!isAllowed(principal.user.role, path, method)) throw createError({ statusCode: 403, statusMessage: 'You do not have permission to perform this action' })
+  getWorkspace().permissions.assertRoute(principal.user, path, method)
   event.context.principal = principal
 })

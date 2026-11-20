@@ -14,4 +14,4 @@ export type ResourceValues = {
   alertRules: Omit<AlertRule, 'id'>
 }
 export type Resource = keyof ResourceValues
-export type StoredEntity<T> = T & { id: string, updatedAt: string }
+export type StoredEntity<T> = T & { id: string, updatedAt: string, createdBy?: string }

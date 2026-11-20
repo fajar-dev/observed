@@ -30,7 +30,7 @@ export const dashboardSchema = z.object({
 
 export type DashboardDefinition = z.infer<typeof dashboardSchema>
 
-export type Dashboard = DashboardDefinition & { id: string, updatedAt: string }
+export type Dashboard = DashboardDefinition & { id: string, updatedAt: string, createdBy?: string }
 
 export const folderSchema = z.object({ name })
 

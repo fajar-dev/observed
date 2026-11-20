@@ -13,7 +13,7 @@ export default defineWorkspaceHandler((event) => {
   const token = accessToken(event)!
   const services = getWorkspace()
   const encoder = new TextEncoder()
-  let closed = false, running = false, signature = '', lastAuthenticated = 0
+  let closed = false, running = false, signature = ''
   let controller: ReadableStreamDefaultController<Uint8Array>
   setResponseHeaders(event, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store, no-transform', 'X-Accel-Buffering': 'no' })
   function stop() {
@@ -29,10 +29,8 @@ export default defineWorkspaceHandler((event) => {
     if (closed || running || (controller.desiredSize ?? 0) <= 0) return
     running = true
     try {
-      if (Date.now() - lastAuthenticated >= 15_000) {
-        await services.auth.authenticate(token)
-        lastAuthenticated = Date.now()
-      }
+      const principal = await services.auth.authenticate(token)
+      services.permissions.assertRoute(principal.user, 'notifications/stream', 'GET')
       const update = await services.notifications.update(userId, cursor)
       if (closed) return
       const next = JSON.stringify(update)

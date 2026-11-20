@@ -39,11 +39,11 @@ export class DashboardService {
     return this.saveDashboard(repaired, id)
   }
 
-  async saveDashboard(dashboard: DashboardDefinition, id?: string) {
+  async saveDashboard(dashboard: DashboardDefinition, id?: string, creatorId?: string) {
     await this.dataSources.validateSources([...dashboard.panels.flatMap(panel => panel.dataSourceId ? [panel.dataSourceId] : []), ...(dashboard.variables ?? []).flatMap(variable => variable.dataSourceId ? [variable.dataSourceId] : [])])
     return id
       ? this.repository.saveDashboard(id, dashboard)
-      : this.repository.create('dashboards', { ...dashboard, revision: 1 })
+      : this.repository.create('dashboards', { ...dashboard, revision: 1 }, creatorId)
   }
 
   async importDashboard(input: { dataSourceId: string | null, document: unknown }) {
@@ -65,7 +65,6 @@ export class DashboardService {
     }
   }
 
-  list() { return this.repository.list('dashboards') }
   get(id: string) { return this.repository.get('dashboards', id) }
   delete(id: string) { return this.repository.delete('dashboards', id) }
   async versions(id: string) {

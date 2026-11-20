@@ -1,8 +1,9 @@
+import type { UserPermissions } from './permissions'
 import { z } from 'zod'
 
 export const roles = ['admin', 'editor', 'viewer'] as const
 export type Role = typeof roles[number]
-export type AuthUser = { id: string, email: string, name: string, role: Role, enabled: boolean, hasPassword: boolean, createdAt: string, lastSignInAt: string | null }
+export type AuthUser = { permissions?: UserPermissions, id: string, email: string, name: string, role: Role, enabled: boolean, hasPassword: boolean, createdAt: string, lastSignInAt: string | null }
 export type AuthSession = { id: string, createdAt: string, expiresAt: string, current: boolean, userAgent: string }
 export type AuthProvider = 'google' | 'microsoft'
 export type AuthConfiguration = { setupRequired: boolean, providers: AuthProvider[] }

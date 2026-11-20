@@ -1,5 +1,7 @@
+import { defaultPermissions } from '#shared/domain/permissions'
+import type { UserPermissions } from '#shared/domain/permissions'
+import type { AuthUser, AuthProvider, UserInput } from '#shared/domain/auth'
 import { createHash, randomBytes } from 'node:crypto'
-import type { AuthProvider, UserInput } from '#shared/domain/auth'
 import type { AccessTokens, AuthenticationRepository, PasswordHasher, SessionRecord } from '~~/server/features/auth/domain/authentication.ports'
 import { WorkspaceError } from '~~/server/domain/workspace-error'
 
@@ -8,7 +10,11 @@ const unauthorized = () => new WorkspaceError({ statusCode: 401, statusMessage: 
 
 export class AuthService {
   private dummyHash?: Promise<string>
-  constructor(private readonly repository: AuthenticationRepository, private readonly passwords: PasswordHasher, private readonly tokens: AccessTokens, private readonly allowOAuthSignup = false) {}
+  constructor(private readonly repository: AuthenticationRepository, private readonly passwords: PasswordHasher, private readonly tokens: AccessTokens, private readonly allowOAuthSignup = false, private readonly permissions?: { forUser(user: AuthUser): Promise<UserPermissions> }) {}
+
+  private async withPermissions(user: AuthUser): Promise<AuthUser> {
+    return { ...user, permissions: this.permissions ? await this.permissions.forUser(user) : defaultPermissions(user.role === 'admin') }
+  }
 
   async configuration(providers: AuthProvider[]) {
     return { setupRequired: !await this.repository.isSetupComplete(), providers }
@@ -38,7 +44,7 @@ export class AuthService {
   }
 
   private async credentials(record: SessionRecord, refreshToken: string) {
-    return { ...record, accessToken: await this.tokens.issue(record.user.id, record.sessionId), refreshToken }
+    return { ...record, user: await this.withPermissions(record.user), accessToken: await this.tokens.issue(record.user.id, record.sessionId), refreshToken }
   }
 
   async createSession(userId: string, userAgent: string) {
@@ -63,7 +69,7 @@ export class AuthService {
     }
     const user = await this.repository.sessionUser(claims.userId, claims.sessionId)
     if (!user) throw unauthorized()
-    return { user, sessionId: claims.sessionId }
+    return { user: await this.withPermissions(user), sessionId: claims.sessionId }
   }
 
   async signOut(refreshToken?: string) {
@@ -85,7 +91,7 @@ export class AuthService {
       }
       expectedHash = user.passwordHash
     }
-    return this.repository.updateProfile(userId, input.name, input.password ? await this.passwords.hash(input.password) : undefined, expectedHash)
+    return this.withPermissions(await this.repository.updateProfile(userId, input.name, input.password ? await this.passwords.hash(input.password) : undefined, expectedHash))
   }
 
   listUsers() { return this.repository.listUsers() }
