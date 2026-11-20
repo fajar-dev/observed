@@ -23,7 +23,7 @@ export default defineAppConfig({
     pageHeader: { slots: { root: 'border-none py-space-sm', title: 'font-heading text-title sm:text-title font-semibold tracking-tight', description: 'mt-space-sm text-sm sm:text-sm leading-relaxed text-muted', links: 'flex flex-wrap items-center gap-space-sm' } },
     modal: { slots: { content: 'rounded-xl shadow-xl', header: 'p-space-xl', body: 'p-space-xl sm:p-space-xl', footer: 'justify-end gap-space-sm p-space-lg sm:p-space-lg', title: 'font-heading text-heading font-semibold', description: 'mt-space-xs text-sm text-muted' } },
     slideover: { slots: { header: 'p-space-xl', body: 'p-space-xl sm:p-space-xl', footer: 'justify-end gap-space-sm p-space-lg sm:p-space-lg', title: 'font-heading text-heading font-semibold', description: 'mt-space-xs text-sm text-muted' } },
-    tabs: { variants: { orientation: { horizontal: { list: 'w-fit max-w-full' } } }, slots: { root: 'items-start', list: 'w-fit max-w-full rounded-lg p-space-xs', trigger: 'rounded-md px-space-lg py-space-sm text-sm font-medium', indicator: 'rounded-md' }, defaultVariants: { size: 'md' } },
+    tabs: { variants: { orientation: { horizontal: { list: 'w-full max-w-full' } } }, slots: { root: 'min-w-none max-w-full items-start', list: 'w-full max-w-full rounded-none p-none', trigger: 'rounded-none px-space-md py-space-sm text-sm font-medium sm:px-space-lg', indicator: 'rounded-none' }, defaultVariants: { size: 'md', variant: 'link' } },
     popover: { slots: { content: 'rounded-lg' } },
     empty: { slots: { root: 'rounded-xl p-space-xxl', title: 'font-heading text-heading font-semibold', description: 'text-sm leading-relaxed text-muted' } },
     toast: { slots: {

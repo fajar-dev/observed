@@ -132,7 +132,7 @@ Frontend controllers are organized by feature. Shared HTTP transport, renewal, r
 
 ## UI conventions
 
-Use Nuxt UI components and their semantic `xs`, `sm`, `md`, `lg`, `xl` size props. Shared component themes live in `app/app.config.ts`. Pages use `WorkspacePage`; fields use `UFormField`; forms, tables, tabs, cards, charts and dialogs use Nuxt UI. Charts use `UChart` with TanStack definitions for field colors, named secondary axes and unit formatting. Custom renderers are limited to visualization-specific gauges, statistics and the dashboard grid.
+Use Nuxt UI components and their semantic `xs`, `sm`, `md`, `lg`, `xl` size props. Shared component themes live in `app/app.config.ts`. All tabs inherit the same underline variant, text size, spacing and active-state colors from that theme; individual pages do not define separate pill or underline styles. Pages use `WorkspacePage`; fields use `UFormField`; forms, tables, tabs, cards, charts and dialogs use Nuxt UI. Charts use `UChart` with TanStack definitions for field colors, named secondary axes and unit formatting. Custom renderers are limited to visualization-specific gauges, statistics and the dashboard grid.
 
 Spacing uses `space-xs`, `space-sm`, `space-md`, `space-lg`, `space-xl`, `space-xxl`, `space-section` and `space-page`. Role sizes include `control-md`, `icon-md`, `field`, `drawer`, `modal` and `chart`. Values are centralized in `app/assets/styles/tokens.css`; avoid numeric or arbitrary utility classes. The local `semantic-ui/semantic-sizes` ESLint rule enforces this convention. Do not override Tailwind container namespaces with spacing tokens: Nuxt UI uses those for overlay widths.
 

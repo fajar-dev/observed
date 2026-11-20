@@ -12,8 +12,6 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
     <template #body>
       <UTabs
         v-model="settingsTab"
-        variant="link"
-        :ui="{ list: 'content-tabs-list' }"
         :content="false"
         :items="[{ label: 'General', value: 'general' }, { label: 'Variables', value: 'variables' }, { label: 'Versions', value: 'versions' }, { label: 'JSON', value: 'json' }]"
       />

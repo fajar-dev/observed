@@ -25,7 +25,6 @@ useErrorToast(error, 'Could not load query fields')
         v-model="mode"
         :items="[{ label: 'Builder', value: 'builder' }, { label: 'Code', value: 'code' }]"
         :content="false"
-        size="xs"
       />
     </div>
     <template v-if="mode === 'builder' && builder && source">

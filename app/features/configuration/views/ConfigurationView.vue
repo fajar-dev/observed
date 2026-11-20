@@ -41,8 +41,6 @@ useErrorToast(loadError, 'Could not load configuration')
     </template>
     <UTabs
       v-model="tab"
-      variant="link"
-      :ui="{ list: 'content-tabs-list' }"
       :items="[{ label: 'Data sources', value: 'data-sources', icon: 'i-lucide-database' }, { label: 'Telegram destinations', value: 'telegram-destinations', icon: 'i-lucide-send' }]"
       :content="false"
     />

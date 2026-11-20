@@ -6,7 +6,6 @@
 
 /* Data views use flat, edge-aligned surfaces and compact controls. */
 .content-panel-footer { padding: var(--spacing-space-md) var(--spacing-space-lg); }
-.content-tabs-list { width: 100%; border-bottom: 1px solid var(--ui-border); border-radius: 0; padding: 0; }
 .workspace-dashboard, .workspace-management { max-width: none; padding: 0; display: flex; flex-direction: column; gap: var(--spacing-space-md); min-height: 100%; background: var(--ui-bg); }
 :is(.workspace-dashboard, .workspace-management) > :not(.content-toolbar) { margin-inline: var(--spacing-space-md); }
 .workspace-dashboard > .grid-stack { margin-bottom: var(--spacing-space-md); }

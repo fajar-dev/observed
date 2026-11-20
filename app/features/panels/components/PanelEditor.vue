@@ -123,8 +123,6 @@ useErrorToast(() => open.value ? error.value : '', 'Panel query failed')
             <div class="flex flex-wrap items-center justify-between gap-space-md border-b border-default px-space-lg">
               <UTabs
                 v-model="tab"
-                variant="link"
-                :ui="{ list: 'content-tabs-list' }"
                 :items="[{ label: 'Queries', value: 'queries' }, { label: 'Field settings', value: 'transform' }]"
                 :content="false"
               />
