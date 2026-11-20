@@ -10,7 +10,7 @@ const tab = ref('stats')
   <USlideover
     v-model:open="open"
     title="Query inspector"
-    description="Inspect execution statistics, queries, and returned data."
+    description="Inspect query performance and returned sensor measurements."
     :ui="{ content: 'sm:max-w-modal' }"
   >
     <template #body>

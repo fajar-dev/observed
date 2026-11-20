@@ -2,7 +2,7 @@
 import { signInSchema, setupSchema } from '#shared/domain/auth'
 
 const { route, configuration, loadError, busy, error, form, settingUp, showPassword, submit } = useSignIn()
-usePageSeo(() => settingUp.value ? 'Set up Observed' : 'Sign in')
+usePageSeo(() => settingUp.value ? 'Initial setup' : 'Sign in')
 useErrorToast(() => loadError.value || error.value, 'Sign in failed')
 
 useNotice(() => route.query.error === 'oauth'

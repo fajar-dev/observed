@@ -84,7 +84,7 @@ const { form, destinationOptions } = useAlertRules()
         </h2>
         <UFormField
           name="telegramDestinationIds"
-          label="Destinations"
+          label="Telegram destinations"
           required
         >
           <USelectMenu
@@ -93,7 +93,7 @@ const { form, destinationOptions } = useAlertRules()
             :items="destinationOptions"
             value-key="value"
             multiple
-            placeholder="Select destinations"
+            placeholder="Select Telegram destinations"
             class="w-full"
           />
         </UFormField>
