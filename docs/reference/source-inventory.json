@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 231,
+  "runtimeModules": 234,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -233,6 +233,11 @@
       "reachable": true
     },
     {
+      "path": "app/features/auth/components/ProfileSessions.vue",
+      "lines": 90,
+      "reachable": true
+    },
+    {
       "path": "app/features/auth/components/ResourcePermissionFields.vue",
       "lines": 71,
       "reachable": true
@@ -249,7 +254,7 @@
     },
     {
       "path": "app/features/auth/composables/useProfile.ts",
-      "lines": 41,
+      "lines": 51,
       "reachable": true
     },
     {
@@ -264,7 +269,7 @@
     },
     {
       "path": "app/features/auth/views/ProfileView.vue",
-      "lines": 159,
+      "lines": 153,
       "reachable": true
     },
     {
@@ -559,7 +564,7 @@
     },
     {
       "path": "app/plugins/alert-notifications.client.ts",
-      "lines": 46,
+      "lines": 52,
       "reachable": true
     },
     {
@@ -615,6 +620,11 @@
     {
       "path": "server/api/observe/auth/me.get.ts",
       "lines": 4,
+      "reachable": true
+    },
+    {
+      "path": "server/api/observe/auth/notification-preferences.put.ts",
+      "lines": 7,
       "reachable": true
     },
     {
@@ -889,7 +899,7 @@
     },
     {
       "path": "server/features/auth/application/auth.service.ts",
-      "lines": 108,
+      "lines": 112,
       "reachable": true
     },
     {
@@ -899,12 +909,12 @@
     },
     {
       "path": "server/features/auth/domain/authentication.ports.ts",
-      "lines": 28,
+      "lines": 29,
       "reachable": true
     },
     {
       "path": "server/features/auth/infrastructure/authentication.repository.ts",
-      "lines": 170,
+      "lines": 176,
       "reachable": true
     },
     {
@@ -1044,7 +1054,7 @@
     },
     {
       "path": "server/platform/database/database.ts",
-      "lines": 91,
+      "lines": 93,
       "reachable": true
     },
     {
@@ -1055,6 +1065,11 @@
     {
       "path": "server/platform/database/migrations/normalize-workspace.ts",
       "lines": 52,
+      "reachable": true
+    },
+    {
+      "path": "server/platform/database/migrations/notification-preferences.ts",
+      "lines": 4,
       "reachable": true
     },
     {
@@ -1114,7 +1129,7 @@
     },
     {
       "path": "shared/domain/auth.ts",
-      "lines": 22,
+      "lines": 25,
       "reachable": true
     },
     {

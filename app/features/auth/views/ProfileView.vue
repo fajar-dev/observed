@@ -3,7 +3,7 @@ import { profileSchema } from '#shared/domain/auth'
 
 usePageSeo('Profile', 'Manage your Observed account, sign-in methods, and active sessions.')
 
-const { auth, route, configuration, linked, sessions, busy, error, loadError, form, state, save, revoke, preferencesBusy, setRealtimeAlertToasts } = useProfile()
+const { auth, route, configuration, linked, sessions, busy, error, loadError, form, state, save, revoke, preferencesBusy, setRealtimeAlertToasts, sessionsStatus } = useProfile()
 useErrorToast(() => loadError.value || error.value, 'Account action failed')
 
 useNotice(() => route.query.error === 'oauth'
@@ -28,7 +28,7 @@ useNotice(() => route.query.error === 'oauth'
     description="Your account, sign-in methods, and active sessions."
     icon="i-lucide-user"
   >
-    <div class="grid items-start gap-space-lg lg:grid-cols-pair">
+    <div class="space-y-space-lg">
       <ContentPanel title="Account">
         <UForm
           :schema="profileSchema"
@@ -36,27 +36,32 @@ useNotice(() => route.query.error === 'oauth'
           class="space-y-space-lg p-space-lg"
           @submit="save"
         >
-          <UFormField label="Email">
-            <UInput
-              placeholder="Your email address"
-              :model-value="auth.user.value?.email"
-              disabled
-              class="w-full"
-            />
-          </UFormField>
-          <UFormField
-            name="name"
-            label="Name"
-            required
+          <div class="grid gap-space-lg sm:grid-cols-pair">
+            <UFormField label="Email">
+              <UInput
+                placeholder="Your email address"
+                :model-value="auth.user.value?.email"
+                disabled
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField
+              name="name"
+              label="Name"
+              required
+            >
+              <UInput
+                v-model="form.name"
+                placeholder="Your full name"
+                autocomplete="name"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
+          <div
+            v-if="auth.user.value?.hasPassword"
+            class="grid items-start gap-space-lg sm:grid-cols-pair"
           >
-            <UInput
-              v-model="form.name"
-              placeholder="Your full name"
-              autocomplete="name"
-              class="w-full"
-            />
-          </UFormField>
-          <template v-if="auth.user.value?.hasPassword">
             <UFormField
               name="currentPassword"
               label="Current password"
@@ -82,7 +87,7 @@ useNotice(() => route.query.error === 'oauth'
                 class="w-full"
               />
             </UFormField>
-          </template>
+          </div>
           <UButton
             type="submit"
             label="Save changes"
@@ -92,7 +97,10 @@ useNotice(() => route.query.error === 'oauth'
           />
         </UForm>
       </ContentPanel>
-      <div class="space-y-space-lg">
+      <div
+        class="grid gap-space-lg"
+        :class="configuration?.providers.length ? 'lg:grid-cols-pair' : undefined"
+      >
         <ContentPanel title="Notifications">
           <div class="p-space-lg">
             <USwitch
@@ -125,7 +133,7 @@ useNotice(() => route.query.error === 'oauth'
                 v-else
                 :href="'/api/observe/auth/oauth/' + provider + '?link=1'"
                 external
-                :label="'Connect ' + provider"
+                :label="provider === 'google' ? 'Connect Google' : 'Connect Microsoft'"
                 color="neutral"
                 variant="outline"
                 size="sm"
@@ -133,39 +141,13 @@ useNotice(() => route.query.error === 'oauth'
             </div>
           </div>
         </ContentPanel>
-        <ContentPanel title="Active sessions">
-          <ul class="divide-y divide-default">
-            <li
-              v-for="session in sessions"
-              :key="session.id"
-              class="flex items-center justify-between gap-space-md p-space-lg"
-            >
-              <div class="min-w-none">
-                <p class="text-sm font-medium">
-                  {{ session.current ? 'This session' : 'Browser session' }}
-                </p>
-                <p
-                  :title="session.userAgent"
-                  class="mt-space-xs max-w-field truncate text-xs text-muted"
-                >
-                  {{ session.userAgent }}
-                </p>
-                <p class="mt-space-xs text-xs text-muted">
-                  Started {{ new Date(session.createdAt).toLocaleString() }}
-                </p>
-              </div>
-              <UButton
-                label="Revoke"
-                size="sm"
-                color="neutral"
-                variant="outline"
-                :disabled="busy"
-                @click="revoke(session)"
-              />
-            </li>
-          </ul>
-        </ContentPanel>
       </div>
+      <ProfileSessions
+        :sessions="sessions"
+        :busy="busy"
+        :loading="sessionsStatus === 'pending'"
+        @revoke="revoke"
+      />
     </div>
   </WorkspacePage>
 </template>

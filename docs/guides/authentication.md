@@ -8,7 +8,7 @@ Sign-in memakai email/password. Akses browser disimpan dalam cookie HttpOnly, bu
 
 ## Profile
 
-Menu akun → **Profile** menyediakan perubahan nama, password lokal dengan current password, daftar metode sign-in yang terhubung, serta browser sessions. Email ditampilkan read-only pada profil pribadi. Perubahan password mencabut sesi dan meminta sign-in kembali. Revoke session dapat dilakukan untuk sesi lain atau sesi saat ini; revoke sesi saat ini langsung keluar.
+Menu akun → **Profile** menyediakan perubahan nama, password lokal dengan current password, daftar metode sign-in yang terhubung, serta browser sessions. Email ditampilkan read-only pada profil pribadi. Perubahan password mencabut sesi dan meminta sign-in kembali. Form akun memakai dua kolom pada layar lebar dan satu kolom pada mobile. Daftar Active sessions berada pada bagian tersendiri selebar halaman, menempatkan sesi saat ini paling atas, serta menampilkan 10 sesi per halaman. Revoke session dapat dilakukan untuk sesi lain atau sesi saat ini; revoke sesi saat ini langsung keluar.
 
 ## Preferensi notifikasi
 

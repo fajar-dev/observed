@@ -7,7 +7,7 @@ export function useProfile() {
   const route = useRoute()
   const { data: configuration, error: configurationError } = useAsyncData('auth-config', auth.configuration, { server: false })
   const { data: linked, error: linkedError } = useAsyncData<AuthProvider[]>('auth-linked', () => apiRequest<AuthProvider[]>('auth/providers'), { server: false, default: () => [] })
-  const { data: sessions, error: sessionsError, refresh } = useAsyncData('auth-sessions', () => apiRequest<AuthSession[]>('auth/sessions'), { server: false, default: () => [] })
+  const { data: sessions, error: sessionsError, status: sessionsStatus, refresh } = useAsyncData('auth-sessions', () => apiRequest<AuthSession[]>('auth/sessions'), { server: false, default: () => [] })
   const { busy, error, perform } = useAsyncAction()
   const { busy: preferencesBusy, error: preferencesError, perform: updatePreferences } = useAsyncAction()
   const toast = useNotifications()
@@ -47,5 +47,5 @@ export function useProfile() {
   }
 
   const loadError = computed(() => configurationError.value || linkedError.value || sessionsError.value || preferencesError.value)
-  return { auth, route, configuration, linked, sessions, busy, error, loadError, form, state, save, revoke, preferencesBusy, setRealtimeAlertToasts }
+  return { auth, route, configuration, linked, sessions, busy, error, loadError, form, state, save, revoke, preferencesBusy, setRealtimeAlertToasts, sessionsStatus }
 }
