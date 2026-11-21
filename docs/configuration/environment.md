@@ -1,54 +1,54 @@
-# Referensi environment
+# Environment reference
 
-Environment server dibaca di [configuration.ts](../../server/bootstrap/configuration.ts), modul auth, dan plugin scheduler. Variabel ini tidak boleh dimasukkan ke payload frontend. Prefix `OBSERVE_` adalah nama konfigurasi teknis yang dipertahankan walaupun nama produk Observed.
+Server environment is read by [configuration.ts](../../server/bootstrap/configuration.ts), authentication modules, and container startup scripts. Never expose these settings in frontend payloads. `OBSERVE_` is the technical configuration prefix retained for the Observed product.
 
-## Aplikasi
+## Application
 
-| Variabel | Default/perilaku | Kegunaan |
+| Variable | Default/behavior | Purpose |
 | --- | --- | --- |
-| `DATABASE_URL` | Wajib | URL `postgresql://` atau `postgres://` database aplikasi |
-| `OBSERVE_SECRET_KEY` | Wajib | Base64 yang menghasilkan tepat 32 byte; enkripsi credential dan derivasi signing key JWT |
-| `OBSERVE_GOOGLE_ENABLED` | Hanya `true` mengaktifkan | Menampilkan/mengaktifkan sign-in Google |
-| `OBSERVE_GOOGLE_CLIENT_ID` | Kosong | Client ID Google |
-| `OBSERVE_GOOGLE_CLIENT_SECRET` | Kosong | Client secret Google |
-| `OBSERVE_MICROSOFT_ENABLED` | Hanya `true` mengaktifkan | Menampilkan/mengaktifkan sign-in Microsoft |
-| `OBSERVE_MICROSOFT_CLIENT_ID` | Kosong | Client ID Microsoft |
-| `OBSERVE_MICROSOFT_CLIENT_SECRET` | Kosong | Client secret Microsoft |
-| `OBSERVE_MICROSOFT_TENANT_ID` | Kosong | UUID tenant tertentu; bukan `common` atau `organizations` |
-| `OBSERVE_OAUTH_ALLOW_SIGNUP` | Hanya `true` mengaktifkan | Mengizinkan identitas OAuth baru membuat akun Viewer setelah setup admin |
-| `HOST`, `PORT` | Diatur runtime | Binding server hasil build |
-| `NITRO_HOST`, `NITRO_PORT` | Diatur runtime | Pengaturan listener Nitro; container menggunakan port 3000 |
-| `NODE_ENV` | Diatur runtime/build | Mode runtime Node-compatible |
+| `DATABASE_URL` | Required | Application database URL using `postgresql://` or `postgres://` |
+| `OBSERVE_SECRET_KEY` | Required | Base64 decoding to exactly 32 bytes; credential encryption and JWT signing-key derivation |
+| `OBSERVE_GOOGLE_ENABLED` | Only `true` enables it | Show and enable Google sign-in |
+| `OBSERVE_GOOGLE_CLIENT_ID` | Empty | Google client ID |
+| `OBSERVE_GOOGLE_CLIENT_SECRET` | Empty | Google client secret |
+| `OBSERVE_MICROSOFT_ENABLED` | Only `true` enables it | Show and enable Microsoft sign-in |
+| `OBSERVE_MICROSOFT_CLIENT_ID` | Empty | Microsoft client ID |
+| `OBSERVE_MICROSOFT_CLIENT_SECRET` | Empty | Microsoft client secret |
+| `OBSERVE_MICROSOFT_TENANT_ID` | Empty | Specific tenant UUID, not `common` or `organizations` |
+| `OBSERVE_OAUTH_ALLOW_SIGNUP` | Only `true` enables it | Allow new OAuth identities to create Viewer accounts after administrator setup |
+| `HOST`, `PORT` | Runtime settings | Built server listener binding |
+| `NITRO_HOST`, `NITRO_PORT` | Runtime settings | Nitro listener; the container uses port 3000 |
+| `NODE_ENV` | Runtime/build setting | Node-compatible runtime mode |
 
-`OBSERVE_SETUP_TOKEN` dan `MONITORING_SECRET_KEY` tidak digunakan implementasi saat ini. Simpan key enkripsi tetap sama selama umur data; pergantian key tanpa migrasi credential bukan prosedur rotasi yang tersedia.
+`OBSERVE_SETUP_TOKEN` and `MONITORING_SECRET_KEY` are not used by the current implementation. Preserve the encryption key throughout the lifetime of encrypted data; changing it without migrating credentials is not a supported rotation procedure.
 
-## Khusus Docker
+## Docker settings
 
-Template lengkap ada di [docker/.env.example](../../docker/.env.example).
+The complete template is [docker/.env.example](../../docker/.env.example).
 
-| Variabel | Default | Fungsi |
+| Variable | Default | Purpose |
 | --- | --- | --- |
-| `COMPOSE_PROJECT_NAME` | `observed` | Nama stack dan namespace volume |
-| `OBSERVE_IMAGE` | `observed:local` | Tag image aplikasi |
-| `BUN_VERSION` | `1.4.4` | Argumen build Docker |
-| `POSTGRES_DB` | `observed` | Database aplikasi |
-| `POSTGRES_HOST` | `database` pada entrypoint | Host database untuk penyusunan URL; Compose menetapkannya internal ke service database |
-| `POSTGRES_PORT` | `5432` pada entrypoint | Port database internal, bukan port HTTP host |
-| `POSTGRES_USER` | `observed` | Role aplikasi yang dibuat saat init |
-| `POSTGRES_PASSWORD` | Dibuat setup | Password role aplikasi |
-| `POSTGRES_ADMIN_PASSWORD` | Dibuat setup | Password administrator PostgreSQL, berbeda dari role aplikasi |
-| `OBSERVE_HTTP_PORT` | `3000` | Port host yang dipublikasikan |
-| `OBSERVE_BIND_ADDRESS` | `127.0.0.1` | Interface host |
-| `OBSERVE_ENV_FILE` | `.env.docker` | Lokasi environment yang dibaca helper shell |
+| `COMPOSE_PROJECT_NAME` | `observed` | Stack name and volume namespace |
+| `OBSERVE_IMAGE` | `observed:local` | Application image tag |
+| `BUN_VERSION` | `1.4.4` | Docker build argument |
+| `POSTGRES_DB` | `observed` | Application database |
+| `POSTGRES_HOST` | `database` in the entrypoint | Database host when constructing the URL; Compose sets the internal database service |
+| `POSTGRES_PORT` | `5432` in the entrypoint | Internal database port, not the host HTTP port |
+| `POSTGRES_USER` | `observed` | Application role created during initialization |
+| `POSTGRES_PASSWORD` | Generated by setup | Application role password |
+| `POSTGRES_ADMIN_PASSWORD` | Generated by setup | Separate PostgreSQL administrator password |
+| `OBSERVE_HTTP_PORT` | `3000` | Published host port |
+| `OBSERVE_BIND_ADDRESS` | `127.0.0.1` | Host interface |
+| `OBSERVE_ENV_FILE` | `.env.docker` | Environment file used by shell helpers |
 
-Entrypoint image dapat memuat `DATABASE_URL_FILE`, `POSTGRES_PASSWORD_FILE`, `OBSERVE_SECRET_KEY_FILE`, `OBSERVE_GOOGLE_CLIENT_SECRET_FILE`, dan `OBSERVE_MICROSOFT_CLIENT_SECRET_FILE`. Pilih nilai langsung atau versi `_FILE`, jangan keduanya. File harus terbaca UID 1000. Jika tidak disuplai langsung, URL database container dirangkai dari variabel PostgreSQL dengan encoding URL.
+The image entrypoint supports `DATABASE_URL_FILE`, `POSTGRES_PASSWORD_FILE`, `OBSERVE_SECRET_KEY_FILE`, `OBSERVE_GOOGLE_CLIENT_SECRET_FILE`, and `OBSERVE_MICROSOFT_CLIENT_SECRET_FILE`. Set the direct value or its `_FILE` variant, not both. Files must be readable by UID 1000. When not supplied directly, the container database URL is constructed from PostgreSQL variables with URL encoding.
 
 ## Testing
 
-Environment pengujian (`TEST_DATABASE_URL`, `BROWSER_BASE_URL`, `BROWSER_EXECUTABLE`, `NOTIFICATION_TEST_DATABASE_URL`, `PERMISSION_TEST_DATABASE_URL`, dan `DOCKER_TEST_*`) dijelaskan di [pengujian](../development/testing.md). Environment pengujian tidak menjadi konfigurasi aplikasi produksi.
+Testing variables (`TEST_DATABASE_URL`, `BROWSER_BASE_URL`, `BROWSER_EXECUTABLE`, `NOTIFICATION_TEST_DATABASE_URL`, `PERMISSION_TEST_DATABASE_URL`, and `DOCKER_TEST_*`) are documented in [testing](../development/testing.md). They are not production application settings.
 
-Restart/recreate proses aplikasi setelah mengubah environment. Pada PostgreSQL yang sudah diinisialisasi, mengubah password di env tidak otomatis mengubah password role database.
+Restart/recreate the application process after changing environment values. Editing an environment password does not automatically change an initialized PostgreSQL role's password.
 
-## Request dan evaluasi alert
+## Requests and alert evaluation
 
-Domain/TLS ditangani infrastruktur di luar aplikasi. Callback OAuth dan cookie mengikuti URL request; tidak ada konfigurasi origin atau trust jaringan di environment. Scheduler alert selalu berjalan selama server hidup. Enable/pause diatur per rule pada UI Alerts.
+Domains/TLS are handled outside the application. OAuth callbacks and cookies follow the incoming request URL; no origin or network-trust environment configuration is provided. The alert scheduler always runs while the server is alive. Enable/pause is configured per rule in Alerts.

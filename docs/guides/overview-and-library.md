@@ -1,17 +1,17 @@
-# Overview dan daftar dashboard
+# Overview and dashboard library
 
 ## Overview
 
-Overview menampilkan ringkasan pemantauan, dashboard terbaru, dan informasi alert yang tersedia bagi akun. Jumlah resource mengikuti permission; akun dengan akses terbatas tidak memperoleh daftar resource pengguna lain. Empty state mengarahkan Editor/Admin membuat resource dan membantu Viewer mengenali bahwa akses belum diberikan.
+Overview shows a monitoring summary, recent dashboards, and alert information available to the account. Resource counts follow permissions; restricted accounts do not receive other users' resource lists. Empty states direct Editors/Admins to create resources and help Viewers recognize missing access.
 
-## Daftar dashboard
+## Dashboard library
 
-Buka **Dashboards** untuk mencari berdasarkan teks, memilih folder, mengatur urutan, serta memilih tampilan daftar atau grid. Pilihan sort mencakup pembaruan terbaru dan nama. Gunakan tag untuk memberi konteks struktur, lokasi, atau kelompok sensor pada dashboard.
+Open **Dashboards** to search by text, filter by folder/tag, change sorting, and choose list or grid view. Sorting includes recently updated and name. Tags can identify structures, locations, or sensor groups.
 
-**New dashboard** menyediakan dua aksi: **Create new** dan **Import JSON**. Tombol pembuatan tampil untuk Admin/Editor. Administrator juga dapat mengelola folder. Folder digunakan untuk organisasi daftar, bukan sebagai mekanisme pewarisan permission.
+**New dashboard** offers **Create new** and **Import JSON**. Creation is available to Admins/Editors. Administrators can also manage folders. Folders organize resources but do not provide inherited permissions.
 
-Pada menu titik tiga vertikal di kanan item tersedia aksi sesuai hak akses, seperti membuka, duplicate, export JSON, dan delete. Menu duplikasi pada daftar ditampilkan bila pengguna dapat mengedit dashboard asal dan membuat dashboard; hasilnya adalah dashboard baru dengan ID sendiri. Delete dibatasi Administrator atau pembuat yang masih mempunyai Edit access.
+The right-aligned vertical menu offers actions according to access, including open, duplicate, export JSON, and delete. The library shows Duplicate when the user can edit the original dashboard and create dashboards; the copy has its own ID. Delete is limited to an Administrator or the creator who still has Edit access.
 
-Mencari atau memfilter daftar tidak menghapus data. Jika dashboard yang diharapkan tidak muncul, hapus filter dan minta Administrator memeriksa permission. Jangan membuat ulang dashboard hanya karena akun belum diberi akses.
+Searching or filtering does not delete data. If a dashboard is missing, clear filters and ask an Administrator to check permissions. Do not recreate a dashboard merely because access has not been assigned.
 
-Lanjutkan ke [mengatur dashboard](dashboards.md).
+Continue with [dashboard editing](dashboards.md).

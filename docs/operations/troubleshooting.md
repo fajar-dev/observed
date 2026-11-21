@@ -1,33 +1,34 @@
 # Troubleshooting
 
-| Gejala | Periksa dan tindakan |
+| Symptom | Checks and action |
 | --- | --- |
-| `Set a 32-byte base64 OBSERVE_SECRET_KEY` | Gunakan hasil `openssl rand -base64 32`; bukan string 32 karakter biasa. Pastikan env benar-benar dimuat runtime. Pertahankan key lama jika database sudah berisi credential. |
-| Health 503 / database operation failed | URL database, network, role/password, hak schema, kapasitas koneksi, dan log PostgreSQL. Health memicu readiness/migrasi. |
-| Setup muncul/tidak muncul tidak sesuai | Pastikan aplikasi memakai database yang dimaksud. Setup selesai tersimpan permanen; restart atau logout bukan reset. |
-| HTTP 403 dari script | Mutation cookie membutuhkan Origin yang sesuai atau sinyal same-origin; gunakan Bearer untuk API non-browser. Permission resource tetap berlaku. |
-| Sign-in kembali setelah perubahan akses | Permission/password/role dapat mencabut sesi; ini perilaku yang disengaja. |
-| Google/Microsoft tidak muncul | Flag enabled harus persis `true`, restart proses; cek konfigurasi provider dan callback origin. |
-| OAuth ditolak walau email sama | Tidak ada auto-link berdasarkan email. Hubungkan provider dari Profile saat sudah sign-in lokal. Cek tenant dan claim email. |
-| Credential gagal setelah restore | Pastikan key enkripsi sama dengan saat backup. Mengganti key bukan migrasi credential. |
-| InfluxDB timeout | Test dari jaringan runtime/container, bukan hanya browser/host. Cek URL, firewall, token, server, range dan agregasi. Transport dibatasi 12 detik. |
-| InfluxDB di host tidak dapat dicapai Docker | Gunakan `host.docker.internal`, bukan localhost container; cek bind service dan host firewall. |
-| Dashboard `No data` | Periksa waktu/timestamp sensor, bucket, measurement/field/tag, pemetaan source, variable, bahasa query. Buka Check panel data dan inspector. |
-| Dashboard import berbeda | Baca warnings. Format plugin/transformasi Grafana tertentu tidak didukung; perbaiki query dan appearance secara manual. |
-| Chart/legend/tabel terpotong | Cukupkan tinggi/lebar panel, ringkas label seri, ubah penempatan legend, kurangi seri, periksa scroll lokal. Untuk bug gunakan fixture serupa tanpa secret. |
-| Data truncated | Lebih dari 5.000 baris; tambah filter/agregasi atau persempit range. Alert menganggapnya error. |
-| Dashboard save conflict 409 | Ada revision lebih baru. Simpan draft terpisah bila perlu, reload, gabungkan perubahan. |
-| Source/tujuan tidak dapat dihapus | Masih direferensikan dashboard/alert; lepaskan referensi terlebih dahulu. |
-| Alert belum firing | Cek enabled, numeric field, unit threshold, reducer, pending, interval, query, dan waktu server. |
-| Alert berhenti dievaluasi | Cek proses server hidup, scheduler enabled, readiness database dan lock/evaluasi yang sedang berjalan. |
-| Tidak ada recovery | Harus pernah firing yang diberitahukan lalu evaluasi normal. no_data/error/pending bukan recovery. Mute menahan pengiriman. |
-| Inbox kosong | Belum ada transisi atau user tidak mendapat View access rule; bell tetap ada untuk pengguna sign-in. |
-| Toast lama muncul ulang | Periksa cursor/reconnect dan state session; histori awal seharusnya silent. Jangan ubah sequence bigint menjadi Number. |
-| Telegram gagal | Test destination mengirim pesan nyata. Cek token/chat ID, bot sudah di-start/berhak kirim, egress, enabled/mute, dan deliveryError. |
-| Refresh otomatis tidak berjalan saat edit | Timer dihentikan saat edit/tab tersembunyi. Off juga mematikannya; jadwal alert terpisah. |
+| `Set a 32-byte base64 OBSERVE_SECRET_KEY` | Use `openssl rand -base64 32`, not an ordinary 32-character string. Confirm the runtime loads its environment. Preserve the existing key when credentials already exist. |
+| Health 503 / database operation failed | Check database URL, network, role/password, schema privileges, connection capacity, and PostgreSQL logs. Health triggers readiness/migrations. |
+| Unexpected setup screen/state | Confirm the intended database is configured. Setup completion is durable; restart/logout is not a reset. |
+| HTTP 403 from a script | Cookie mutations need a matching Origin or same-origin signal; non-browser clients may use Bearer. Resource permissions still apply. |
+| Sign-in required after access changes | Permission/password/role changes may revoke sessions intentionally. |
+| Missing Google/Microsoft button | The enabled flag must be exactly `true`; restart and verify provider credentials/callbacks. |
+| OAuth rejected despite matching email | No automatic email linking exists. Connect the provider from Profile while locally signed in. Check tenant and email claims. |
+| Credentials fail after restore | Use the encryption key matching the backup. Replacing the key is not a credential migration. |
+| InfluxDB timeout | Test from the runtime/container network, not only the browser/host. Check URL, firewall, token, server, time range, and aggregation. Transport timeout is 12 seconds. |
+| Container cannot reach host InfluxDB | Use `host.docker.internal`, not container localhost; check listener binding and the host firewall. |
+| Dashboard `No data` | Check time/timestamps, bucket, measurement, fields/tags, source mapping, variables, and query language. Use Check panel data and the inspector. |
+| Imported dashboard differs | Read warnings. Some Grafana plugins/transformations are unsupported; adjust queries and appearance manually. |
+| Clipped chart/legend/table | Increase panel height/width, shorten labels, reposition legends, reduce series, and check local scrolling. Reproduce bugs with sanitized fixtures. |
+| Truncated data | More than 5,000 rows: filter/aggregate or narrow the range. Alert evaluation treats truncation as an error. |
+| Dashboard save conflict 409 | A newer revision exists. Preserve a separate draft if needed, reload, and merge changes. |
+| Source/destination cannot be deleted | Remove dashboard/alert references first. |
+| Alert not firing | Check enabled state, numeric field, threshold units, reducer, pending period, interval, query, and server time. |
+| Alert evaluation stops | Check the running server, database readiness, due state, and in-progress evaluation/locks. Scheduling is always active. |
+| No recovery | Recovery requires a previously notified firing episode followed by normal. no_data/error/pending is not recovery. Mute suppresses delivery. |
+| Empty inbox | No transition yet or no View access to the rule; the bell still appears for signed-in users. |
+| No alert toast but inbox updates | Check Profile → Notifications → Alert pop-ups. Disabling it suppresses alert pop-ups only. |
+| Old toasts replay | Check cursor/reconnect/session state; initial history should be silent. Keep bigint sequences as strings. |
+| Telegram failure | A destination test sends a real message. Check token/chat ID, bot conversation/permissions, egress, enabled/mute, and deliveryError. |
+| Automatic refresh pauses during editing | Panel timers pause during editing or when the tab is hidden; Off also disables refresh. Alert scheduling is separate. |
 
-## Urutan investigasi
+## Investigation order
 
-Mulai dari health dan sesi, lalu permission, koneksi source, query mentah, hasil inspector, baru pemetaan visualisasi. Untuk alert pisahkan keberhasilan evaluasi dari pengiriman Telegram. Catat langkah reproduksi dan log tersanitasi; jangan melampirkan `.env`, cookie, token, atau dump database produksi ke issue.
+Start with health/session, then permissions, source connectivity, raw query output, inspector results, and visualization mapping. For alerts, distinguish evaluation success from Telegram delivery. Record reproduction steps and sanitized logs; never attach `.env`, cookies, tokens, or production database dumps to an issue.
 
-Prosedur test ada di [pengujian](../development/testing.md), dan rollback data di [backup/recovery](backup-and-recovery.md).
+See [testing](../development/testing.md) and [backup/recovery](backup-and-recovery.md).

@@ -1,42 +1,42 @@
-# Kontrak data dan contoh
+# Data contracts and examples
 
-Schema Zod di [shared/domain](../../shared/domain) adalah sumber kebenaran. Type TypeScript diturunkan dari schema; validasi frontend saja tidak cukup. API memakai ID UUID, waktu ISO 8601, dan JSON. Properti yang tidak dikenal umumnya dibuang oleh `z.object`; schema import dan beberapa request memakai strict object dan menolak properti tambahan.
+Zod schemas in [shared/domain](../../shared/domain) are the source of truth. TypeScript types are inferred where applicable; frontend validation alone is insufficient. The API uses UUIDs, ISO 8601 timestamps, and JSON. `z.object` generally strips unknown properties; import and some request schemas use strict objects and reject extras.
 
-## Contoh siap divalidasi
+## Validated examples
 
-- [dashboard.json](../examples/dashboard.json): definisi dashboard native, satu row, panel time series dan table.
-- [query.json](../examples/query.json): request query Flux.
-- [alert-rule.json](../examples/alert-rule.json): rule threshold dengan Telegram kosong dan inbox otomatis.
-- [permissions.json](../examples/permissions.json): scope Selected untuk dashboard dan alert.
+- [dashboard.json](../examples/dashboard.json): a native dashboard with one row, a time-series panel, and a table.
+- [query.json](../examples/query.json): a Flux query request.
+- [alert-rule.json](../examples/alert-rule.json): a threshold rule with no Telegram destinations and automatic in-app events.
+- [permissions.json](../examples/permissions.json): Selected dashboard/alert grants.
 
-Seluruh ID dan nama sensor pada contoh adalah dummy. Ganti `dataSourceId` dengan ID sumber yang sudah ada; gunakan ID resource aktual saat menyimpan permission. Contoh tidak mengandung credential dan tidak membuat data sensor.
+All example IDs and sensor names are placeholders. Replace `dataSourceId` with an existing source ID and permission grants with real resource IDs. Examples contain no credentials and do not create sensor measurements.
 
-## Dashboard dan panel
+## Dashboards and panels
 
-Field wajib dashboard: `name`, `description`, `range`, `refresh`, `panels`. Panel wajib: `id`, `title`, `type`, `span`, `dataSourceId`, `query`; `additionalQueries` default kosong. `dataSourceId` nullable untuk draft/panel text, tetapi query panel data memerlukan source valid.
+Required dashboard fields: `name`, `description`, `range`, `refresh`, `panels`. Required panel fields: `id`, `title`, `type`, `span`, `dataSourceId`, `query`; `additionalQueries` defaults to empty. `dataSourceId` may be null for draft/text panels, but data queries need a valid source.
 
-Posisi: `x`, `y`, `height`, `span` dan `columns` (12 atau 24). Row memakai `sections` dengan UUID, title, y, collapsed; panel mengacu `sectionId`. Jangan menggunakan urutan array sebagai pengganti koordinat layout. Update menyertakan revision terkini agar konflik edit terdeteksi.
+Geometry uses `x`, `y`, `height`, `span`, and `columns` (12 or 24). Rows use `sections` containing UUID, title, y, collapsed; panels reference `sectionId`. Array order is not a replacement for layout coordinates. Updates include the current revision to detect concurrent edits.
 
-| Batas | Nilai |
+| Limit | Value |
 | --- | --- |
-| Nama resource | 1–120 karakter setelah trim |
-| Description dashboard / note panel | 1.000 karakter maksimum |
-| Panel dan section per dashboard | Masing-masing 100 |
-| Variable per dashboard | 20, nama unik |
-| Query per panel | Satu utama + sembilan tambahan |
-| Panjang query | 25.000 karakter |
-| Tag dashboard | 20, masing-masing 1–40 karakter |
-| Tinggi panel | 2–100 unit grid |
-| Lebar panel | 1–24; harus sesuai jumlah kolom layout |
-| Opsi decimals | 0–8 |
-| Threshold warna | Maksimal 10 |
-| Palette | 1–30 warna hex enam digit |
+| Resource name | 1–120 characters after trimming |
+| Dashboard description / panel note | Up to 1,000 characters |
+| Panels and sections per dashboard | 100 each |
+| Dashboard variables | 20, unique names |
+| Queries per panel | One primary + nine additional |
+| Query length | 25,000 characters |
+| Dashboard tags | 20, each 1–40 characters |
+| Panel height | 2–100 grid units |
+| Panel width | 1–24; must fit the layout columns |
+| Decimals | 0–8 |
+| Color thresholds | Up to 10 |
+| Palette | 1–30 six-digit hex colors |
 
-`PanelOptions` mengatur unit, decimals, min/max, fixed/palette/threshold color, reducer, legend placement/list/table/calculations, tooltip, line width/fill/interpolation/stacking, axis, field order/rename/visibility/unit, field-specific appearance, stat modes, table header/cell modes/alignment, dan text. Lihat [panel.ts](../../shared/domain/panel.ts) untuk tipe eksak. JSON lanjutan tidak berarti setiap opsi sudah punya kontrol UI terpisah.
+`PanelOptions` covers units, decimals, min/max, fixed/palette/threshold colors, reducers, legend placement/list/table/calculations, tooltip, line width/fill/interpolation/stacking, axes, field ordering/renaming/visibility/units, field appearance, stat modes, table header/cell modes/alignment, and text. See [panel.ts](../../shared/domain/panel.ts) for exact types. An advanced JSON option does not imply a separate editor control exists.
 
-## QueryRequest dan QueryResponse
+## QueryRequest and QueryResponse
 
-Request: `dataSourceId`, `query`, `range`; opsional `from`, `to`, `variables`. Relative range: `5m`, `15m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. `from`/`to` harus berpasangan, awal sebelum akhir, maksimum 366 hari.
+Request: `dataSourceId`, `query`, `range`; optional `from`, `to`, `variables`. Relative ranges: `5m`, `15m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Absolute `from`/`to` must be supplied together, start before end, and span at most 366 days.
 
 Response:
 
@@ -50,28 +50,28 @@ Response:
 }
 ```
 
-`duration` dalam milidetik. Cell berupa string, number, boolean, atau null. Nilai integer Influx yang tidak aman direpresentasikan sebagai JavaScript Number dipertahankan sebagai string. Batas hasil 5.000 baris; alert menganggap truncated sebagai error.
+`duration` is milliseconds. Cells are strings, numbers, booleans, or null. Influx integers unsafe to represent as JavaScript Number remain strings. Results are limited to 5,000 rows; alert evaluation treats truncation as an error.
 
-Refresh dashboard berupa `"auto"` atau angka detik: 0 untuk Off, selainnya 5–86.400. Variable value berupa string atau array string, maksimal 500 nilai dengan panjang masing-masing 500 karakter.
+Dashboard refresh is `"auto"` or seconds: 0 means Off; other valid values are 5–86,400. Variable values are strings or arrays of strings, up to 500 values of up to 500 characters each.
 
-## Alert dan permission
+## Alerts and permissions
 
-Alert memperluas QueryRequest dengan name, enabled, operator, reducer, field, threshold, interval, serta tujuan Telegram. Summary/severity/folder/pending/mute opsional. Nilai threshold harus finite. Preview menghilangkan field name, enabled, dan telegramDestinationIds dari kontrak rule.
+Alerts extend QueryRequest with name, enabled, operator, reducer, field, threshold, interval, and Telegram destinations. Summary/severity/folder/pending/mute are optional. Thresholds must be finite. Preview omits name, enabled, and telegramDestinationIds from the rule contract.
 
-Permission terdiri dari `dashboards` dan `alerts`; masing-masing `{scope, access, grants}`. Scope: `none|selected|all`, access: `view|edit`, grant `{id,access}` maksimal 1.000 ID unik. Admin tidak dibatasi payload; Viewer tidak dapat menaikkan diri ke Edit.
+Permissions contain `dashboards` and `alerts`, each `{scope, access, grants}`. Scope is `none|selected|all`, access is `view|edit`, and grants are `{id,access}` with up to 1,000 unique IDs. Admin is unrestricted; Viewer cannot gain Edit through a payload.
 
-## Notifikasi
+## Notifications
 
-Event berisi ID, sequence string, ID/nama alert, nama source, `state: firing|recovered`, value, threshold, operator, occurredAt, readAt dan metadata opsional. Snapshot `{items, unread, cursor}`; update menambahkan `events`. Cursor adalah string digit maksimal bigint PostgreSQL (`9223372036854775807`), bukan Number.
+Events include ID, string sequence, alert ID/name, source name, `state: firing|recovered`, value, threshold, operator, occurredAt, readAt, and optional metadata. Snapshot is `{items, unread, cursor}`; updates add `events`. Cursors are digit strings limited to PostgreSQL bigint (`9223372036854775807`), never Number.
 
-Body API maksimal 2 MiB. Credential source/token Telegram hanya diterima di endpoint konfigurasi; respons memakai `hasSecret`/`hasToken`, tidak mengembalikan secret asli.
+API bodies are limited to 2 MiB. Source credentials/Telegram tokens are accepted only by configuration endpoints; responses expose `hasSecret`/`hasToken`, not saved plaintext.
 
-## Semantik credential pada API
+## Credential update semantics
 
-Pada update source, properti `secret` yang tidak dikirim mempertahankan credential tersimpan; `secret: ""` menghapusnya; string nonkosong menggantinya. Form UI menerjemahkan field kosong menjadi properti yang tidak dikirim, dan checkbox Remove saved credential menjadi string kosong. Jangan menyamakan field kosong pada UI dengan string kosong dalam request API.
+For source updates, omitting `secret` preserves it, `secret: ""` removes it, and a nonempty value replaces it. The UI turns an empty edit field into an omitted property and Remove saved credential into an empty string. An empty UI field and an empty API string have different meanings.
 
-Untuk Telegram, `token` yang dihilangkan mempertahankan token tersimpan. String kosong tidak lolos format token. User baru melalui endpoint Users wajib mempunyai password walaupun schema input menjadikan password opsional untuk update; akun OAuth-only dibuat lewat flow provider, bukan dengan menghilangkan password pada create user lokal.
+For Telegram, omitting `token` preserves it; an empty string fails token validation. Creating a user through Users requires a password even though the input schema makes it optional for updates. OAuth-only accounts are created through the provider flow, not by omitting a local-create password.
 
-## Preferensi toast alert
+## Alert pop-up preference
 
-AuthUser menyertakan `realtimeAlertToasts: boolean`, default true dari database. `PUT auth/notification-preferences` menerima strict object dengan properti itu saja; hanya akun principal yang dapat diubah. False menghentikan toast alert, bukan stream/inbox atau notifikasi Telegram. Endpoint tidak mengubah password, nama, role, grant, atau sesi.
+AuthUser includes `realtimeAlertToasts: boolean`, default true in the database. `PUT auth/notification-preferences` accepts a strict object containing that property only and updates the principal's own account. False suppresses alert toasts, not streams/inbox or Telegram. The endpoint does not change passwords, names, roles, grants, or sessions.

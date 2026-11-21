@@ -1,25 +1,25 @@
-# Import dan export JSON
+# JSON import and export
 
 ## Import
 
-1. Buka **Dashboards → New dashboard → Import JSON**.
-2. Pilih file/paste JSON dashboard. Aplikasi menerima definisi Observed serta bagian format dashboard Grafana klasik yang dikenali converter.
-3. Pilih sumber tujuan. Periksa pemetaan sumber pada panel, bahasa query, variable bucket/server/sensor, dan peringatan converter.
-4. Jalankan pemeriksaan data yang tersedia di dialog. Perbaiki sumber/query/variable yang error sebelum menyimpan.
-5. Buat dashboard, buka hasilnya, periksa nilai, unit, legend, tabel, dan susunan panel.
+1. Open **Dashboards → New dashboard → Import JSON**.
+2. Upload or paste dashboard JSON. Observed accepts native definitions and recognized parts of classic Grafana dashboard JSON.
+3. Choose the destination source. Review panel source mapping, query language, bucket/server/sensor variables, and converter warnings.
+4. Run the data checks available in the dialog. Correct source/query/variable errors before saving.
+5. Create the dashboard and inspect its values, units, legends, tables, and panel layout.
 
-Import dari ID Grafana atau URL katalog tidak tersedia. File JSON tidak menyertakan credential sumber. Sumber dengan nama sama di instalasi lain belum tentu mempunyai ID sama.
+Importing by Grafana ID or catalog URL is not available. Dashboard JSON does not include source credentials. A source with the same name in another installation may have a different ID.
 
-## Apa yang perlu diverifikasi
+## What to verify
 
-Converter berusaha membawa posisi/ukuran panel, row, query, variable, warna, unit, legend, threshold, dan opsi tabel yang didukung schema Observed. Hasilnya tidak dijamin sama persis untuk setiap dashboard Grafana. Plugin visualisasi, transformasi kompleks, expression, sumber non-InfluxDB, atau format schema lain dapat memerlukan penyusunan ulang manual. Baca warnings, jangan hanya mengandalkan preview gambar.
+The converter attempts to preserve panel position/size, rows, queries, variables, colors, units, legends, thresholds, and table options supported by the Observed schema. It does not guarantee an exact match for every Grafana dashboard. Visualization plugins, complex transformations, expressions, non-InfluxDB sources, and other schemas may need manual reconstruction. Read warnings instead of judging only the visual preview.
 
-`No data` biasanya berarti rentang waktu, bucket, measurement, field/tag, variable, atau bahasa sumber tidak cocok. Tampilan kosong bukan alasan untuk menambahkan data sensor fiktif. Gunakan **Check panel data** dan inspector untuk mengetahui penyebab.
+`No data` commonly means a mismatched time range, bucket, measurement, field/tag, variable, or query language. Do not insert fictional sensor data to hide an empty result. Use **Check panel data** and the inspector to identify the cause.
 
-## Export dan perubahan JSON
+## Export and JSON editing
 
-Menu dashboard → **Export JSON** mengunduh konfigurasi. **Dashboard settings → JSON** memungkinkan mengedit definisi draft, memvalidasi, lalu Save. Contoh native yang sederhana ada di [dashboard.json](../examples/dashboard.json). Ganti seluruh ID sumber contoh sebelum menggunakannya.
+Dashboard menu → **Export JSON** downloads the configuration. **Dashboard settings → JSON** edits and validates the draft before Save. See [dashboard.json](../examples/dashboard.json) for a minimal native example. Replace example source IDs before use.
 
-Import menyimpan dokumen asal pada `importMetadata` agar perbaikan pemetaan/appearance dapat merujuk dokumen tersebut. Fitur perbaikan import membutuhkan Edit access dan menghasilkan pembaruan/versi dashboard; periksa hasilnya setelah diterapkan.
+Import stores the original document in `importMetadata` so source/appearance repairs can reference it. Import repair requires Edit access and updates the saved dashboard/version; inspect the result afterward.
 
-Body API maksimal 2 MiB. `sourceDocument` maksimal 1.500.000 karakter dan masing-masing query maksimal 25.000 karakter. Jangan menaruh token atau secret di query/JSON dashboard: export dan pengguna yang memiliki View access dapat membacanya.
+API bodies are limited to 2 MiB. `sourceDocument` is limited to 1,500,000 characters and each query to 25,000. Never put tokens or secrets in dashboard queries/JSON: exports and users with View access can read them.

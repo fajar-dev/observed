@@ -1,32 +1,34 @@
-# Menambah fitur
+# Extending the application
 
-## Menambah kemampuan domain/API
+## Domain and API features
 
-1. Cari feature terdekat melalui [peta AI](../ai/README.md), jangan membuat domain paralel.
-2. Tetapkan schema request/response di `shared/domain`, termasuk default, batas dan enum.
-3. Tambahkan fungsi murni atau service method. Bila perlu dependency eksternal, nyatakan port dan implementasikan adapter; inject melalui composition root.
-4. Tambahkan repository method dan migrasi jika persistensi berubah. Pertimbangkan lock/transaksi, cascade, dan revision.
-5. Buat handler tipis di `server/api`, gunakan validateBody/resourceId dan principal.
-6. Update policy role dan resource permission jika endpoint baru. Tidak boleh ada bypass hanya karena path belum dikenali aturan lama.
-7. Tambahkan akses client/composable serta UI menggunakan pola loading/error/success yang sudah ada.
-8. Uji perilaku bermakna, dokumentasikan endpoint dan kontrak, lalu regenerate inventory.
+1. Find the closest feature through the [AI change map](../ai/README.md); do not create a parallel domain unnecessarily.
+2. Define shared request/response schemas with defaults, bounds, and enums.
+3. Add a pure function or application service method. Define a port for external dependencies, implement an adapter, and inject it through the composition root.
+4. Add repository methods and migrations for persisted changes; consider locks, transactions, cascades, and revisions.
+5. Add a thin `server/api` handler using validateBody/resourceId and the principal.
+6. Update role and resource policies for new endpoints. A path not recognized by old rules must not become a bypass.
+7. Add client/composable behavior and UI using existing loading/error/success patterns.
+8. Test meaningful behavior, document the endpoint/contract, and regenerate the inventory.
 
-## Visualisasi baru
+## New visualizations
 
-Tambah identifier/schema serta katalog visualisasi, pemetaan output di QueryVisualization/QueryChart, opsi panel, default, preview editor, dan converter import bila relevan. Uji seri kosong, null, nilai besar/kecil, banyak label, resize, mobile, legend panjang, field override dan CSV inspector. Jangan mengubah unit data diam-diam agar chart terlihat cocok.
+Update the visualization identifier/schema/catalog, QueryVisualization/QueryChart mapping, panel settings/defaults, editor preview, and import converter when applicable. Test empty/null series, large/small numbers, many labels, resizing, mobile, long legends, field overrides, and inspector CSV. Never silently convert measurement units just to make a chart fit.
 
-## Perubahan layout
+## Layout changes
 
-Gunakan fungsi layout bersama dan adapter GridStack. Pertahankan ID panel, row membership, koordinat desktop, columns 12/24, ukuran, serta round-trip save/import/export. Uji row collapsed, panel pindah row, remove row yang mempertahankan panel, compact, mobile dan kiosk. Jangan menyimpan layout satu kolom mobile di atas desktop secara otomatis.
+Use shared layout functions and the GridStack adapter. Preserve panel IDs, row membership, desktop coordinates, 12/24 columns, dimensions, and save/import/export round trips. Check collapsed rows, moving panels between rows, removing rows while retaining panels, compaction, mobile, and kiosk. Do not automatically save mobile's one-column presentation over desktop coordinates.
 
-## Perubahan notifikasi/alert
+## Alerts and notifications
 
-Bedakan evaluasi dari delivery. Tambahkan transition rule dalam evaluator/service, lalu uji pending, no_data/error, duplicate evaluation, mute/pause, firing sekali, recovery, kegagalan satu tujuan, dan retry. Event in-app tetap atomik dengan evaluasi dan permission mengikuti alert. Hindari menambah notification ACL/source ACL tanpa keputusan produk eksplisit.
+Separate evaluation from delivery. Add transition behavior to the evaluator/service, then test pending, no_data/error, duplicate evaluations, mute/pause, one firing per episode, recovery, partial destination failure, and retry. In-app events remain atomic with evaluation and follow alert access. Do not add notification or source ACLs without an explicit product decision.
 
-## Integrasi/provider baru
+The alert pop-up preference must affect only presentation. Disabling it cannot stop the inbox stream, unread updates, normal action toasts, or Telegram; re-enabling must not replay suppressed events.
 
-Pisahkan config server dan identity flow dari UI. Validasi provider claims, expiry, state/linking, dan perbedaan akun. Jangan menyimpan provider tokens tanpa kebutuhan. UI toggle bukan pengganti server authorization.
+## Integrations and providers
 
-## Dokumentasi dan rollback
+Separate server configuration and identity flows from UI. Validate claims, expiry, state/linking, and account boundaries. Do not store provider tokens without a requirement. A UI toggle does not replace server authorization.
 
-Setiap fitur baru harus menerangkan tujuan, langkah penggunaan, akses, input/output, error, batasan dan cara mengujinya. Untuk schema data tentukan pemulihan dari backup atau migrasi lanjutan; jangan menjanjikan rollback otomatis yang tidak diimplementasikan.
+## Documentation and recovery
+
+Describe each new feature's purpose, steps, access, input/output, errors, limits, and verification in English. Define database recovery through backups or forward migrations; do not promise an automatic rollback that is not implemented.

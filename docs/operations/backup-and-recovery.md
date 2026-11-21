@@ -1,10 +1,10 @@
-# Backup dan recovery
+# Backup and recovery
 
-## Yang disimpan
+## What to preserve
 
-Backup PostgreSQL mencakup konfigurasi source/Telegram, dashboard/versi, alert/evaluasi, akun, permission, sesi, dan notifikasi. Backup ini tidak mencakup metrik di InfluxDB; database sensor membutuhkan kebijakan backup sendiri.
+PostgreSQL backups include source/Telegram settings, dashboards/versions, rules/evaluations, accounts, permissions, sessions, and notifications. They do not contain InfluxDB measurements; sensor databases need separate backup policies.
 
-Simpan `OBSERVE_SECRET_KEY` yang cocok dengan backup. Tanpa key itu credential terenkripsi tidak dapat dibaca. Lindungi backup karena mengandung hash akun, sesi, dan konfigurasi sensitif meskipun credential sumber terenkripsi.
+Keep the `OBSERVE_SECRET_KEY` matching each backup. Without it, saved credentials cannot be decrypted. Protect dumps containing account hashes, sessions, and sensitive configuration even though source credentials are encrypted.
 
 ## Docker
 
@@ -13,9 +13,9 @@ sh docker/backup.sh
 sh docker/backup.sh backups/observed-before-update.dump
 ```
 
-Helper memakai `pg_dump` custom format tanpa ownership/ACL, file privat, publish setelah sukses, dan menolak overwrite. Direktori backup diabaikan Git. Salin backup ke penyimpanan terpisah sesuai kebijakan operasi; file di disk host yang sama belum cukup untuk pemulihan kehilangan host.
+The helper uses custom-format `pg_dump` without ownership/ACLs, private files, atomic publication after success, and refuses overwrite. Backups are Git-ignored. Copy them to separate storage according to your operational policy; a backup on the same disk is insufficient for host-loss recovery.
 
-Restore berikut mengganti isi database yang dituju. Pastikan stack dan dump yang dipilih benar, serta matching key sudah dikonfigurasi:
+The following restore replaces the target database contents. Confirm the stack/dump and matching key before running:
 
 ```sh
 sh docker/compose.sh stop app
@@ -25,27 +25,27 @@ sh docker/compose.sh exec -T database sh -c \
 sh docker/compose.sh up -d --wait app
 ```
 
-Untuk deployment baru, jalankan database dahulu, restore, lalu app. Role restore memastikan objek dimiliki role aplikasi agar migrasi selanjutnya tetap dapat berjalan.
+For a new deployment, start the database first, restore, then start the app. Restoring as the application role preserves object ownership for future migrations.
 
-## Database eksternal
+## External databases
 
-Gunakan fasilitas backup PostgreSQL milik infrastruktur atau `pg_dump --format=custom --no-owner --no-acl` dengan role/PGPASSFILE yang tepat. Hindari password pada command line/log. Hentikan writer aplikasi ketika restore dan restore sebagai role pemilik schema. Gunakan client PostgreSQL yang kompatibel dengan versi server.
+Use infrastructure-managed PostgreSQL backups or `pg_dump --format=custom --no-owner --no-acl` with the appropriate role/PGPASSFILE. Avoid passwords on command lines or in logs. Stop application writers during restore and restore as the schema owner. Use PostgreSQL client tools compatible with the server version.
 
-## Uji pemulihan
+## Recovery verification
 
-1. Pulihkan ke database terpisah, bukan database aktif.
-2. Gunakan key yang sesuai. Sebelum menjalankan aplikasi hasil restore untuk verifikasi, pause rule pada database salinan tersebut (lihat perintah di bawah) agar tidak mengirim pesan tanpa sengaja.
-3. Periksa health dan sign-in.
-4. Periksa jumlah/isi dashboard, permission, notifikasi, dan versi.
-5. Uji dekripsi credential melalui query source yang diketahui.
-6. Uji scheduler/delivery hanya pada source/tujuan uji terkontrol.
+1. Restore into a separate database, not the active one.
+2. Supply its matching key. Pause rules on the restored copy before starting the verification server to avoid unintended notifications.
+3. Check health and sign-in.
+4. Inspect dashboards, permissions, notifications, and versions.
+5. Verify credential decryption with a known source query.
+6. Test scheduling/delivery only with controlled test sources/destinations.
 
-Menghapus user atau marker setup bukan prosedur recovery admin. Jika seluruh akses admin hilang, gunakan backup yang diketahui dan bantuan pengelola database; jangan membuka bootstrap publik pada database berisi konfigurasi produksi. Catat durasi recovery dan target kehilangan data yang dapat diterima di prosedur operasional instalasi Anda.
+Deleting users or the setup marker is not an administrator recovery procedure. If all administrator access is lost, use a known backup and the database operator's assistance; do not reopen public bootstrap over production configuration. Record recovery duration and acceptable data loss in the installation's operating procedure.
 
-Untuk database salinan yang terisolasi, jalankan sebagai pemilik schema melalui psql **sebelum** server aplikasi uji dijalankan:
+For an isolated recovery/QA database, run as schema owner through psql **before** starting the verification application:
 
 ```sql
 UPDATE observe.alert_rules SET enabled = false;
 ```
 
-Ini hanya untuk salinan pemulihan/QA. Jangan menjalankannya pada database aktif kecuali memang bermaksud mem-pause seluruh rule. Setelah verifikasi, aktifkan hanya rule yang ingin diuji lewat UI.
+Do not run this on an active database unless intentionally pausing every rule. After verification, enable only the rules you intend to test through the UI.

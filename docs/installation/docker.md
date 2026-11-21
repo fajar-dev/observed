@@ -1,10 +1,10 @@
-# Menjalankan dengan Docker
+# Running with Docker
 
-Stack berisi Observed dan PostgreSQL. Host membutuhkan Docker Engine, Docker Compose v2.20+, dan OpenSSL. Node.js, Bun, dan PostgreSQL lokal tidak diperlukan untuk deployment ini.
+The stack contains Observed and PostgreSQL. The host needs Docker Engine, Docker Compose v2.20+, and OpenSSL. Node.js, Bun, and a host PostgreSQL installation are not required for this deployment.
 
 ## Quick start
 
-Dari root repositori:
+From the repository root:
 
 ```sh
 sh docker/setup.sh
@@ -12,42 +12,42 @@ sh docker/compose.sh up -d --build --wait
 sh docker/compose.sh ps
 ```
 
-Buka **http://localhost:3000/sign-in**, lalu buat administrator pertama. Tidak ada akun/password bawaan. Migrasi dibuat otomatis; setup tidak dapat diulang setelah selesai.
+Open **http://localhost:3000/sign-in** and create the first administrator. There is no default account/password. Migrations run automatically; setup cannot be repeated after completion.
 
-`setup.sh` membuat `.env.docker` dengan password database/admin berbeda, key enkripsi acak 32 byte, dan permission file 0600. File existing tidak ditimpa. Alternatifnya salin [template](../../docker/.env.example) dan isi secret sendiri. File `.env` development terpisah dan tidak disalin ke image.
+`setup.sh` creates `.env.docker` with different application/administrator database passwords, a random 32-byte encryption key, and file permissions 0600. Existing files are not overwritten. Alternatively, copy the [template](../../docker/.env.example) and provide your own secrets. The development `.env` is separate and is not copied into the image.
 
-## Membuka akses jaringan
+## Network access
 
-Default aplikasi hanya dipublikasikan pada `127.0.0.1:3000`. Untuk akses dari komputer lain, ubah `.env.docker`:
+By default the application is published only on `127.0.0.1:3000`. To allow access from other machines, edit `.env.docker`:
 
 ```dotenv
 OBSERVE_BIND_ADDRESS=0.0.0.0
 OBSERVE_HTTP_PORT=3000
 ```
 
-Buka alamat server dengan port host yang dipilih. Container tetap mendengarkan port 3000. PostgreSQL tidak mempublikasikan port ke host. Terapkan perubahan:
+Open the server address using the selected host port. The container still listens on port 3000. PostgreSQL does not publish a host port. Apply changes with:
 
 ```sh
 sh docker/compose.sh up -d --wait
 ```
 
-Listener bawaan menggunakan HTTP. Domain dan TLS ditangani infrastruktur di luar aplikasi. Teruskan host dan skema request yang benar agar callback OAuth dan cookie mengikuti alamat browser.
+The built-in listener uses HTTP. Domains and TLS are handled by infrastructure outside the application. Preserve the correct request host and scheme so OAuth callbacks and cookies match the browser address.
 
-## Sumber sensor dan Telegram
+## Sensor sources and Telegram
 
-Tidak ada InfluxDB bawaan. Setelah sign-in, tambahkan sumber existing di Configuration. Untuk InfluxDB pada host Docker gunakan `http://host.docker.internal:8086`; mapping host-gateway juga tersedia untuk Linux. Alamat LAN dapat dipakai jika container dapat mencapainya. Cek bind server InfluxDB dan firewall host.
+InfluxDB is not bundled. Add existing sources through Configuration after signing in. For InfluxDB running on the Docker host, use `http://host.docker.internal:8086`; the Linux host-gateway mapping is included. LAN addresses work if reachable from the container. Check the InfluxDB listener and host firewall.
 
-Scheduler alert selalu aktif selama aplikasi berjalan. Pause dapat diatur pada masing-masing rule. Google/Microsoft nonaktif sampai di-enable dan dikonfigurasi. Tujuan Telegram ditambahkan melalui UI, bukan dimasukkan sebagai env global. Lihat [environment](../configuration/environment.md).
+The alert scheduler always runs while the application is running. Pause is configured per rule. Google/Microsoft remain disabled until enabled and configured. Telegram destinations are added through the UI, not through global environment variables. See the [environment reference](../configuration/environment.md).
 
-## Image, runtime, dan volume
+## Image, runtime, and volume
 
-[Dockerfile](../../Dockerfile) menggunakan build multi-stage dan dependency lock. Runtime berisi `.output` serta skrip startup/health, berjalan sebagai user non-root `bun`, filesystem read-only, `/tmp` sementara, dropped capabilities dan no-new-privileges. Konfigurasi rahasia dan dependency build tidak disalin ke image.
+The [Dockerfile](../../Dockerfile) uses a multi-stage build and locked dependencies. The runtime contains `.output` and startup/health scripts. It runs as the non-root `bun` user with a read-only filesystem, temporary `/tmp`, dropped capabilities, and no additional privileges. Secrets and build dependencies are not copied into the image.
 
-PostgreSQL 18 menyimpan data pada named volume `postgres_data` di `/var/lib/postgresql`. Role aplikasi memiliki database/schema tetapi bukan superuser dan tidak dapat membuat role/database. Password administrator terpisah dipakai untuk inisialisasi.
+PostgreSQL 18 stores data in the `postgres_data` named volume mounted at `/var/lib/postgresql`. The application role owns its database/schema but is not a superuser and cannot create roles/databases. A separate administrator password initializes PostgreSQL.
 
-Aplikasi mulai setelah database sehat. Health `/api/health` juga memeriksa kesiapan database/migrasi. Kedua service memakai restart policy dan rotasi log. Image mengikuti arsitektur yang disediakan base image; pengujian container repositori dilakukan pada Linux ARM64, bukan klaim bahwa seluruh platform sudah diuji.
+The application starts after the database is healthy. `/api/health` also checks database/migration readiness. Both services use restart policies and log rotation. Image architectures follow the available base images; repository container validation was performed on Linux ARM64, not every possible platform.
 
-## Operasi harian
+## Daily operations
 
 ```sh
 sh docker/compose.sh logs --tail=100 -f app
@@ -57,20 +57,20 @@ sh docker/compose.sh up -d --build --wait
 sh docker/compose.sh down
 ```
 
-`down` mempertahankan volume. `down --volumes` menghapus data. Jangan mengganti key enkripsi saat update. Jangan mengganti major PostgreSQL pada volume existing tanpa migrasi database. Mengubah password env tidak merotasi role database yang sudah diinisialisasi.
+`down` preserves the volume. `down --volumes` deletes its data. Keep the encryption key unchanged during upgrades. Do not change the PostgreSQL major version on an existing volume without a database migration. Editing an environment password does not rotate an initialized database role.
 
-[Backup dan restore lengkap](../operations/backup-and-recovery.md) menjelaskan ownership role, matching key, dan pemulihan terkontrol. [Troubleshooting](../operations/troubleshooting.md) menjelaskan masalah network dan startup.
+[Backup and recovery](../operations/backup-and-recovery.md) covers ownership, matching keys, and controlled restoration. [Troubleshooting](../operations/troubleshooting.md) covers network and startup issues.
 
-## File environment lain
+## Another environment file
 
 ```sh
 sh docker/setup.sh /absolute/path/observed.env
 OBSERVE_ENV_FILE=/absolute/path/observed.env sh docker/compose.sh up -d --build --wait
 ```
 
-`COMPOSE_PROJECT_NAME` memisahkan deployment dan namespace volume. Semua helper harus diarahkan ke file/proyek yang sama untuk operasi stack tersebut. Jangan memakai stack pengujian untuk data produksi.
+`COMPOSE_PROJECT_NAME` separates deployments and volume namespaces. Point all helper scripts at the same file/project for a deployment. Do not use a test stack for production data.
 
-## Image dengan PostgreSQL eksternal
+## Image with external PostgreSQL
 
 ```sh
 docker build -t observed:local .
@@ -82,6 +82,6 @@ docker run -d --name observed --restart unless-stopped --init \
   -p 127.0.0.1:3000:3000 observed:local
 ```
 
-Isi env dengan `DATABASE_URL`, `OBSERVE_SECRET_KEY`, dan pengaturan opsional yang dibutuhkan. User database harus dapat membuat/memelihara schema observe. Entrypoint mendukung versi `_FILE` untuk secret sebagaimana [referensi env](../configuration/environment.md); jangan isi plain dan `_FILE` bersamaan, serta pastikan file dapat dibaca UID 1000.
+Provide `DATABASE_URL`, `OBSERVE_SECRET_KEY`, and any optional settings in the environment file. The database user must be able to create/maintain the observe schema. The entrypoint supports secret `_FILE` variants listed in the [environment reference](../configuration/environment.md). Do not set both plain and `_FILE` values; mounted files must be readable by UID 1000.
 
-Test runtime Docker dijelaskan pada [pengujian](../development/testing.md). Test tersebut melakukan perubahan database dan restore pada stack terisolasi.
+See [testing](../development/testing.md) for Docker runtime tests. These modify and restore a database in an isolated stack.

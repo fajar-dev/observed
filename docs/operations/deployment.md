@@ -1,22 +1,22 @@
-# Deployment dan operasi
+# Deployment and operations
 
-Gunakan [Docker](../installation/docker.md) untuk stack aplikasi + PostgreSQL, atau [build lokal](../installation/local.md) untuk runtime Bun dengan database eksternal.
+Use [Docker](../installation/docker.md) for the application/PostgreSQL stack or a [local build](../installation/local.md) for a Bun runtime with an external database.
 
-## Checklist konfigurasi
+## Configuration checklist
 
-1. Database dan role aplikasi terpisah dari PostgreSQL administrator.
-2. `OBSERVE_SECRET_KEY` tepat 32 byte setelah base64 decode, disimpan tetap dan dibackup.
-3. Request yang diteruskan infrastruktur menggunakan host dan skema browser yang benar.
-4. Sumber InfluxDB dapat dicapai dari runtime server; browser tidak mengakses credential langsung.
-5. Outbound Telegram/provider tersedia jika diaktifkan.
-6. Proses aplikasi hidup terus-menerus; scheduler alert selalu aktif.
-7. Database, volume, backup, dan akses host dipantau.
+1. Use an application database role separate from the PostgreSQL administrator.
+2. Preserve and back up `OBSERVE_SECRET_KEY`, which must decode to exactly 32 bytes.
+3. Infrastructure must preserve the browser's request host and scheme.
+4. The server runtime must reach InfluxDB; browsers do not receive source credentials.
+5. Permit outbound Telegram/provider connections when those integrations are used.
+6. Keep the process alive continuously; the alert scheduler is always active.
+7. Monitor the database, volume, backups, and host access.
 
-Domain dan TLS dikelola infrastruktur di luar aplikasi. Callback OAuth dan atribut Secure cookie mengikuti URL request yang diterima runtime. Host dan skema request harus sesuai alamat yang dibuka browser; aplikasi tidak menyediakan pengaturan domain atau kepercayaan jaringan melalui environment. IP untuk throttle menggunakan alamat client yang diberikan runtime.
+Domains and TLS belong to infrastructure outside the application. OAuth callbacks and Secure cookie attributes follow the runtime request URL. Host/scheme must match the browser address; no domain or network-trust environment settings are provided. Authentication throttling uses the client address supplied by the runtime.
 
-## Health dan diagnostik
+## Health and diagnostics
 
-`GET /api/health` bersifat publik, `Cache-Control: no-store`, dengan body `{"status":"ok"}` (200) atau `{"status":"unavailable"}` (503). Probe memeriksa koneksi database dan kesiapan migrasi. Health tidak membuktikan InfluxDB, Telegram, dan provider OAuth semuanya sehat. Uji koneksi source/tujuan melalui Configuration dan periksa evaluasi alert.
+`GET /api/health` is public, uses `Cache-Control: no-store`, and returns `{"status":"ok"}` (200) or `{"status":"unavailable"}` (503). The probe checks database connectivity and migration readiness. It does not establish the health of every InfluxDB source, Telegram, or OAuth provider. Test sources/destinations through Configuration and inspect alert evaluations separately.
 
 ```sh
 sh docker/compose.sh ps
@@ -25,14 +25,14 @@ sh docker/compose.sh logs --tail=100 database
 curl --fail http://localhost:3000/api/health
 ```
 
-Log tidak boleh membocorkan env, URL credential, hash password, token, atau raw cookie. Saat melaporkan masalah, kirim status HTTP, pesan tersanitasi, langkah reproduksi, dan waktu kejadian.
+Never expose environment secrets, credential URLs, password hashes, tokens, or raw cookies in logs. Issue reports should include HTTP status, sanitized messages, reproduction steps, and event time.
 
-## Multi-instance
+## Multiple instances
 
-Semua instance harus memakai database dan key enkripsi yang sama. Masing-masing memiliki pool koneksi sendiri. Lock per rule mengurangi evaluasi ganda; notifikasi menggunakan PostgreSQL sehingga stream tidak tergantung satu proses. Ini tidak menjamin exactly-once pengiriman Telegram jika crash terjadi di tengah pengiriman eksternal.
+All instances must share the database and encryption key. Each has its own connection pools. Per-rule locks reduce duplicate evaluation and PostgreSQL-backed notifications allow streaming across instances. Telegram is still not exactly-once if a process crashes during external delivery.
 
-Scheduler berjalan pada setiap instance aplikasi. Lock database mengoordinasikan rule agar tidak dievaluasi bersamaan. Gunakan pause/enable pada masing-masing rule untuk mengatur evaluasi; tidak ada sakelar scheduler global. Pertimbangkan beban InfluxDB, jumlah panel/user, refresh, dan interval alert sebelum menambah replica.
+Every instance runs its scheduler. Database locks coordinate individual rules. Use per-rule enable/pause controls; no global scheduler switch exists. Consider InfluxDB load, panel/user counts, refresh, and evaluation intervals before adding replicas.
 
-## Upgrade
+## Upgrades
 
-Buat backup database+key, periksa perubahan schema/environment, build versi baru dan jalankan health, uji sign-in, query source, dashboard, serta preview alert. Migrasi otomatis bukan rollback otomatis. Jika perlu kembali ke versi lama, gunakan rencana recovery database yang kompatibel. Jangan melakukan major upgrade PostgreSQL dengan sekadar mengganti tag image pada volume lama.
+Back up the database/key, review schema/environment changes, build the new version, check readiness, and verify sign-in, source queries, dashboards, and alert previews. Automatic migration is not automatic rollback. Returning to an older binary needs a compatible database recovery plan. Do not upgrade PostgreSQL's major version merely by changing the image tag on an existing volume.

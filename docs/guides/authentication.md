@@ -1,32 +1,34 @@
-# Sign-in, profil, dan provider
+# Sign-in, profile, and identity providers
 
-## Password dan setup
+## Passwords and setup
 
-Setup administrator hanya tersedia sekali sebelum database diinisialisasi. Tidak ada pendaftaran lokal publik, akun default, atau alur email forgot-password. Administrator mengelola akun/reset password melalui Users. Logout tidak membuka setup kembali.
+Administrator setup is available once before the database is initialized. There is no public local registration, default account, or email forgot-password flow. Administrators manage accounts and reset passwords through Users. Signing out does not reopen setup.
 
-Sign-in memakai email/password. Akses browser disimpan dalam cookie HttpOnly, bukan localStorage. Access JWT berlaku 10 menit; refresh token opaque berotasi dengan sesi absolut 30 hari. Refresh token yang dipakai ulang mencabut sesi terkait. Sign out mencabut sesi saat ini dan membersihkan cookie.
+Sign in with email/password. Browser credentials use HttpOnly cookies rather than localStorage. Access JWTs last 10 minutes; opaque refresh tokens rotate within an absolute 30-day session. Reusing a consumed refresh token revokes its session. Sign out revokes the current session and clears cookies.
 
 ## Profile
 
-Menu akun → **Profile** menyediakan perubahan nama, password lokal dengan current password, daftar metode sign-in yang terhubung, serta browser sessions. Email ditampilkan read-only pada profil pribadi. Perubahan password mencabut sesi dan meminta sign-in kembali. Form akun memakai dua kolom pada layar lebar dan satu kolom pada mobile. Daftar Active sessions berada pada bagian tersendiri selebar halaman, menempatkan sesi saat ini paling atas, serta menampilkan 10 sesi per halaman. Revoke session dapat dilakukan untuk sesi lain atau sesi saat ini; revoke sesi saat ini langsung keluar.
+Account menu → **Profile** provides name changes, local password changes using the current password, linked sign-in methods, and browser sessions. Email is read-only in the personal profile. Changing a password revokes sessions and requires sign-in again.
 
-## Preferensi notifikasi
+Account fields use two columns on wider screens and one on mobile. Active sessions occupies a separate full-width section, places the current session first, and shows 10 sessions per page. Revoke works for other sessions or the current one; revoking the current session signs out immediately.
 
-Di Profile → Notifications, switch **Alert pop-ups** aktif secara default untuk akun baru maupun existing. Perubahan langsung disimpan per akun tanpa menekan Save changes. Saat dimatikan, hanya pop-up firing/recovery yang dihentikan; inbox, unread count, pembaruan alert, toast hasil aksi biasa, dan pengiriman Telegram tetap berjalan. Pilihan tersimpan setelah sign-in ulang. Browser/sesi lain membaca pilihan tersimpan saat memperbarui data akun atau reload.
+## Notification preference
 
-## Google dan Microsoft
+**Profile → Notifications → Alert pop-ups** is enabled by default for new and existing accounts. Changes save immediately per account without Save changes. Disabling it suppresses only firing/recovery pop-ups; the inbox, unread count, alert refresh, ordinary action toasts, and Telegram delivery continue. The preference survives sign-in. Other browsers/sessions read the saved preference when account data refreshes or the page reloads.
 
-Administrator menyiapkan aplikasi OAuth web confidential pada provider, lalu mengisi environment dan restart Observed. Daftarkan callback sesuai alamat aplikasi yang dibuka browser. Alamat ini mengikuti request dan tidak memerlukan environment domain:
+## Google and Microsoft
+
+Administrators create confidential web OAuth applications with each provider, configure the environment, and restart Observed. Register callbacks matching the browser's application URL. Callbacks follow incoming requests without a domain environment setting:
 
 ```text
-<URL_APLIKASI>/api/observe/auth/oauth/google/callback
-<URL_APLIKASI>/api/observe/auth/oauth/microsoft/callback
+<APPLICATION_URL>/api/observe/auth/oauth/google/callback
+<APPLICATION_URL>/api/observe/auth/oauth/microsoft/callback
 ```
 
-Google membutuhkan client ID/secret dan email terverifikasi dari ID token. Microsoft membutuhkan client ID/secret, UUID tenant tertentu, serta claim `email` yang valid; akun tenant lain ditolak. Aplikasi tidak mendukung tenant `common` atau `organizations` pada implementasi ini. Tombol provider hanya muncul jika `OBSERVE_<PROVIDER>_ENABLED=true`; enabled tanpa credential lengkap menyebabkan konfigurasi gagal.
+Google requires a client ID/secret and a verified email claim. Microsoft requires a client ID/secret, a specific tenant UUID, and a valid `email` claim; other tenants are rejected. `common` and `organizations` are not supported tenant values. Buttons appear only when `OBSERVE_<PROVIDER>_ENABLED=true`; enabling an incompletely configured provider causes a configuration error.
 
-Secara default identitas baru tidak membuat akun otomatis. Pengguna existing sign-in lokal terlebih dahulu, buka **Profile → Sign-in methods**, lalu hubungkan provider. Identitas diikat ke provider dan subject, bukan otomatis ditautkan hanya karena email sama. Email yang bentrok membutuhkan linking eksplisit.
+By default, new identities cannot create accounts automatically. Existing users sign in locally, open **Profile → Sign-in methods**, and connect the provider. Identities bind by provider and subject, never silently by matching email. An email conflict requires explicit linking.
 
-`OBSERVE_OAUTH_ALLOW_SIGNUP=true` mengizinkan identitas baru membuat Viewer setelah setup admin. Administrator masih perlu memberi permission resource. Menonaktifkan provider di env menghentikan sign-in melalui provider itu; pastikan administrator mempunyai metode sign-in lain sebelum menonaktifkannya. UI saat ini tidak menyediakan unlink provider.
+`OBSERVE_OAUTH_ALLOW_SIGNUP=true` lets new identities create Viewer accounts after administrator setup. Administrators still assign resource access. Disabling a provider prevents its use for sign-in; keep another administrator sign-in method available before disabling it. The current UI does not provide provider unlinking.
 
-OIDC memakai authorization code, PKCE S256, state, nonce, dan pemeriksaan ID token. Token provider tidak dijadikan credential sumber sensor dan tidak disimpan sebagai sesi refresh Observed. Konfigurasi OAuth bukan proses setup administrator pertama.
+OIDC uses authorization code, PKCE S256, state, nonce, and ID-token verification. Provider tokens are not sensor credentials and are not stored as Observed refresh sessions. OAuth configuration does not replace first-administrator setup.

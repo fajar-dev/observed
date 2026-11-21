@@ -1,14 +1,14 @@
-# Instalasi lokal
+# Local installation
 
-## Prasyarat
+## Prerequisites
 
-Siapkan Git, Bun sesuai `packageManager` di [package.json](../../package.json) (saat ini 1.4.4), Node.js yang kompatibel dengan dependency Nuxt untuk tooling, dan PostgreSQL. Deployment Docker menggunakan PostgreSQL 18. Gunakan [Docker](docker.md) bila tidak ingin memasang database lokal.
+Install Git, the Bun version declared by `packageManager` in [package.json](../../package.json) (currently 1.4.4), Node.js compatible with the Nuxt dependencies for tooling, and PostgreSQL. The Docker deployment uses PostgreSQL 18. Choose [Docker](docker.md) if you do not want a local database installation.
 
-Sediakan instance InfluxDB yang berisi data sensor. Aplikasi tidak membuat bucket maupun memasukkan sample sensor secara otomatis.
+Provide an InfluxDB instance containing sensor data. The application does not create buckets or insert sensor samples automatically.
 
-## Menjalankan
+## Start the application
 
-Dari root repositori:
+From the repository root:
 
 ```sh
 bun install --frozen-lockfile
@@ -16,7 +16,7 @@ cp .env.example .env
 openssl rand -base64 32
 ```
 
-Simpan hasil perintah terakhir sebagai `OBSERVE_SECRET_KEY` di `.env`. Jangan memasukkan secret ke Git. Siapkan database dengan role khusus. Contoh melalui `psql` sebagai administrator PostgreSQL:
+Set `OBSERVE_SECRET_KEY` in `.env` to the generated value. Never commit secrets. Create a dedicated database role, for example through `psql` as a PostgreSQL administrator:
 
 ```sql
 CREATE ROLE observed LOGIN;
@@ -24,7 +24,7 @@ CREATE ROLE observed LOGIN;
 CREATE DATABASE observed OWNER observed;
 ```
 
-Isi konfigurasi dengan password yang dibuat. Karakter khusus pada bagian password URL harus di-percent-encode:
+Use the password you created. Percent-encode special characters in the password section of the database URL:
 
 ```dotenv
 DATABASE_URL=postgresql://observed:YOUR_URL_ENCODED_PASSWORD@127.0.0.1:5432/observed
@@ -35,20 +35,20 @@ OBSERVE_SECRET_KEY=YOUR_32_BYTE_BASE64_KEY
 bun run dev
 ```
 
-Buka `http://localhost:3000/sign-in`, isi nama, email, dan password administrator pertama (12–128 karakter). Setup tersimpan permanen di database dan tidak dibuka kembali setelah restart. Tidak ada setup token atau akun bawaan.
+Open `http://localhost:3000/sign-in` and enter the first administrator's name, email, and password (12–128 characters). Setup completion is persisted and does not reopen after a restart. There is no setup token or default account.
 
-Migrasi dijalankan otomatis saat database pertama kali digunakan, termasuk melalui health check. Role aplikasi harus dapat membuat dan memelihara schema `observe`. Setelah sign-in, lanjutkan ke [Configuration](../configuration/data-sources.md).
+Migrations run automatically when the database is first used, including through the health check. The application role must be able to create and maintain the `observe` schema. After signing in, continue with [Configuration](../configuration/data-sources.md).
 
-## Build produksi tanpa Docker
+## Production build without Docker
 
 ```sh
 bun run build
 bun --env-file=.env .output/server/index.mjs
 ```
 
-Hasil build berada di `.output`. `bun run start` menjalankan output tersebut, tetapi environment produksi harus sudah dimuat oleh proses pemanggil; jangan menganggap Nuxt otomatis membaca `.env` saat menjalankan server hasil build. Atur `HOST`/`PORT` atau `NITRO_HOST`/`NITRO_PORT` sesuai kebutuhan listener. Callback autentikasi mengikuti URL request tanpa konfigurasi origin environment.
+Build output is written to `.output`. `bun run start` runs that output, but the calling process must load the production environment; do not assume Nuxt reads `.env` when running the built server. Set `HOST`/`PORT` or `NITRO_HOST`/`NITRO_PORT` for the listener. Authentication callbacks follow the incoming request URL without an origin environment setting.
 
-## Memeriksa kesiapan
+## Verify readiness
 
 ```sh
 curl --fail http://localhost:3000/api/health
@@ -57,4 +57,4 @@ bun run typecheck
 bun run test
 ```
 
-Health yang sukses mengembalikan `{"status":"ok"}`. HTTP 503 berarti aplikasi/database belum siap; lihat [troubleshooting](../operations/troubleshooting.md). Test integrasi menggunakan database terpisah, bukan database aplikasi ini.
+A successful health check returns `{"status":"ok"}`. HTTP 503 means the application/database is not ready; see [troubleshooting](../operations/troubleshooting.md). Integration tests require a separate database, not this application database.

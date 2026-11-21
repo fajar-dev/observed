@@ -1,14 +1,14 @@
-# API HTTP
+# HTTP API
 
-Base path aplikasi adalah `/api/observe`. API menggunakan JSON dengan ID UUID. Tidak ada OpenAPI/Swagger yang dihasilkan saat ini; katalog berikut memetakan seluruh file handler yang ada. Label `:id` dan `:provider` adalah parameter path, bukan literal URL.
+The application API base path is `/api/observe`. Requests use JSON and UUID identifiers. There is no generated OpenAPI/Swagger specification; the catalog below maps every current handler. `:id` and `:provider` are path parameters, not literal URL segments.
 
-## Autentikasi dan origin
+## Authentication and request origin
 
-Browser menggunakan cookie HttpOnly. Script dapat mengirim `Authorization: Bearer <accessToken>` yang diperoleh dari sign-in/setup. Respons sign-in/refresh berisi `{user, accessToken, expiresIn: 600}`; refresh token hanya dikirim melalui cookie, bukan response JSON.
+Browsers use HttpOnly cookies. Scripts may send `Authorization: Bearer <accessToken>` obtained from sign-in/setup. Sign-in/refresh returns `{user, accessToken, expiresIn: 600}`; refresh tokens are sent only through cookies, not response JSON.
 
-Mutation tanpa bearer membutuhkan Origin yang sama dengan URL request atau sinyal same-origin yang didukung middleware. Bearer tidak mengabaikan larangan Origin yang salah/cross-site. Route public auth tetap memakai origin guard untuk mutation.
+Mutations without Bearer need an Origin matching the request URL or a supported same-origin signal. Bearer does not bypass mismatched Origin/cross-site rejection. Public authentication mutations still use request-origin protection.
 
-Contoh sign-in (gunakan akun uji, payload disimpan privat, tidak dicommit):
+Example sign-in with a test account and a private, uncommitted payload file:
 
 ```sh
 curl --request POST http://localhost:3000/api/observe/auth/sign-in \
@@ -17,9 +17,9 @@ curl --request POST http://localhost:3000/api/observe/auth/sign-in \
   --data-binary @/absolute/private/sign-in.json
 ```
 
-Isi file berupa `{"email":"engineer@example.test","password":"YOUR_PASSWORD"}`. Respons dan header cookie mengandung credential sesi; jangan menyalinnya ke log/issue. Untuk refresh client non-browser, simpan cookie dari respons sign-in dalam cookie jar privat lalu kirim kembali pada `/auth/refresh`; bearer access token saja tidak menggantikan refresh cookie.
+The file contains `{"email":"engineer@example.test","password":"YOUR_PASSWORD"}`. Responses and cookie headers contain session credentials: do not copy them into logs/issues. For non-browser refresh, retain response cookies in a private cookie jar and send them to `/auth/refresh`; an access Bearer token does not replace the refresh cookie.
 
-Untuk menjalankan query, set variabel shell `OBSERVED_ACCESS_TOKEN` secara privat dengan access token aktif:
+To run a query, privately set shell variable `OBSERVED_ACCESS_TOKEN` to an active access token:
 
 ```sh
 curl --request POST http://localhost:3000/api/observe/queries \
@@ -28,96 +28,96 @@ curl --request POST http://localhost:3000/api/observe/queries \
   --data-binary @docs/examples/query.json
 ```
 
-Ganti ID sumber pada salinan contoh sebelum request. Semua endpoint selain health/auth public memerlukan sesi aktif. Tidak ada anonymous dashboard API atau API key permanen.
+Replace the example source ID in a private copy before requesting. Every endpoint except health/public authentication requires an active session. There is no anonymous dashboard API or permanent API key.
 
-## Kontrak dan hasil
+## Contracts and responses
 
-Referensi schema utama: [auth](../../shared/domain/auth.ts), [source](../../shared/domain/data-source.ts), [dashboard](../../shared/domain/dashboard.ts), [panel](../../shared/domain/panel.ts), [query](../../shared/domain/query.ts), [alert](../../shared/domain/alert-rule.ts), [variable](../../shared/domain/variable.ts), [permission](../../shared/domain/permissions.ts), [notification](../../shared/domain/notification.ts). Body mengikuti schema tanpa wrapper tambahan kecuali disebutkan pada tabel.
+Main schemas: [auth](../../shared/domain/auth.ts), [sources](../../shared/domain/data-source.ts), [dashboards](../../shared/domain/dashboard.ts), [panels](../../shared/domain/panel.ts), [queries](../../shared/domain/query.ts), [alerts](../../shared/domain/alert-rule.ts), [variables](../../shared/domain/variable.ts), [permissions](../../shared/domain/permissions.ts), [notifications](../../shared/domain/notification.ts). Bodies follow their schemas without an additional wrapper unless noted.
 
-Collection umumnya mengembalikan array; get/create/update mengembalikan record sesuai handler. Jangan mengasumsikan semua aksi memakai envelope `data`. Snapshot notification memakai `{items, unread, cursor, events}`. `auth/session` mengembalikan `{user, canRefresh}` untuk bootstrap browser, sedangkan `auth/me` memerlukan autentikasi.
+Collections generally return arrays; get/create/update returns the record defined by the handler. Do not assume a universal `data` envelope. Notification updates use `{items, unread, cursor, events}`. `auth/session` returns `{user, canRefresh}` for browser bootstrap, whereas `auth/me` requires authentication.
 
-| HTTP status | Makna umum |
+| HTTP status | Typical meaning |
 | --- | --- |
-| 400 | Body bukan JSON valid |
-| 401 | Sesi/token tidak valid atau kedaluwarsa |
-| 403 | Role/permission/origin tidak mengizinkan |
-| 404 | Resource atau provider tidak tersedia |
-| 409 | Konflik revision, lock sedang dipakai, nama duplikat, atau resource masih direferensikan |
-| 413 | Body melebihi 2 MiB |
-| 422 | Payload, UUID, variable atau rentang waktu tidak valid |
-| 429 | Throttle autentikasi |
-| 502 | Koneksi/respons layanan remote gagal |
-| 503 | Konfigurasi/database/provider belum siap |
+| 400 | Invalid JSON body |
+| 401 | Invalid or expired session/token |
+| 403 | Role, permission, or request origin denied |
+| 404 | Resource or provider unavailable |
+| 409 | Revision conflict, occupied lock, duplicate name, or referenced resource |
+| 413 | Body exceeds 2 MiB |
+| 422 | Invalid payload, UUID, variable, or time range |
+| 429 | Authentication throttling |
+| 502 | Remote connection/response failure |
+| 503 | Configuration, database, or provider not ready |
 
-Error mengikuti format H3, dengan statusCode/statusMessage dan detail tersanitasi bila tersedia. Jangan bergantung pada stack trace. Respons API terproteksi menggunakan Cache-Control no-store. Tidak ada pagination umum untuk semua collection; notifikasi memakai cursor, versi dan history mempunyai retensi khusus.
+Errors follow H3 format with statusCode/statusMessage and sanitized details where available. Do not depend on stack traces. Protected API responses use Cache-Control no-store. There is no universal collection pagination contract; notifications use cursors and versions/history have specific retention limits. Profile session pagination is client-side.
 
-## Katalog endpoint
+## Endpoint catalog
 
-Aturan singkat: **Signed-in** = semua role yang terautentikasi; **Create** = Admin/Editor; **View/Edit** = level resource, dibatasi role; **Delete** = Admin atau creator dengan Edit. Admin memiliki akses penuh. Membaca source tidak memerlukan resource grant. Nama tujuan Telegram yang tersedia untuk Editor/Viewer difilter sesuai kebutuhan alert; chatId dikosongkan untuk non-Admin.
+**Signed-in** means any authenticated role; **Create** means Admin/Editor; **View/Edit** means the resource level capped by role; **Delete** means Admin or a creator with current Edit access. Admin has full access. Reading source metadata needs no resource grant. Telegram destination metadata is filtered for Editor/Viewer needs and chatId is blank for non-Admins.
 
-| Endpoint | Akses | Payload / hasil / efek | Source |
+| Endpoint | Access | Payload / response / side effects | Source |
 | --- | --- | --- | --- |
-| `GET /api/health` | Publik | Readiness database/migrasi; 200 ok atau 503 unavailable | [handler](../../server/api/health.get.ts) |
-| `POST /api/observe/alert-rules/:id/evaluate` | Edit alert | Evaluasi aktual; enabled/unmuted dapat mengirim notifikasi; tanpa body | [handler](../../server/api/observe/alert-rules/[id]/evaluate.post.ts) |
-| `DELETE /api/observe/alert-rules/:id` | Delete alert | Hapus rule dengan lock evaluasi | [handler](../../server/api/observe/alert-rules/[id].delete.ts) |
-| `GET /api/observe/alert-rules/:id` | View alert | Satu AlertRule | [handler](../../server/api/observe/alert-rules/[id].get.ts) |
-| `PUT /api/observe/alert-rules/:id` | Edit alert | Body alertRuleSchema; ubah rule dan reset state bila kondisi berubah | [handler](../../server/api/observe/alert-rules/[id].put.ts) |
-| `GET /api/observe/alert-rules` | Signed-in, daftar difilter | AlertRule[] yang diizinkan | [handler](../../server/api/observe/alert-rules/index.get.ts) |
-| `POST /api/observe/alert-rules` | Create alert | Body alertRuleSchema; buat rule | [handler](../../server/api/observe/alert-rules/index.post.ts) |
-| `POST /api/observe/alert-rules/preview` | Create alert | Body alertPreviewSchema; hasil evaluasi dan queryResult; tidak mengirim | [handler](../../server/api/observe/alert-rules/preview.post.ts) |
-| `GET /api/observe/auth/config` | Publik | Konfigurasi setupRequired dan provider aktif | [handler](../../server/api/observe/auth/config.get.ts) |
-| `GET /api/observe/auth/me` | Signed-in | AuthUser saat ini beserta permission | [handler](../../server/api/observe/auth/me.get.ts) |
-| `GET /api/observe/auth/oauth/:provider/callback` | Provider aktif; linking butuh sesi | Callback authorization code OIDC | [handler](../../server/api/observe/auth/oauth/[provider]/callback.get.ts) |
-| `GET /api/observe/auth/oauth/:provider` | Provider aktif; linking butuh sesi | Redirect provider; ?link=1 untuk hubungkan akun saat sign-in | [handler](../../server/api/observe/auth/oauth/[provider]/index.get.ts) |
-| `PUT /api/observe/auth/notification-preferences` | Signed-in, akun sendiri | Body {realtimeAlertToasts: boolean}; simpan preferensi toast dan kembalikan AuthUser tanpa mencabut sesi | [handler](../../server/api/observe/auth/notification-preferences.put.ts) |
-| `PUT /api/observe/auth/profile` | Signed-in | Body profileSchema; update nama/password akun sendiri | [handler](../../server/api/observe/auth/profile.put.ts) |
-| `GET /api/observe/auth/providers` | Signed-in | Provider identity yang terhubung ke akun | [handler](../../server/api/observe/auth/providers.get.ts) |
-| `POST /api/observe/auth/refresh` | Refresh cookie aktif | Rotasi refresh token; tanpa body; cookie diperbarui | [handler](../../server/api/observe/auth/refresh.post.ts) |
-| `GET /api/observe/auth/session` | Publik | Bootstrap sesi; {user, canRefresh} | [handler](../../server/api/observe/auth/session.get.ts) |
-| `DELETE /api/observe/auth/sessions` | Signed-in | Body {id: UUID}; revoke sesi sendiri | [handler](../../server/api/observe/auth/sessions.delete.ts) |
-| `GET /api/observe/auth/sessions` | Signed-in | Daftar sesi sendiri | [handler](../../server/api/observe/auth/sessions.get.ts) |
-| `POST /api/observe/auth/setup` | Publik, hanya sebelum setup selesai | Body setupSchema: name/email/password; membuat Admin pertama | [handler](../../server/api/observe/auth/setup.post.ts) |
-| `POST /api/observe/auth/sign-in` | Publik | Body signInSchema: email/password; sesi dan cookie | [handler](../../server/api/observe/auth/sign-in.post.ts) |
-| `POST /api/observe/auth/sign-out` | Publik, origin diperiksa | Cabut sesi bila ada dan hapus cookie | [handler](../../server/api/observe/auth/sign-out.post.ts) |
-| `DELETE /api/observe/dashboard-folders/:id` | Admin | Hapus folder jika tidak direferensikan | [handler](../../server/api/observe/dashboard-folders/[id].delete.ts) |
-| `GET /api/observe/dashboard-folders` | Signed-in, daftar difilter | Folder yang relevan dengan resource yang terlihat | [handler](../../server/api/observe/dashboard-folders/index.get.ts) |
-| `POST /api/observe/dashboard-folders` | Admin | Body {name}; buat folder | [handler](../../server/api/observe/dashboard-folders/index.post.ts) |
-| `POST /api/observe/dashboard-imports/check` | Create dashboard | Body dashboardSchema; diagnosis variable/panel draft sebelum import | [handler](../../server/api/observe/dashboard-imports/check.post.ts) |
-| `POST /api/observe/dashboard-imports/preview` | Create dashboard | Body {document: JSON, dataSourceId: UUID|null}; konversi/preview, belum menyimpan dashboard | [handler](../../server/api/observe/dashboard-imports/preview.post.ts) |
-| `POST /api/observe/dashboards/:id/diagnostics` | View dashboard | Diagnosis query/variable dashboard tersimpan; tanpa body | [handler](../../server/api/observe/dashboards/[id]/diagnostics.post.ts) |
-| `POST /api/observe/dashboards/:id/restore-import` | Edit dashboard | Body {dataSourceId: UUID|null, restorePanelOptions?: boolean}; perbaiki hasil import | [handler](../../server/api/observe/dashboards/[id]/restore-import.post.ts) |
-| `GET /api/observe/dashboards/:id/versions` | View dashboard | Snapshot versi sebelumnya | [handler](../../server/api/observe/dashboards/[id]/versions.get.ts) |
-| `DELETE /api/observe/dashboards/:id` | Delete dashboard | Hapus dashboard dan relasi terkait | [handler](../../server/api/observe/dashboards/[id].delete.ts) |
-| `GET /api/observe/dashboards/:id` | View dashboard | Satu Dashboard | [handler](../../server/api/observe/dashboards/[id].get.ts) |
-| `PUT /api/observe/dashboards/:id` | Edit dashboard | Body dashboardSchema termasuk revision terkini; update/version | [handler](../../server/api/observe/dashboards/[id].put.ts) |
-| `GET /api/observe/dashboards` | Signed-in, daftar difilter | Dashboard[] yang diizinkan | [handler](../../server/api/observe/dashboards/index.get.ts) |
-| `POST /api/observe/dashboards` | Create dashboard | Body dashboardSchema; create dan grant creator atomik | [handler](../../server/api/observe/dashboards/index.post.ts) |
-| `POST /api/observe/data-sources/:id/test` | Admin | Test query koneksi sumber tersimpan | [handler](../../server/api/observe/data-sources/[id]/test.post.ts) |
-| `DELETE /api/observe/data-sources/:id` | Admin | Hapus jika tidak direferensikan | [handler](../../server/api/observe/data-sources/[id].delete.ts) |
-| `PUT /api/observe/data-sources/:id` | Admin | Body dataSourceSchema; secret dihilangkan = pertahankan, secret string kosong = hapus | [handler](../../server/api/observe/data-sources/[id].put.ts) |
-| `GET /api/observe/data-sources` | Signed-in | Metadata DataSource[] tanpa secret | [handler](../../server/api/observe/data-sources/index.get.ts) |
-| `POST /api/observe/data-sources` | Admin | Body dataSourceSchema; simpan koneksi | [handler](../../server/api/observe/data-sources/index.post.ts) |
-| `GET /api/observe/notifications` | Signed-in, mengikuti alert | Snapshot/update dengan ?after=cursor opsional | [handler](../../server/api/observe/notifications/index.get.ts) |
-| `POST /api/observe/notifications/read` | Signed-in, mengikuti alert | Body {id: UUID} atau {through: cursor}; mark read milik user | [handler](../../server/api/observe/notifications/read.post.ts) |
-| `GET /api/observe/notifications/stream` | Signed-in, mengikuti alert | SSE event notifications; ?after=cursor opsional | [handler](../../server/api/observe/notifications/stream.get.ts) |
-| `POST /api/observe/queries` | Signed-in, semua source | Body querySchema; hasil QueryResponse, maksimal 5.000 baris | [handler](../../server/api/observe/queries/index.post.ts) |
-| `POST /api/observe/telegram-destinations/:id/test` | Admin | Kirim pesan test nyata | [handler](../../server/api/observe/telegram-destinations/[id]/test.post.ts) |
-| `DELETE /api/observe/telegram-destinations/:id` | Admin | Hapus jika tidak direferensikan | [handler](../../server/api/observe/telegram-destinations/[id].delete.ts) |
-| `PUT /api/observe/telegram-destinations/:id` | Admin | Body telegramDestinationSchema; token kosong mempertahankan tersimpan | [handler](../../server/api/observe/telegram-destinations/[id].put.ts) |
-| `GET /api/observe/telegram-destinations` | Signed-in, metadata difilter | Daftar tujuan tanpa token; chatId disamarkan untuk non-Admin | [handler](../../server/api/observe/telegram-destinations/index.get.ts) |
-| `POST /api/observe/telegram-destinations` | Admin | Body telegramDestinationSchema; token diperlukan untuk tujuan baru | [handler](../../server/api/observe/telegram-destinations/index.post.ts) |
-| `GET /api/observe/users/:id/permissions` | Admin | UserPermissions: baca atau ganti grant; save mencabut sesi target | [handler](../../server/api/observe/users/[id]/permissions.get.ts) |
-| `PUT /api/observe/users/:id/permissions` | Admin | UserPermissions: baca atau ganti grant; save mencabut sesi target | [handler](../../server/api/observe/users/[id]/permissions.put.ts) |
-| `DELETE /api/observe/users/:id` | Admin | Hapus akun; guard diri sendiri/Admin terakhir | [handler](../../server/api/observe/users/[id].delete.ts) |
-| `PUT /api/observe/users/:id` | Admin | Body userInputSchema; ubah akun | [handler](../../server/api/observe/users/[id].put.ts) |
-| `GET /api/observe/users` | Admin | Daftar akun | [handler](../../server/api/observe/users/index.get.ts) |
-| `POST /api/observe/users` | Admin | Body userInputSchema; buat akun | [handler](../../server/api/observe/users/index.post.ts) |
-| `POST /api/observe/variables/resolve` | Signed-in, semua source | Body variableResolutionSchema; selections/variables/values/errors | [handler](../../server/api/observe/variables/resolve.post.ts) |
+| `GET /api/health` | Public | Database/migration readiness; 200 ok or 503 unavailable | [handler](../../server/api/health.get.ts) |
+| `POST /api/observe/alert-rules/:id/evaluate` | Edit alert | Real evaluation; enabled/unmuted rules may notify; no body | [handler](../../server/api/observe/alert-rules/[id]/evaluate.post.ts) |
+| `DELETE /api/observe/alert-rules/:id` | Delete alert | Delete under the evaluation lock | [handler](../../server/api/observe/alert-rules/[id].delete.ts) |
+| `GET /api/observe/alert-rules/:id` | View alert | One AlertRule | [handler](../../server/api/observe/alert-rules/[id].get.ts) |
+| `PUT /api/observe/alert-rules/:id` | Edit alert | alertRuleSchema; update and reset active state when the condition changes | [handler](../../server/api/observe/alert-rules/[id].put.ts) |
+| `GET /api/observe/alert-rules` | Signed-in, filtered list | Permitted AlertRule[] | [handler](../../server/api/observe/alert-rules/index.get.ts) |
+| `POST /api/observe/alert-rules` | Create alert | alertRuleSchema; create a rule | [handler](../../server/api/observe/alert-rules/index.post.ts) |
+| `POST /api/observe/alert-rules/preview` | Create alert | alertPreviewSchema; evaluation with queryResult; no notification delivery | [handler](../../server/api/observe/alert-rules/preview.post.ts) |
+| `GET /api/observe/auth/config` | Public | setupRequired and enabled providers | [handler](../../server/api/observe/auth/config.get.ts) |
+| `GET /api/observe/auth/me` | Signed-in | Current AuthUser including permissions and pop-up preference | [handler](../../server/api/observe/auth/me.get.ts) |
+| `PUT /api/observe/auth/notification-preferences` | Signed-in, own account | {realtimeAlertToasts: boolean}; persist preference and return AuthUser without revoking sessions | [handler](../../server/api/observe/auth/notification-preferences.put.ts) |
+| `GET /api/observe/auth/oauth/:provider/callback` | Enabled provider; linking requires a session | OIDC authorization-code callback | [handler](../../server/api/observe/auth/oauth/[provider]/callback.get.ts) |
+| `GET /api/observe/auth/oauth/:provider` | Enabled provider; linking requires a session | Redirect to provider; ?link=1 connects an identity to the signed-in account | [handler](../../server/api/observe/auth/oauth/[provider]/index.get.ts) |
+| `PUT /api/observe/auth/profile` | Signed-in | profileSchema: update own name/password | [handler](../../server/api/observe/auth/profile.put.ts) |
+| `GET /api/observe/auth/providers` | Signed-in | Identity providers linked to the current account | [handler](../../server/api/observe/auth/providers.get.ts) |
+| `POST /api/observe/auth/refresh` | Valid refresh cookie | Rotate refresh token and update cookies; no body | [handler](../../server/api/observe/auth/refresh.post.ts) |
+| `GET /api/observe/auth/session` | Public | Browser session bootstrap: {user, canRefresh} | [handler](../../server/api/observe/auth/session.get.ts) |
+| `DELETE /api/observe/auth/sessions` | Signed-in | {id: UUID}; revoke an owned session | [handler](../../server/api/observe/auth/sessions.delete.ts) |
+| `GET /api/observe/auth/sessions` | Signed-in | Own active sessions | [handler](../../server/api/observe/auth/sessions.get.ts) |
+| `POST /api/observe/auth/setup` | Public, before setup completion only | setupSchema: name/email/password; create the first Admin | [handler](../../server/api/observe/auth/setup.post.ts) |
+| `POST /api/observe/auth/sign-in` | Public | signInSchema: email/password; issue session and cookies | [handler](../../server/api/observe/auth/sign-in.post.ts) |
+| `POST /api/observe/auth/sign-out` | Public; mutation origin checked | Revoke the available session and clear cookies | [handler](../../server/api/observe/auth/sign-out.post.ts) |
+| `DELETE /api/observe/dashboard-folders/:id` | Admin | Delete only when no longer referenced | [handler](../../server/api/observe/dashboard-folders/[id].delete.ts) |
+| `GET /api/observe/dashboard-folders` | Signed-in, filtered list | Folders relevant to visible resources | [handler](../../server/api/observe/dashboard-folders/index.get.ts) |
+| `POST /api/observe/dashboard-folders` | Admin | {name}; create a folder | [handler](../../server/api/observe/dashboard-folders/index.post.ts) |
+| `POST /api/observe/dashboard-imports/check` | Create dashboard | dashboardSchema; diagnose draft variables/panels before import | [handler](../../server/api/observe/dashboard-imports/check.post.ts) |
+| `POST /api/observe/dashboard-imports/preview` | Create dashboard | {document: JSON, dataSourceId: UUID or null}; convert/preview without saving | [handler](../../server/api/observe/dashboard-imports/preview.post.ts) |
+| `POST /api/observe/dashboards/:id/diagnostics` | View dashboard | Diagnose saved queries/variables; no body | [handler](../../server/api/observe/dashboards/[id]/diagnostics.post.ts) |
+| `POST /api/observe/dashboards/:id/restore-import` | Edit dashboard | {dataSourceId: UUID or null, restorePanelOptions?: boolean}; repair an imported dashboard | [handler](../../server/api/observe/dashboards/[id]/restore-import.post.ts) |
+| `GET /api/observe/dashboards/:id/versions` | View dashboard | Previous version snapshots | [handler](../../server/api/observe/dashboards/[id]/versions.get.ts) |
+| `DELETE /api/observe/dashboards/:id` | Delete dashboard | Delete dashboard and associated relations | [handler](../../server/api/observe/dashboards/[id].delete.ts) |
+| `GET /api/observe/dashboards/:id` | View dashboard | One Dashboard | [handler](../../server/api/observe/dashboards/[id].get.ts) |
+| `PUT /api/observe/dashboards/:id` | Edit dashboard | dashboardSchema with current revision; update and save previous version | [handler](../../server/api/observe/dashboards/[id].put.ts) |
+| `GET /api/observe/dashboards` | Signed-in, filtered list | Permitted Dashboard[] | [handler](../../server/api/observe/dashboards/index.get.ts) |
+| `POST /api/observe/dashboards` | Create dashboard | dashboardSchema; atomically create dashboard and creator grant | [handler](../../server/api/observe/dashboards/index.post.ts) |
+| `POST /api/observe/data-sources/:id/test` | Admin | Run a connection query using the saved source | [handler](../../server/api/observe/data-sources/[id]/test.post.ts) |
+| `DELETE /api/observe/data-sources/:id` | Admin | Delete only when no longer referenced | [handler](../../server/api/observe/data-sources/[id].delete.ts) |
+| `PUT /api/observe/data-sources/:id` | Admin | dataSourceSchema; omitted secret preserves it, empty string removes it | [handler](../../server/api/observe/data-sources/[id].put.ts) |
+| `GET /api/observe/data-sources` | Signed-in | DataSource[] metadata without secrets | [handler](../../server/api/observe/data-sources/index.get.ts) |
+| `POST /api/observe/data-sources` | Admin | dataSourceSchema; save a source | [handler](../../server/api/observe/data-sources/index.post.ts) |
+| `GET /api/observe/notifications` | Signed-in, follows alert access | Snapshot/update with optional ?after=cursor | [handler](../../server/api/observe/notifications/index.get.ts) |
+| `POST /api/observe/notifications/read` | Signed-in, follows alert access | {id: UUID} or {through: cursor}; mark own notifications read | [handler](../../server/api/observe/notifications/read.post.ts) |
+| `GET /api/observe/notifications/stream` | Signed-in, follows alert access | SSE notifications events; optional ?after=cursor | [handler](../../server/api/observe/notifications/stream.get.ts) |
+| `POST /api/observe/queries` | Signed-in, all sources | querySchema; QueryResponse with at most 5,000 rows | [handler](../../server/api/observe/queries/index.post.ts) |
+| `POST /api/observe/telegram-destinations/:id/test` | Admin | Send a real test message | [handler](../../server/api/observe/telegram-destinations/[id]/test.post.ts) |
+| `DELETE /api/observe/telegram-destinations/:id` | Admin | Delete only when no longer referenced | [handler](../../server/api/observe/telegram-destinations/[id].delete.ts) |
+| `PUT /api/observe/telegram-destinations/:id` | Admin | telegramDestinationSchema; omitted token preserves the saved token | [handler](../../server/api/observe/telegram-destinations/[id].put.ts) |
+| `GET /api/observe/telegram-destinations` | Signed-in, filtered metadata | Destinations without tokens; chatId hidden from non-Admins | [handler](../../server/api/observe/telegram-destinations/index.get.ts) |
+| `POST /api/observe/telegram-destinations` | Admin | telegramDestinationSchema; a token is required for new destinations | [handler](../../server/api/observe/telegram-destinations/index.post.ts) |
+| `GET /api/observe/users/:id/permissions` | Admin | Read UserPermissions | [handler](../../server/api/observe/users/[id]/permissions.get.ts) |
+| `PUT /api/observe/users/:id/permissions` | Admin | UserPermissions; replace grants and revoke target sessions | [handler](../../server/api/observe/users/[id]/permissions.put.ts) |
+| `DELETE /api/observe/users/:id` | Admin | Delete a user; self/last-Admin protections apply | [handler](../../server/api/observe/users/[id].delete.ts) |
+| `PUT /api/observe/users/:id` | Admin | userInputSchema; update a user | [handler](../../server/api/observe/users/[id].put.ts) |
+| `GET /api/observe/users` | Admin | List users | [handler](../../server/api/observe/users/index.get.ts) |
+| `POST /api/observe/users` | Admin | userInputSchema; create a local user with a password | [handler](../../server/api/observe/users/index.post.ts) |
+| `POST /api/observe/variables/resolve` | Signed-in, all sources | variableResolutionSchema; selections/variables/values/errors | [handler](../../server/api/observe/variables/resolve.post.ts) |
 
-## SSE dan replay
+## SSE and replay
 
-`GET /api/observe/notifications/stream?after=<cursor>` mengirim frame bernama `notifications`. Payload mengikuti NotificationUpdate. Client menyimpan cursor string dan mengirimkannya ketika reconnect. Tanpa cursor, snapshot histori diambil sebagai keadaan awal, bukan alasan mengeluarkan toast histori satu per satu. Server memeriksa akses pada setiap pembacaan dan mengirim heartbeat berkala; fallback menggunakan GET notifications.
+`GET /api/observe/notifications/stream?after=<cursor>` sends frames named `notifications` containing NotificationUpdate. Clients retain the string cursor and supply it when reconnecting. Without a cursor, history becomes the initial snapshot rather than a reason to replay historical toasts. The server checks access on each read and emits periodic heartbeats; JSON fallback uses GET notifications.
 
-## Menambah endpoint
+## Adding an endpoint
 
-Perbarui policy role/resource, controller, client, schema, test, dan baris katalog ini dalam perubahan yang sama. `bun run docs:check` membandingkan signature METHOD/path tabel dengan file handler agar endpoint tidak terlupakan. Detail response aksi khusus tetap harus dicocokkan dengan handler/service yang ditautkan, bukan ditebak dari nama route.
+Update role/resource policy, controller, client, schema, tests, and this catalog together. `bun run docs:check` compares METHOD/path signatures against handler files so endpoints cannot be silently omitted. Check linked handlers/services for exact action-specific responses instead of inferring them from route names.

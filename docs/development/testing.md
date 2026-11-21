@@ -1,8 +1,8 @@
-# Pengujian dan quality checks
+# Testing and quality checks
 
-Jalankan dari root repositori setelah dependency dan Nuxt prepare tersedia. Jangan menggunakan database aplikasi aktif. Check yang di-skip karena dependency/environment tidak tersedia harus dilaporkan sebagai skip, bukan pass.
+Run from the repository root after installing dependencies and preparing Nuxt. Do not use an active application database. Report checks skipped for missing dependencies/environment as skipped, not passed.
 
-## Pemeriksaan dasar
+## Core checks
 
 ```sh
 bun run lint
@@ -13,42 +13,42 @@ bun run audit:architecture --inventory
 bun run build
 ```
 
-Lint mencakup semantic UI dan aturan Tailwind. Typecheck mencakup kontrak Nuxt/TypeScript. Unit test memeriksa aturan auth/permission, layout/refresh/import, query, service, transport, container env, health, serta notifikasi. Build memeriksa output deployable. Architecture audit memeriksa dependency/reachability statis dan larangan notifikasi inline; bukan bukti semua perilaku runtime benar.
+Lint covers semantic UI and Tailwind rules. Typecheck verifies Nuxt/TypeScript contracts. Unit tests cover auth/permissions, layout/refresh/import, queries, services, transport, container environment, health, and notifications. Build verifies deployable output. The architecture audit checks static dependencies/reachability and prohibited inline notifications; it does not prove all runtime behavior correct.
 
-`docs:check` memeriksa link lokal Markdown, contoh JSON terhadap schema, environment template, dan katalog endpoint. Perbarui inventory bila source/runtime berubah. Jangan mengandalkan angka jumlah test dari laporan historis sebagai syarat tetap.
+`docs:check` validates local Markdown links, schema examples, environment templates, and endpoint coverage. Regenerate the inventory when runtime source changes. Historical test counts are not permanent requirements.
 
-## Integrasi PostgreSQL
+## PostgreSQL integration
 
-Buat database terpisah yang namanya berakhiran `_test`. Set `TEST_DATABASE_URL` ke database itu. File integrasi melakukan DROP/recreate schema `observe`; suffix hanya guard, bukan pengganti memastikan database benar.
+Create an isolated database whose name ends in `_test` and point `TEST_DATABASE_URL` at it. Integration files DROP/recreate the `observe` schema. The suffix is a guard, not a substitute for selecting the correct database.
 
-Jika file memakai database yang sama, jalankan satu per satu agar reset schema tidak balapan:
+Run files sequentially when sharing a database to avoid schema-reset races:
 
 ```sh
 export TEST_DATABASE_URL='postgresql://TEST_USER:TEST_PASSWORD@127.0.0.1:5432/observed_test'
 (
   set -e
   for spec in tests/integration/*.test.ts; do
-    bun test --tsconfig-override .nuxt/tsconfig.server.json "$spec"
+    bun test --timeout 30000 --tsconfig-override .nuxt/tsconfig.server.json "$spec"
   done
 )
 ```
 
-Subshell dengan `set -e` meneruskan kegagalan sebagai exit nonzero. Script `test:integration` tersedia, tetapi jangan menjalankan file yang saling mereset schema secara paralel pada database sama. Cakupan: auth setup/refresh/sesi, persistensi resource/revision, enkripsi, grant, dan notifikasi atomik/filter baca.
+The `set -e` subshell propagates failures. `test:integration` is also available, but do not run mutually destructive schema-reset files concurrently on one database. Coverage includes one-time setup, refresh/sessions, resource persistence/revisions, encryption, grants, atomic notifications, and per-user pop-up preferences/migration. For temporary Docker PostgreSQL, wait for its final TCP listener rather than only the initialization server's Unix socket.
 
-## Browser dengan fixture
+## Fixture browser tests
 
-Server aplikasi harus berjalan, misalnya pada port 3000. Playwright-core menggunakan Chrome lokal: deteksi Chrome macOS, `BROWSER_EXECUTABLE` untuk path eksplisit, atau channel `chrome` yang terinstal. Tidak ada download browser otomatis dari playwright-core.
+Run the application server, for example on port 3000. Playwright-core uses installed Chrome: macOS Chrome detection, `BROWSER_EXECUTABLE` for an explicit executable, or the installed `chrome` channel. It does not download a browser automatically.
 
 ```sh
 BROWSER_BASE_URL=http://localhost:3000 \
   node --test --test-concurrency=1 tests/browser/*.test.mjs
 ```
 
-Sebagian besar browser tests memock API dengan fixture, memeriksa layout auth, identitas, sidebar aktif, row, kiosk, responsive drag/resize, refresh, modal, dan visualisasi. Screenshot sementara yang dibuat test berada di `/tmp`, bukan artefak untuk commit.
+Most browser tests mock APIs and check auth layout, identity, sidebar activation, rows, kiosk, responsive drag/resize, refresh, dialogs, visualizations, and alert pop-up preferences. Temporary screenshots go to `/tmp`, not committed artifacts.
 
-## Browser live: permission dan inbox
+## Live browser tests: permissions and inbox
 
-Dua test opt-in memakai `PERMISSION_TEST_DATABASE_URL` dan `NOTIFICATION_TEST_DATABASE_URL`. Database harus berakhiran `_test` dan harus sama dengan DATABASE_URL aplikasi uji yang dibuka oleh BROWSER_BASE_URL. Jalankan aplikasi uji dengan key valid dan sumber sensor simulasi. Scheduler juga aktif pada aplikasi uji; gunakan rule paused di luar langkah evaluasi, atau interval panjang sesudah evaluasi manual awal agar pengukuran uji tidak berubah karena evaluasi terjadwal.
+Two opt-in tests use `PERMISSION_TEST_DATABASE_URL` and `NOTIFICATION_TEST_DATABASE_URL`. Their database must end in `_test` and match the application's DATABASE_URL at BROWSER_BASE_URL. Use a valid test key and simulated sources. Scheduling is also active in tests; keep rules paused outside controlled evaluation steps, or use a long interval after the initial manual evaluation.
 
 ```sh
 BROWSER_BASE_URL=http://127.0.0.1:3001 \
@@ -58,17 +58,17 @@ node --test --test-concurrency=1 \
   tests/browser/permissions.test.mjs tests/browser/alert-notifications.test.mjs
 ```
 
-Test menginisialisasi/sign-in akun fixture `notifications@example.test` dengan password uji yang ada di source, membuat resource/account, memasukkan event, dan dapat TRUNCATE notifikasi. Mulai dari database QA baru agar tidak bentrok dengan akun admin berbeda. Test source memakai server sensor simulasi, bukan InfluxDB/Telegram produksi. Jangan arahkan live test ke deployment aktif walaupun hanya ingin screenshot.
+These tests initialize/sign in the fixture account `notifications@example.test` using test credentials in source, create accounts/resources, insert events, and may TRUNCATE notifications. Start with a fresh QA database to avoid conflicting administrator credentials. Sensor data comes from a simulated server, not production InfluxDB/Telegram. Never target an active deployment merely to obtain a screenshot.
 
-## Runtime Docker
+## Docker runtime
 
-Host pengujian memerlukan dependency development, Node.js, dan Chrome selain Docker. Buat environment/stack baru:
+The test host needs development dependencies, Node.js, and Chrome in addition to Docker. Create an isolated environment/stack:
 
 ```sh
 sh docker/setup.sh /tmp/observed-smoke.env
 ```
 
-Edit file itu: `COMPOSE_PROJECT_NAME=observed-smoke` dan `OBSERVE_HTTP_PORT=3113`. Kemudian:
+Set `COMPOSE_PROJECT_NAME=observed-smoke` and `OBSERVE_HTTP_PORT=3113` in that file, then run:
 
 ```sh
 OBSERVE_ENV_FILE=/tmp/observed-smoke.env sh docker/compose.sh up -d --build --wait
@@ -78,12 +78,12 @@ DOCKER_TEST_ENV_FILE=/tmp/observed-smoke.env \
 node --test tests/docker/runtime.test.mjs
 ```
 
-Test mewajibkan origin lokal dan project berakhiran `-smoke`. Cakupannya: privilege container, setup/auth, source simulasi via host, query, firing/recovery, SSE, persistensi saat app recreate, health saat database mati, backup/restore, dekripsi credential, dan sign-in browser. Ia tidak mengirim Telegram nyata. Bersihkan hanya stack/volume QA yang dibuat:
+The test requires a local origin and a project name ending in `-smoke`. It checks container privileges, setup/auth, host sensor simulation, queries, firing/recovery, SSE, persistence after app recreation, readiness during database outage, backup/restore, credential decryption, and browser sign-in. It sends no real Telegram messages. Remove only the dedicated QA stack/volumes:
 
 ```sh
 OBSERVE_ENV_FILE=/tmp/observed-smoke.env sh docker/compose.sh down --volumes
 ```
 
-## Memilih test yang tepat
+## Choosing checks
 
-Perubahan teks/style sederhana cukup lint, docs check, dan inspeksi visual yang relevan. Perubahan kontrak memerlukan typecheck/unit. Perubahan permission/persistensi memerlukan integrasi dan request langsung. Perubahan lifecycle stream/layout memerlukan browser terkait. Pengujian Telegram nyata hanya dilakukan pada tujuan uji dengan otorisasi eksplisit. Hindari menambah test yang hanya menyalin implementasi tanpa memeriksa perilaku yang bermakna.
+Simple copy/style changes need lint, documentation checks, and relevant visual inspection. Contract changes need typecheck/unit tests. Permissions/persistence need integration and direct requests. Stream/layout lifecycle changes need the relevant browser checks. Real Telegram tests require an authorized test destination. Avoid tests that merely mirror implementation without checking meaningful behavior.

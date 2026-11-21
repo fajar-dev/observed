@@ -1,27 +1,27 @@
-# Workflow pengembangan
+# Development workflow
 
-## Memulai perubahan
+## Start a change
 
-1. Baca [pengenalan](../introduction.md), [arsitektur](../architecture/overview.md), dan [aturan UI](../reference/branding-and-ui.md).
-2. Jalankan [instalasi lokal](../installation/local.md). Jangan memakai data produksi untuk pengembangan/test.
-3. Periksa `git status`, diff existing, serta schema/port/controller yang terkait.
-4. Tentukan perilaku yang hendak diubah dan aturan akses sebelum mengubah komponen.
-5. Gunakan branch `codex/<nama-perubahan>` untuk pekerjaan agent bila membuat branch baru; ikuti konvensi tim untuk kontribusi manusia.
+1. Read the [introduction](../introduction.md), [architecture](../architecture/overview.md), and [UI rules](../reference/branding-and-ui.md).
+2. Complete [local installation](../installation/local.md). Do not use production data for development or testing.
+3. Inspect `git status`, existing diffs, and the relevant schemas, ports, controllers, and services.
+4. Define the intended behavior and access rules before changing components.
+5. Use `codex/<change-name>` when an agent creates a new branch; human contributors should follow the team's branch convention.
 
-## Konvensi kode
+## Code conventions
 
-TypeScript dengan type/schema bersama, nama deskriptif konsisten, error terstruktur, constructor DI untuk service dan adapter. Gunakan fungsi murni untuk transformasi/evaluator. Jangan menambah abstraction/generic repository baru bila kebutuhan sudah dapat ditangani port yang ada.
+Use TypeScript, shared schemas/types, descriptive names, structured errors, and constructor injection for services/adapters. Keep transformations/evaluators as pure functions when appropriate. Do not introduce another abstraction or generic repository when existing ports already cover the need.
 
-Feature view mengorkestrasi UI; composable menangani state dan lifecycle; business rules server berada di application service; HTTP handler melakukan validasi dan pemetaan saja. Infrastruktur database/HTTP tetap di adapter. Hapus import/dependency/code yang tidak lagi dipakai setelah perubahan; jangan mempertahankan jalur lama yang menduplikasi perilaku.
+Feature views orchestrate UI; composables handle state/lifecycle; server application services own business rules; handlers validate/map HTTP only. Database/HTTP infrastructure stays in adapters. Remove dead code, dependencies, and imports after a change instead of maintaining duplicate legacy paths.
 
-Format mengikuti ESLint repositori (termasuk tanpa trailing comma). Komponen Nuxt UI dan semantic token diutamakan. Penamaan endpoint, field JSON, dan kolom SQL yang publik/persisten tidak diganti tanpa migrasi dan pembaruan kontrak.
+Follow repository ESLint formatting, including no trailing commas. Prefer Nuxt UI and semantic tokens. Public/persisted endpoint names, JSON fields, and SQL columns require migrations and contract updates when changed. Write comments, examples, documentation, and application-owned copy in English.
 
-## Perubahan database dan API
+## Database and API changes
 
-Update schema Zod, service, repository/migrasi, API client, dan UI terkait sebagai satu perubahan koheren. Periksa backward compatibility terhadap data tersimpan dan concurrent update. Body/controller harus tetap memakai helper validasi dan resource ID. Perubahan akses wajib menguji request langsung dan list yang difilter, bukan hanya tombol.
+Update Zod schemas, services, repositories/migrations, clients, and UI as one coherent change. Check saved-data compatibility and concurrency. Handlers continue using shared body/ID validation and principal context. Access changes require direct request tests and filtered-collection verification, not just hidden buttons.
 
-## Sebelum review
+## Before review
 
-Jalankan check sesuai [pengujian](testing.md). Perbarui panduan fitur, API, environment, dan contoh yang berubah. Regenerasi inventory jika source berubah. Periksa diff untuk secret, output build, backup, fixture credential produksi, serta file di luar scope.
+Run the relevant [checks](testing.md). Update affected user guides, API/environment references, and examples. Regenerate the inventory after source changes. Inspect the diff for secrets, generated builds, backups, production credentials in fixtures, and unrelated files.
 
-Commit dipisah berdasarkan perubahan logis (misalnya domain/API, UI, test, docs), dengan pesan yang menjelaskan hasil. Jangan mengarang hasil test atau menyebut check yang di-skip sebagai pass. Push/deploy hanya sesuai instruksi pemilik pekerjaan.
+Separate commits by logical change, such as domain/API, UI, tests, and documentation. Describe the resulting behavior. Do not invent test results or report skipped checks as passed. Push/deploy only when authorized by the task owner.

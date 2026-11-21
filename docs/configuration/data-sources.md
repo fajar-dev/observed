@@ -1,37 +1,37 @@
 # Configuration: InfluxDB
 
-Hanya Administrator dapat menambah, mengubah, menguji, dan menghapus koneksi. Semua pengguna yang sudah sign-in dapat melihat metadata sumber dan menjalankan query. Tidak ada permission per data source.
+Only Administrators can add, edit, test, or delete connections. Every signed-in user can read source metadata and run queries. There are no per-source permissions.
 
-## Menambah koneksi
+## Add a connection
 
-1. Buka **Configuration → Data sources → Add data source**.
-2. Isi nama yang menjelaskan sumber sensor atau lokasi struktur.
-3. Isi base URL InfluxDB, misalnya `http://192.168.10.20:8086`. Jangan tambahkan `/api/v2/query`, credential URL, parameter, atau fragment.
-4. Pilih bahasa query yang benar, lalu isi bucket/database dan credential yang sesuai.
-5. Simpan dan gunakan **Test connection** pada daftar sumber.
+1. Open **Configuration → Data sources → Add data source**.
+2. Enter a name identifying the sensor source or structure location.
+3. Enter the InfluxDB base URL, such as `http://192.168.10.20:8086`. Do not append `/api/v2/query`, URL credentials, parameters, or fragments.
+4. Select the correct query language and supply the matching bucket/database and credentials.
+5. Save, then use **Test connection** in the source list.
 
 | Field | Flux | InfluxQL |
 | --- | --- | --- |
-| URL | Server yang menyediakan API `/api/v2/query` | Server yang menyediakan API `/query` |
-| Organization | Wajib | Dapat kosong |
-| Bucket/database | Bucket default | Database default |
-| Username | Tidak diperlukan untuk token Flux | Isi untuk Basic authentication |
-| Credential | Token yang dapat membaca bucket | Token, atau password ketika username diisi |
+| URL | Server providing `/api/v2/query` | Server providing `/query` |
+| Organization | Required | May be empty |
+| Bucket/database | Default bucket | Default database |
+| Username | Not needed for Flux tokens | Set for Basic authentication |
+| Credential | Token with bucket read access | Token, or password when a username is provided |
 
-Observed tidak mengaktifkan dukungan Flux pada server yang tidak menyediakannya. Untuk InfluxQL pada deployment InfluxDB yang memerlukan mapping DBRP, mapping tersebut harus disiapkan di server InfluxDB.
+Observed cannot enable Flux on servers that do not provide it. If the InfluxDB deployment requires DBRP mapping for InfluxQL, configure that mapping on the InfluxDB server.
 
-## Mengubah dan menghapus
+## Edit and delete
 
-Credential tidak dikembalikan API. Pada edit, membiarkan credential kosong mempertahankan credential tersimpan; gunakan kontrol penghapusan credential bila ingin mengosongkannya. Jangan menyalin nilai placeholder sebagai credential baru. Secret disimpan terenkripsi di PostgreSQL.
+The API never returns saved credentials. In the edit form, leaving the credential blank preserves it; use the remove-credential control to clear it. Do not copy placeholder text as a new credential. Secrets are encrypted in PostgreSQL.
 
-Sumber yang masih direferensikan dashboard atau alert tidak dapat dihapus; pindahkan/hapus referensinya dahulu. Pemilihan source variable juga perlu diperiksa sebelum menghapus sumber.
+A source referenced by a dashboard or alert cannot be deleted until those references are removed or reassigned. Review source-variable selections before deleting a source as well.
 
-## Koneksi dari Docker
+## Connecting from Docker
 
-`localhost` di container bukan komputer host. Untuk InfluxDB di host Docker gunakan `http://host.docker.internal:8086`. Untuk sumber LAN gunakan alamat LAN yang dapat dicapai container. Pastikan service InfluxDB menerima koneksi dari interface yang sesuai.
+`localhost` inside a container is not the host computer. For host InfluxDB use `http://host.docker.internal:8086`. For LAN sources, use an address reachable from the container. Ensure InfluxDB accepts connections on the intended interface.
 
-## Batas query
+## Query limits
 
-Transport remote memiliki timeout 12 detik dan batas respons 8 MiB. Hasil query dibatasi 5.000 baris, disertai `truncated`. Gunakan filter measurement, field, sensor, range pendek, dan agregasi server. Alert menolak hasil terpotong agar tidak mengambil keputusan dari data parsial.
+Remote transport has a 12-second timeout and an 8 MiB response limit. Query results are limited to 5,000 rows and report `truncated`. Filter measurements, fields, and sensors; shorten time ranges and aggregate on the server. Alert evaluation rejects truncated results instead of deciding from partial data.
 
-Gunakan credential InfluxDB dengan hak baca minimum. Filter baca InfluxQL adalah pertahanan tambahan; credential upstream tetap batas keamanan utama, termasuk untuk Flux. Contoh query ada di [panduan panel](../guides/panels-and-queries.md).
+Use InfluxDB credentials with minimum read privileges. The InfluxQL read-only check is an additional defense; upstream credentials remain the main privilege boundary, including for Flux. See [panel queries](../guides/panels-and-queries.md) for examples.

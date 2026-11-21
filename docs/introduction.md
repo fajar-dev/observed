@@ -1,27 +1,27 @@
-# Pengenalan
+# Introduction
 
-Observed membantu civil engineer, kontraktor, dan pemilik struktur membaca metrik sensor IoT melalui dashboard yang dapat disesuaikan. Data pengukuran tetap berada di InfluxDB; Observed menyimpan konfigurasi, akun, permission, histori evaluasi, dan notifikasi di PostgreSQL.
+Observed helps civil engineers, contractors, and structure owners read IoT sensor metrics through customizable dashboards. Measurements remain in InfluxDB. Observed stores configuration, accounts, permissions, evaluation history, and notifications in PostgreSQL.
 
-## Kemampuan saat ini
+## Current capabilities
 
-| Area | Kemampuan |
+| Area | Capabilities |
 | --- | --- |
-| Data | Banyak sumber InfluxDB; Flux dan InfluxQL sesuai API server sumber |
-| Dashboard | Banyak panel, row accordion, drag/resize desktop, tampilan mobile, folder, tag, variable, rentang waktu, refresh, versi, kiosk |
-| Visualisasi | Time series, area, bar, metric, gauge, bar gauge, pie, table, text |
-| Portabilitas | Import/export JSON Observed; konversi sebagian format dashboard Grafana klasik dari file JSON |
-| Alert | Query numerik, reducer, threshold, pending period, jadwal evaluasi, pause, mute, histori |
-| Notifikasi | Inbox otomatis sesuai akses alert, toast realtime, Telegram opsional dengan banyak tujuan |
-| Akun | Setup admin sekali, password, JWT dan refresh token, sesi, Google/Microsoft opsional |
-| Akses | Admin, Editor, Viewer; permission View/Edit per dashboard dan alert |
+| Data | Multiple InfluxDB sources; Flux and InfluxQL according to the source server API |
+| Dashboards | Multiple panels, collapsible rows, desktop drag/resize, mobile presentation, folders, tags, variables, time ranges, refresh, versions, kiosk |
+| Visualizations | Time series, area, bar, metric, gauge, bar gauge, pie, table, text |
+| Portability | Observed JSON import/export; partial conversion of classic Grafana dashboard JSON files |
+| Alerts | Numeric queries, reducers, thresholds, pending periods, scheduled evaluation, pause, mute, history |
+| Notifications | Permission-filtered inbox, realtime toasts with a per-user preference, optional Telegram delivery to multiple destinations |
+| Accounts | One-time administrator setup, passwords, JWT and refresh tokens, sessions, optional Google/Microsoft sign-in |
+| Access | Admin, Editor, Viewer; View/Edit permissions per dashboard and alert |
 
-## Batas produk
+## Product boundaries
 
-- Observed membaca data sensor, bukan gateway ingest atau pengganti penyimpanan time series. Pengiriman sensor ke InfluxDB dilakukan sistem di luar aplikasi.
-- Belum ada katalog aset/sensor, pemetaan BIM, acknowledgement alert, escalation policy, laporan PDF, atau plugin visualisasi pihak ketiga.
-- Tidak tersedia import melalui ID/URL Grafana, playground terpisah, star, atau share publik. Query ditulis di editor panel dan alert.
-- Kompatibilitas JSON Grafana terbatas pada query, layout, variable, dan opsi yang didukung converter. Plugin, transformasi, serta schema lain perlu diperiksa manual.
-- Permission dashboard/alert membatasi resource tersebut. Semua pengguna yang sign-in tetap bisa membaca metadata sumber dan menjalankan query ke semua sumber.
-- Threshold adalah konfigurasi pemantauan. Interpretasi keselamatan struktur dan penentuan ambang dilakukan pihak yang berkompeten; aplikasi tidak menghitung sertifikasi kelayakan struktur.
+- Observed reads sensor data. It is not an ingestion gateway or a time-series database. Sensor ingestion into InfluxDB is handled outside this application.
+- Asset/sensor catalogs, BIM mapping, alert acknowledgment, escalation policies, PDF reporting, and third-party visualization plugins are not implemented.
+- Grafana ID/URL import, a separate playground, stars, and public sharing are not available. Queries are written in panel and alert editors.
+- Grafana JSON compatibility covers only queries, layouts, variables, and options supported by the converter. Plugins, transformations, and other schemas require manual review.
+- Dashboard/alert permissions protect those resources. All signed-in users can still read source metadata and query every source.
+- Thresholds are monitoring configuration. Qualified professionals determine thresholds and interpret structural safety; the application does not certify structural fitness.
 
-Lanjutkan ke [alur awal](guides/getting-started.md) atau [instalasi](installation/local.md).
+Continue with [getting started](guides/getting-started.md) or [installation](installation/local.md).

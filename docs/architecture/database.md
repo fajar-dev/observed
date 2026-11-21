@@ -1,62 +1,62 @@
-# Database dan migrasi
+# Database and migrations
 
-PostgreSQL menyimpan state aplikasi dalam schema `observe`. Data sensor time series tetap di InfluxDB. Struktur memadukan metadata relasional, foreign key, dan JSONB untuk konfigurasi panel/alert yang fleksibel.
+PostgreSQL stores application state in the `observe` schema. Sensor time-series measurements remain in InfluxDB. The database combines relational metadata and foreign keys with JSONB for flexible panel/alert configuration.
 
-## Tabel aktif
+## Active tables
 
-| Tabel | Isi utama |
+| Table | Main contents |
 | --- | --- |
-| `schema_migrations` | Versi migrasi yang telah diterapkan |
-| `data_sources` | Koneksi InfluxDB; ciphertext credential |
-| `telegram_destinations` | Chat ID dan ciphertext token bot |
-| `dashboard_folders` | Nama folder unik, termasuk normalisasi huruf |
-| `dashboards` | Metadata, definition JSONB, revision, `created_by` |
-| `dashboard_versions` | Snapshot versi sebelumnya |
-| `dashboard_data_sources` | Referensi sumber untuk integritas dashboard |
-| `alert_rules` | Konfigurasi JSONB, runtime JSONB, enabled, jadwal due, creator |
-| `alert_rule_destinations` | Relasi banyak tujuan Telegram per alert |
-| `users` | Identitas akun, role, status, hash password opsional, preferensi realtime alert toast |
-| `auth_setup` | Marker singleton setup admin sudah selesai |
-| `auth_identities` | Binding provider + subject ke user |
-| `auth_sessions` | Sesi, expiry, revoke, user agent |
-| `auth_refresh_tokens` | Hash refresh token dan status consumed |
-| `auth_throttles` | Counter upaya autentikasi |
-| `user_access` | Scope dan level dasar dashboard/alert per user |
-| `user_dashboard_permissions` | Grant per dashboard |
-| `user_alert_permissions` | Grant per alert |
-| `alert_notifications` | Snapshot firing/recovered dan sequence bigint |
-| `notification_reads` | Waktu baca per user dan notifikasi |
+| `schema_migrations` | Applied migration versions |
+| `data_sources` | InfluxDB connections and encrypted credentials |
+| `telegram_destinations` | Chat IDs and encrypted bot tokens |
+| `dashboard_folders` | Unique folder names with normalized-name constraints |
+| `dashboards` | Metadata, JSONB definition, revision, `created_by` |
+| `dashboard_versions` | Previous snapshots |
+| `dashboard_data_sources` | Source references enforcing dashboard integrity |
+| `alert_rules` | JSONB configuration/runtime, enabled state, next evaluation, creator |
+| `alert_rule_destinations` | Multiple Telegram destinations per alert |
+| `users` | Account identity, role, enabled state, optional password hash, alert pop-up preference |
+| `auth_setup` | Durable singleton setup-completion marker |
+| `auth_identities` | Provider + subject bindings to users |
+| `auth_sessions` | Sessions, expiration, revocation, user agent |
+| `auth_refresh_tokens` | Hashed refresh tokens and consumed state |
+| `auth_throttles` | Authentication attempt counters |
+| `user_access` | Dashboard/alert scope and base access level per user |
+| `user_dashboard_permissions` | Individual dashboard grants |
+| `user_alert_permissions` | Individual alert grants |
+| `alert_notifications` | Firing/recovery snapshots and bigint sequence |
+| `notification_reads` | Per-user notification read timestamps |
 
-Sumber DDL: [workspace-schema](../../server/platform/database/workspace-schema.ts), [auth](../../server/platform/database/migrations/authentication.ts), [permission](../../server/platform/database/migrations/permissions.ts), [notification](../../server/platform/database/migrations/notifications.ts). Tidak ada ACL data source atau notification terpisah pada model aktif.
+DDL sources: [resource schema](../../server/platform/database/workspace-schema.ts), [authentication](../../server/platform/database/migrations/authentication.ts), [permissions](../../server/platform/database/migrations/permissions.ts), [notifications](../../server/platform/database/migrations/notifications.ts), [notification preferences](../../server/platform/database/migrations/notification-preferences.ts). The active model has no independent source or notification ACL.
 
-## Relasi dan penghapusan
+## Relationships and deletion
 
-Dashboard/alert menyimpan creator nullable; menghapus user mengosongkan creator melalui `ON DELETE SET NULL`, bukan menghapus konfigurasi struktur. Relasi source/tujuan yang masih digunakan menahan penghapusan. Grant resource dan snapshot dashboard version ikut terhapus bersama resource sesuai foreign key.
+Dashboards/alerts have nullable creator references. Deleting a user sets creator references to null rather than deleting structural monitoring configuration. Referenced sources/destinations cannot be deleted. Grants and dashboard versions cascade with their resources according to foreign keys.
 
-`alert_notifications.alert_rule_id` sengaja tidak memiliki FK ke rule: snapshot histori tetap tersimpan ketika rule dihapus. Akses baca histori tetap difilter berdasarkan model permission. Read receipt terkait user dan event dengan cascade.
+`alert_notifications.alert_rule_id` deliberately has no rule foreign key so historical snapshots survive rule deletion. Read access remains permission-filtered. Read receipts reference users and events with cascading deletion.
 
-## Transaksi dan concurrency
+## Transactions and concurrency
 
-- Query SQL menggunakan parameter; pemetaan tabel resource dikontrol kode, bukan interpolasi input pengguna.
-- Create resource dan grant Edit pembuat disimpan dalam transaksi.
-- Update dashboard memeriksa revision serta menyimpan snapshot versi sebelumnya secara atomik.
-- Lock advisory per rule mencegah evaluasi bersamaan. Pool lock terpisah menjaga koneksi lock selama operasi berlangsung.
-- Penyimpanan evaluasi dan event notifikasi dalam aplikasi berbagi transaksi. Urutan event dijaga agar replay cursor tidak melewatkan commit yang datang terlambat.
+- SQL uses parameters; resource table mappings are controlled by code, not user input.
+- Resource creation and the creator's Edit grant share a transaction.
+- Dashboard updates check revisions and atomically save previous-version snapshots.
+- Per-rule advisory locks prevent concurrent evaluations. A separate lock pool retains the connection throughout each operation.
+- Evaluation state and in-app events share a transaction. Event ordering prevents cursor replay from skipping late commits.
 
-Pool utama maksimum 12 koneksi dan pool lock maksimum empat per instance, dengan timeout koneksi lima detik. Perhitungkan jumlah replica terhadap kapasitas PostgreSQL.
+Each instance has a main pool of up to 12 connections and a lock pool of up to four, with a five-second connection timeout. Account for replica count when sizing PostgreSQL capacity.
 
-## Migrasi
+## Migrations
 
-[PostgresDatabase.ready](../../server/platform/database/database.ts) menjalankan migrasi otomatis melalui satu initialization promise per proses. Migrasi memakai transaksi dan advisory lock schema, sehingga startup beberapa instance tidak menjalankan perubahan schema bersamaan. Kegagalan membatalkan transaksi dan initialization dapat dicoba lagi.
+[PostgresDatabase.ready](../../server/platform/database/database.ts) runs automatic migrations through one initialization promise per process. Migrations use a transaction and schema advisory lock so simultaneous instances do not change the schema concurrently. Failure rolls back and permits a later initialization retry.
 
-Normalisasi data lama dan migrasi bernomor yang sudah ada adalah bagian implementasi, bukan panduan instalasi lama yang perlu dijalankan manual. Jangan menghapus marker setup atau schema_migrations untuk “memperbaiki” login. Tidak ada CLI rollback schema otomatis.
+Legacy normalization and numbered migrations are implementation details, not manual installation instructions. Never delete setup or schema_migrations markers to repair sign-in. There is no automatic schema rollback CLI.
 
-Saat menambah migrasi: gunakan nomor baru, SQL idempotent yang tepat, guard untuk data backfill satu kali, serta test fresh database dan database versi sebelumnya. Jangan mengedit migrasi historis untuk mengubah arti data tanpa migrasi transisi. Backup sebelum upgrade; downgrade binary tidak otomatis membatalkan schema.
+For a new migration, use a new version, appropriate idempotent SQL, guarded one-time backfills, and tests against fresh and previous-version databases. Do not reinterpret historical data by editing old migrations without a transition. Back up before upgrading; downgrading the application binary does not undo its schema changes.
 
-## Retensi dan backup
+Migration 10 adds `users.realtime_alert_toasts BOOLEAN NOT NULL DEFAULT true`. This is a per-user presentation preference, not notification authorization. Updating it does not revoke sessions or modify alert grants.
 
-Versi dashboard menyimpan maksimal 100 snapshot dan histori evaluasi per rule maksimal 50. Notifikasi bukan ring buffer yang otomatis dibatasi 50 di database; 50 adalah batas daftar inbox. Belum ada job retensi notifikasi configurable. Rencanakan pemeliharaan database sesuai volume event.
+## Retention and backup
 
-Backup harus menyertakan database dan key enkripsi yang sesuai, disimpan terpisah secara aman. [Prosedur backup/recovery](../operations/backup-and-recovery.md) mencakup restore ownership dan verifikasi credential.
+Dashboard versions retain up to 100 snapshots; evaluation history retains 50 entries per rule. Notifications are not automatically capped at 50 database rows: 50 is the inbox display limit. No configurable notification-retention job is implemented. Plan database maintenance for event volume.
 
-Migrasi 10 menambahkan `users.realtime_alert_toasts BOOLEAN NOT NULL DEFAULT true`. Preferensi merupakan pilihan tampilan per user, bukan permission notifikasi. Update preferensi tidak mencabut sesi dan tidak mengubah grant alert.
+Back up the database and its matching encryption key, storing them securely and separately. [Backup and recovery](../operations/backup-and-recovery.md) covers ownership restoration and credential verification.

@@ -1,69 +1,71 @@
-# Arsitektur aplikasi
+# Application architecture
 
-## Komponen runtime
+## Runtime components
 
 ```mermaid
 flowchart LR
   Browser[Vue / Nuxt UI SPA] --> HTTP[Nitro HTTP API]
-  HTTP --> Auth[Authentication dan permission]
+  HTTP --> Auth[Authentication and permissions]
   Auth --> Services[Application services]
-  Services --> PG[(PostgreSQL: konfigurasi dan akun)]
-  Services --> Influx[(InfluxDB: metrik sensor)]
-  Scheduler[Scheduler alert] --> Services
+  Services --> PG[(PostgreSQL: configuration and accounts)]
+  Services --> Influx[(InfluxDB: sensor metrics)]
+  Scheduler[Alert scheduler] --> Services
   Services --> Telegram[Telegram Bot API]
-  PG --> Stream[SSE notifikasi]
+  PG --> Stream[Notification SSE]
   Stream --> Browser
 ```
 
-Nuxt memakai `ssr: false`; UI dirender browser. Nitro preset Bun menjalankan API, scheduler, dan SSE dalam proses server. PostgreSQL menyimpan state aplikasi; InfluxDB merupakan sumber eksternal. Tidak ada message broker, Redis, atau service ingestion sensor dalam stack bawaan.
+Nuxt uses `ssr: false`; the UI renders in the browser. Nitro's Bun preset runs the API, scheduler, and SSE in the application server process. PostgreSQL stores application state; InfluxDB is external. No message broker, Redis instance, or sensor ingestion service is bundled.
 
-## Struktur kode
+## Source structure
 
-| Lokasi | Tanggung jawab |
+| Location | Responsibility |
 | --- | --- |
-| `app/pages` | Entry route tipis, memasang feature view |
-| `app/layouts`, `app/components` | Shell, navigasi, dan primitive UI bersama |
-| `app/core` | HTTP client, state request, utilitas UI, permission frontend |
-| `app/features/<feature>` | View, komponen, composable, dan utilitas per fitur |
-| `app/assets/styles` | Token semantic dan style bersama |
-| `shared/domain` | Schema Zod, type, katalog, dan aturan akses bersama |
-| `shared/utils` | Fungsi murni layout, interpolasi, variable, import appearance |
-| `shared/config` | Identitas produk |
-| `server/api` | Adapter HTTP, validasi payload, pemanggilan service |
-| `server/http`, `server/middleware` | Konteks principal, origin guard, pemetaan error |
-| `server/domain` | Port repository/gateway dan model aplikasi |
-| `server/features/<feature>` | Application service, domain khusus fitur, adapter infrastruktur |
-| `server/platform` | Database, vault, transport HTTP, clock |
-| `server/bootstrap` | Pembacaan konfigurasi dan composition root dependency injection |
-| `server/plugins` | Lifecycle scheduler dan shutdown |
-| `tests`, `tooling`, `docker` | Verifikasi, aturan arsitektur, deployment |
+| `app/pages` | Thin route entries mounting feature views |
+| `app/layouts`, `app/components` | Shared shell, navigation, and UI primitives |
+| `app/core` | HTTP client, request state, UI helpers, frontend permission checks |
+| `app/features/<feature>` | Feature views, components, composables, utilities |
+| `app/assets/styles` | Semantic tokens and shared styles |
+| `shared/domain` | Zod schemas, types, catalogs, shared access rules |
+| `shared/utils` | Pure layout, interpolation, variable, and import appearance functions |
+| `shared/config` | Product identity |
+| `server/api` | HTTP adapters, input validation, service calls |
+| `server/http`, `server/middleware` | Principal context, request protection, error mapping |
+| `server/domain` | Repository/gateway ports and application models |
+| `server/features/<feature>` | Application services, feature-specific domain, infrastructure adapters |
+| `server/platform` | Database, credential vault, HTTP transport, clock |
+| `server/bootstrap` | Configuration and dependency injection composition root |
+| `server/plugins` | Scheduler and shutdown lifecycle |
+| `tests`, `tooling`, `docker` | Verification, architecture rules, deployment |
 
-Alias: `~` menunjuk `app`, `~~` root repositori, `#shared` direktori shared. Auto-import Nuxt disetel pada [nuxt.config.ts](../../nuxt.config.ts). Jangan membuat import relatif yang mengasumsikan `~` sebagai root.
+Aliases: `~` refers to `app`, `~~` to the repository root, and `#shared` to shared code. Auto-imports are configured in [nuxt.config.ts](../../nuxt.config.ts). Do not assume `~` points to the repository root.
 
 ## Dependency injection
 
-[createWorkspace](../../server/bootstrap/workspace.ts) adalah composition root yang merangkai database, repository, vault, InfluxClient, Telegram gateway, clock, dan service. `getWorkspace()` menyimpan satu container per proses. Nama internal `Workspace*` masih digunakan beberapa modul; itu identifier kode yang ada, bukan konsep produk untuk pengguna.
+[createWorkspace](../../server/bootstrap/workspace.ts) composes the database, repositories, vault, InfluxClient, Telegram gateway, clock, and services. `getWorkspace()` retains one container per process. Several internal modules retain `Workspace*` identifiers; these are code identifiers, not a user-facing product concept.
 
-Application service memakai dependency constructor berupa port pada [ports.ts](../../server/domain/ports.ts). Contoh AlertService menerima repository, akses source, akses Telegram, dan Clock, sehingga unit test dapat memakai fake tanpa koneksi eksternal. Fungsi murni seperti evaluator threshold tetap berupa fungsi; OOP digunakan untuk service/lifecycle dan adapter, bukan memaksa setiap value menjadi class.
+Application services use constructor-injected ports from [ports.ts](../../server/domain/ports.ts). AlertService, for example, receives repositories, source access, Telegram access, and a Clock, allowing unit tests to use fakes without external connections. Pure rules such as threshold evaluation remain functions. Classes handle service/adapter lifecycle rather than turning every value into an object hierarchy.
 
-## Alur query panel
+## Panel query flow
 
-1. Composable panel membentuk QueryRequest dari source, variable, dan waktu.
-2. Shared API client menangani sesi dan refresh; QueryRunner membatalkan request yang sudah diganti.
-3. Middleware memvalidasi sesi, role, permission route, serta origin mutation.
-4. Controller memvalidasi body dengan Zod dan menyerahkan ke DataSourceService.
-5. Service membaca konfigurasi, membuka secret melalui vault, dan memanggil InfluxClient.
-6. Client melakukan interpolasi, menambahkan macro waktu, mengirim request, mem-parsing CSV/JSON, dan membatasi hasil.
-7. UI membentuk seri/tabel dari QueryResponse lalu menerapkan opsi visualisasi.
+1. A panel composable builds QueryRequest from source, variables, and time state.
+2. The shared API client handles sessions/refresh; QueryRunner cancels superseded requests.
+3. Middleware checks the session, role, route/resource permission, and mutation origin.
+4. The controller validates the body with Zod and delegates to DataSourceService.
+5. The service loads configuration, decrypts credentials through the vault, and calls InfluxClient.
+6. The client interpolates values, applies time macros, requests the upstream API, parses CSV/JSON, and limits results.
+7. The UI builds chart series/tables from QueryResponse and applies visualization options.
 
-Semua user terautentikasi boleh query semua sumber. Hak membaca dashboard tidak digunakan sebagai ACL source.
+All authenticated users can query every source. Dashboard permission is not a source ACL.
 
-## Alur alert dan notifikasi
+## Alerts and notifications
 
-Scheduler selalu aktif selama proses server berjalan, memeriksa jadwal setiap 10 detik, dan mengambil rule due, mencoba lock PostgreSQL per rule, menjalankan query dan reducer, menghitung pending/state, lalu mengirim Telegram yang diperlukan. Penyimpanan evaluasi dan event dalam aplikasi dilakukan atomik melalui repository. Delivery status Telegram dipelihara per tujuan; layanan eksternal tidak menjadi bagian transaksi SQL.
+The scheduler always runs while the server process is alive. Every 10 seconds it obtains due rules, attempts per-rule PostgreSQL locks, queries/reduces values, computes pending/state, and sends required Telegram messages. Evaluation state and in-app notification events are committed atomically through the repository. Telegram delivery state is tracked per destination; external delivery is not part of the SQL transaction.
 
-Event notifikasi persisten mempunyai sequence global. Stream server memeriksa perubahan database, memfilter permission user, dan mengirim SSE. Client memakai cursor untuk reconnect serta fallback polling. Tidak ada pub/sub process-local sebagai satu-satunya sumber kebenaran.
+Persistent notification events use a global sequence. The server stream checks database changes, filters user access, and sends SSE. The client resumes with a cursor and falls back to polling. There is no process-local-only pub/sub source of truth.
 
-## Batas dependency
+The per-user alert pop-up preference affects client toast presentation only. It does not stop streaming, inbox updates, server evaluation, or Telegram delivery.
 
-Domain/shared tidak boleh bergantung pada Vue, API controller, atau driver database. Komponen tidak menjalankan SQL atau membuka secret. Controller tidak menduplikasi business rules. Saat menambah fitur, gunakan [extension guide](../development/extension-guide.md) dan perbarui [inventaris](../reference/source-inventory.json).
+## Dependency boundaries
+
+Domain/shared code must not depend on Vue, HTTP controllers, or database drivers. Components do not execute SQL or decrypt secrets. Controllers do not duplicate business rules. Follow the [extension guide](../development/extension-guide.md) and update the [inventory](../reference/source-inventory.json) when adding code.

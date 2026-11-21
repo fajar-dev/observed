@@ -1,26 +1,26 @@
 # Configuration: Telegram
 
-Telegram bersifat opsional. Setiap alert tetap menghasilkan notifikasi dalam aplikasi untuk pengguna yang memiliki akses alert, tanpa konfigurasi tujuan terpisah.
+Telegram is optional. Alerts still create in-app notifications for users with alert access without separate destination configuration.
 
-## Membuat tujuan
+## Create a destination
 
-1. Siapkan bot Telegram melalui BotFather dan simpan token secara privat.
-2. Mulai percakapan dengan bot atau tambahkan bot ke grup/channel tujuan serta berikan hak mengirim pesan.
-3. Buka **Configuration → Telegram destinations → Add Telegram destination**.
-4. Isi nama, chat ID numerik (termasuk ID grup negatif) atau `@username` yang didukung, dan token bot.
-5. Simpan, lalu gunakan aksi pengujian pada tujuan tersebut. Pengujian ini benar-benar mengirim pesan Telegram.
-6. Pada editor alert pilih satu atau beberapa tujuan, lalu simpan rule.
+1. Create a Telegram bot through BotFather and keep its token private.
+2. Start a conversation with the bot, or add it to the destination group/channel and grant permission to send messages.
+3. Open **Configuration → Telegram destinations → Add Telegram destination**.
+4. Enter a name, a numeric chat ID (including negative group IDs) or a supported `@username`, and the bot token.
+5. Save, then run the destination test action. This sends a real Telegram message.
+6. Select one or more destinations in the alert editor and save the rule.
 
-Aplikasi mendukung banyak tujuan dan maksimal 20 tujuan unik per rule. Penambahan tujuan di Configuration tidak otomatis memilihnya untuk setiap rule.
+The application supports multiple destinations, with up to 20 unique destinations per rule. Adding a destination in Configuration does not automatically select it for every rule.
 
-## Edit dan pengiriman
+## Editing and delivery
 
-Token tersimpan tidak ditampilkan kembali. Field token kosong saat edit mempertahankan token lama. Tujuan yang masih digunakan rule tidak dapat dihapus sampai referensinya dilepas.
+Saved tokens are not displayed again. Leaving the token blank in the edit form preserves it. Destinations referenced by a rule cannot be deleted until the references are removed.
 
-Pesan firing dan recovery memuat nama alert, sumber, nilai, operator/threshold, waktu kejadian, serta severity/summary jika tersedia. Pesan memakai HTML yang di-escape; waktu pesan diformat WIB. Nilai mengikuti hasil numerik query, bukan konversi unit otomatis dari judul alert.
+Firing and recovery messages include the alert name, source, current value, threshold/operator, event time, and optional severity/summary. Messages use escaped HTML and English labels, dates, and numeric formatting. Event time is shown in `UTC+07:00` (Asia/Jakarta). Values reflect query output; the alert name does not trigger automatic unit conversion.
 
-Kegagalan Telegram dicatat sebagai delivery error pada evaluasi. Aplikasi mencoba lagi pada evaluasi berikutnya untuk tujuan yang belum berhasil; notifikasi dalam aplikasi tidak mensyaratkan keberhasilan Telegram. Pengiriman eksternal tidak mempunyai jaminan exactly-once bila proses berhenti setelah Telegram menerima pesan tetapi sebelum status disimpan.
+Telegram failures appear as evaluation delivery errors. Later evaluations retry destinations that have not succeeded; in-app notifications do not depend on Telegram success. External delivery is not exactly-once if the process stops after Telegram receives a message but before delivery state is saved.
 
-## Jika pesan tidak masuk
+## Missing messages
 
-Periksa token, chat ID, apakah bot sudah di-start, keanggotaan/hak kirim grup atau channel, koneksi keluar server ke Telegram, status enabled rule, pending period, mute, dan hasil query. Preview hanya menguji kondisi dan tidak mengirim notifikasi. Lihat [siklus alert](../guides/alerts.md).
+Check the token, chat ID, whether the bot has been started, group/channel membership and send permissions, outbound server connectivity, rule enabled state, pending period, mute, and query results. Preview checks the condition without sending notifications. See the [alert lifecycle](../guides/alerts.md).

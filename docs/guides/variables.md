@@ -1,38 +1,38 @@
-# Variable dashboard
+# Dashboard variables
 
-Variable memungkinkan satu dashboard digunakan untuk beberapa sensor, lokasi, bucket, atau sumber. Tambahkan melalui **Dashboard settings → Variables**, lalu Save dashboard. Nama harus diawali huruf, diikuti huruf/angka/underscore, maksimum 60 karakter dan bukan nama object JavaScript yang dicadangkan. Nama harus unik dalam dashboard.
+Variables let one dashboard serve multiple sensors, locations, buckets, or sources. Add them in **Dashboard settings → Variables**, then Save. Names must start with a letter, contain only letters/digits/underscores, be no longer than 60 characters, and avoid reserved JavaScript object names. Names must be unique within a dashboard.
 
-| Type | Isi |
+| Type | Values |
 | --- | --- |
-| `custom` | Daftar pilihan statis |
-| `constant` | Nilai tetap untuk interpolasi |
-| `query` | Pilihan dari hasil query sumber |
-| `datasource` | Memilih satu ID sumber InfluxDB |
-| `textbox` | Nilai yang dimasukkan pengguna |
-| `interval` | Daftar nilai durasi seperti `10s`, `1m` |
+| `custom` | Static choices |
+| `constant` | A fixed interpolation value |
+| `query` | Choices loaded from a source query |
+| `datasource` | One selected InfluxDB source ID |
+| `textbox` | User-entered text |
+| `interval` | Durations such as `10s` and `1m` |
 
-Isi label singkat, type, nilai/query, default, serta Multi-value atau Include All jika diperlukan. Source variable hanya boleh satu sumber, tidak multi. Opsi `hidden` tersedia pada kontrak JSON; tidak semua properti kontrak memiliki kontrol UI.
+Set a short label, type, values/query, default, and Multi-value or Include All when appropriate. Source variables are single-select. The JSON contract supports `hidden`; not every contract property has a dedicated UI control.
 
-## Contoh
+## Examples
 
-Buat variable `sensor` dengan nilai `P1`, `P2`, `P3`. Gunakan dalam Flux:
+Create `sensor` with values `P1`, `P2`, and `P3`. Use it in Flux:
 
 ```flux
 |> filter(fn: (r) => r.sensor == "$sensor")
 ```
 
-Untuk banyak nilai, equality Flux yang didukung diubah menjadi membership `contains`. Untuk selector regex:
+Supported Flux equality selectors become `contains` membership expressions for multiple values. For regex selection:
 
 ```flux
 |> filter(fn: (r) => r.sensor =~ /^${sensor:regex}$/)
 ```
 
-Variable di dalam string/regex di-escape sesuai konteks. `${name:json}` menghasilkan JSON; `${name:pipe}` menggabungkan nilai dengan `|`; `${name:raw}` hanya melepas quote untuk satu nilai numerik/durasi/boolean yang lolos validasi. Jangan memakai raw untuk menyisipkan potongan query arbitrer.
+String/regex interpolation escapes values for their context. `${name:json}` produces JSON; `${name:pipe}` joins values with `|`; `${name:raw}` removes quoting only for one validated numeric/duration/boolean value. Do not use raw interpolation to inject arbitrary query fragments.
 
-## Resolusi
+## Resolution
 
-Query variable bisa bergantung pada variable lain. Resolver menyelesaikan dependency lebih dahulu dan melaporkan cycle atau nilai yang belum tersedia. Hasil query dijadikan pilihan string unik, maksimum 500 nilai; kolom umum seperti `_value`, `value`, `name`, dan `host` diprioritaskan dibanding kolom waktu. Periksa hasil resolver bila pilihan yang muncul tidak sesuai harapan.
+Query variables may depend on other variables. The resolver handles dependencies first and reports cycles or unresolved values. Query results become unique string choices, up to 500 values; common columns such as `_value`, `value`, `name`, and `host` are preferred over time columns. Inspect resolver output when choices are unexpected.
 
-Include All menggunakan seluruh pilihan aktual, bukan wildcard SQL mentah. Pilihan pengguna dibawa melalui parameter `var-<name>` pada URL bersama state waktu. Panel yang memakai source variable menyimpan nama variable pada `dataSourceVariable`; nilai variable harus ID sumber yang valid.
+Include All expands actual choices rather than inserting a raw SQL wildcard. Selections use `var-<name>` URL parameters alongside time state. Panels using a source variable store its name in `dataSourceVariable`; the selected value must be a valid source ID.
 
-Macro waktu yang didukung: `$__interval`, `$__interval_ms`, `$__from`, `$__to`, `$__range`, `$__range_s`, `$__range_ms`, serta `${__from:date:iso}` dan `${__to:date:iso}`. Macro yang tidak dikenal tidak otomatis menjadi fitur Grafana lengkap. Alert tidak mempunyai resolver variable dashboard otomatis; gunakan query alert yang mandiri atau nilai eksplisit melalui kontrak query.
+Supported time macros include `$__interval`, `$__interval_ms`, `$__from`, `$__to`, `$__range`, `$__range_s`, `$__range_ms`, `${__from:date:iso}`, and `${__to:date:iso}`. Unknown macros do not imply full Grafana support. Alert rules do not automatically resolve dashboard variables; use self-contained alert queries or explicit values through the query contract.

@@ -1,19 +1,21 @@
-# Notifikasi dalam aplikasi
+# In-app notifications
 
-Ikon lonceng berada di header setiap pengguna yang sign-in, termasuk akun yang belum diberi akses satu alert pun. Tidak ada konfigurasi channel internal atau permission notifikasi terpisah. Notifikasi otomatis mengikuti alert yang dapat dilihat pengguna.
+The header bell is available to every signed-in user, including accounts without access to any alert. No internal channel setup or separate notification permission is required. Notifications automatically follow the alert rules the user can view.
 
-## Membaca inbox
+## Reading the inbox
 
-Klik lonceng untuk melihat daftar firing/recovery terbaru, status belum dibaca, nama alert, sumber, nilai/threshold, dan waktu. Membuka item menandainya telah dibaca; aksi mark all read menerapkan status sampai cursor saat ini. Status baca milik masing-masing user, bukan seluruh pengguna.
+Open the bell to see recent firing/recovery events, unread status, alert/source names, value/threshold, and time. Opening an item marks it read; mark-all-read applies through the current cursor. Read status belongs to each user, not the entire installation.
 
-Inbox memuat maksimal 50 item terbaru yang diizinkan. Jumlah unread menghitung seluruh item yang belum dibaca, sehingga dapat lebih besar dari panjang daftar. Daftar kosong dapat berarti belum ada event atau belum ada akses rule.
+The inbox shows up to 50 permitted recent items. The unread count includes all unread permitted events and may exceed the displayed list length. An empty inbox can mean no events yet or no rule access.
 
-## Realtime
+## Realtime updates
 
-Aplikasi membuka koneksi SSE terautentikasi dan menampilkan toast ketika menerima event baru. Histori awal tidak dimunculkan ulang sebagai toast. Switch **Profile → Notifications → Alert pop-ups** aktif secara default dan dapat dimatikan per akun. Saat dimatikan, toast alert yang masih tampil ditutup dan event berikutnya tetap memperbarui inbox/unread tanpa pop-up. Mengaktifkannya kembali hanya menampilkan toast untuk event baru, bukan memutar ulang event yang diterima saat dimatikan. Jika stream gagal, client menggunakan polling JSON. Sign-out menutup subscription dan membersihkan state/toast akun sebelumnya.
+The application opens an authenticated SSE connection and shows toasts for new events. Initial history is not replayed as toasts. **Profile → Notifications → Alert pop-ups** is enabled by default and can be disabled per account. Disabling it dismisses visible alert toasts and keeps the inbox/unread count updating without pop-ups. Re-enabling it shows future events only, not events received while disabled.
 
-Server membaca event persisten dari PostgreSQL, sehingga beberapa instance aplikasi dapat menyampaikan event yang sama kepada pengguna yang tepat. SSE menggunakan cursor sequence berbentuk string; jangan mengubahnya menjadi JavaScript Number karena dapat kehilangan presisi bigint.
+If streaming fails, the client falls back to JSON polling. Sign-out closes the subscription and clears the previous account's state and alert toasts.
 
-Permission diperiksa pada daftar, replay, dan mark read. Setelah akses suatu alert dicabut, notifikasinya tidak lagi tersedia untuk akun tersebut. Administrator dapat tetap membaca snapshot historis termasuk setelah rule dihapus; akun Selected kehilangan akses jika grant resource sudah hilang.
+Events are persisted in PostgreSQL, allowing multiple application instances to deliver the same events to the correct users. SSE uses a sequence cursor represented as a string; never convert it to JavaScript Number because bigint precision may be lost.
 
-Kiosk menyembunyikan header global, termasuk lonceng, tetapi tidak menjadikan sesi anonim. Telegram dijelaskan pada [Configuration](../configuration/telegram.md); kegagalan Telegram tidak berarti inbox otomatis gagal.
+Permissions are checked for lists, replay, and mark-read operations. After alert access is revoked, its notifications are unavailable to that account. Administrators can retain historical snapshots after rule deletion; Selected access is lost when the resource grant disappears.
+
+Kiosk hides the global header, including the bell, without making the session anonymous. See [Telegram configuration](../configuration/telegram.md) for external delivery; Telegram failure does not imply inbox failure.

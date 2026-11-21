@@ -1,29 +1,31 @@
-# Keamanan dan batas kepercayaan
+# Security and trust boundaries
 
-## Autentikasi
+## Authentication
 
-Password di-hash menggunakan scrypt. Access token JWT HS256 berumur 10 menit, memuat binding sesi dan divalidasi bersama state akun/sesi terkini di database. Signing key diturunkan dari key aplikasi dengan pemisahan penggunaan. Refresh token acak disimpan sebagai hash SHA-256, berotasi, dan replay mencabut sesi. Sesi berumur absolut 30 hari.
+Passwords use scrypt hashes. HS256 access JWTs last 10 minutes and bind to sessions; each authenticated request checks current database account/session state. The signing key is derived from the application key with usage separation. Random refresh tokens are stored as SHA-256 hashes, rotate on refresh, and revoke their session on replay. Sessions have an absolute 30-day lifetime.
 
-Cookie memakai HttpOnly, SameSite Lax dan Secure bila origin HTTPS. Refresh cookie dibatasi path auth. Browser tidak menyimpan token di localStorage. Sign-out/revoke/disable tidak hanya menghapus UI state tetapi mencabut sesi database. Throttle autentikasi disimpan PostgreSQL.
+Cookies use HttpOnly, SameSite Lax, and Secure for HTTPS request URLs. Refresh cookies are restricted to the authentication path. Browsers do not store tokens in localStorage. Sign-out, revocation, and account disabling revoke database sessions rather than merely clearing UI state. Authentication throttles are persisted in PostgreSQL.
 
-Bootstrap admin satu kali memakai marker database yang persisten. OIDC memverifikasi PKCE/state/nonce/issuer/audience dan identitas provider; tidak menghubungkan akun secara diam-diam berdasarkan email.
+First-administrator bootstrap is one-time and uses a durable database marker. OIDC verifies PKCE/state/nonce/issuer/audience and provider identity; accounts are never silently linked by matching email.
 
-## Otorisasi
+## Authorization
 
-Middleware memeriksa route/role; PermissionService memeriksa resource; collection dan notifikasi difilter; delete membutuhkan kepemilikan untuk Editor. Jangan mengandalkan route middleware frontend sebagai batas akses.
+Middleware checks routes/roles, PermissionService checks resources, collection/notification reads are filtered, and Editor deletion requires ownership. Frontend route guards are not the access boundary.
 
-Semua pengguna sign-in dapat query seluruh source. Model ini tidak mengisolasi raw sensor data antar-tenant. Admin mengendalikan URL sumber dan credential. Koneksi ke jaringan privat memang diperlukan; aplikasi tidak menyediakan sandbox jaringan source. Batasi hak Admin dan network egress sesuai instalasi.
+All signed-in users may query all sources. This does not isolate raw sensor data between tenants. Administrators control source URLs and credentials. Private network connectivity is intentional; no source network sandbox is provided. Limit administrator access and egress according to installation needs.
 
-## Secret dan transport
+The per-user alert pop-up preference changes client presentation only. It does not grant access, change rule permissions, stop event persistence/streaming, or suppress Telegram delivery. Only the authenticated principal can change their own preference.
 
-Credential InfluxDB dan token Telegram memakai AES-256-GCM. API tidak mengembalikan plaintext tersimpan. Database backup harus dilindungi bersama key yang dicadangkan terpisah. Belum ada proses rotasi otomatis key yang me-reencrypt semua data.
+## Secrets and transport
 
-Mutation API memeriksa Origin/Sec-Fetch-Site; bearer client tetap ditolak jika mengirim Origin yang salah. Body JSON maksimal 2 MiB, remote response maksimal 8 MiB, timeout transport 12 detik, hasil query maksimal 5.000 baris. Remote redirect ditolak.
+InfluxDB credentials and Telegram tokens use AES-256-GCM. APIs never return saved plaintext. Secure database backups and preserve the corresponding key separately. Automatic encryption-key rotation with re-encryption is not implemented.
 
-SQL parameterized dan validasi Zod mengurangi input yang tidak valid. InfluxQL diperiksa read-only, tetapi token InfluxDB read-only tetap wajib sebagai batas privilege nyata; jangan menganggap filter query aplikasi cukup untuk semua kemampuan Flux.
+Mutation requests validate Origin/Sec-Fetch-Site; Bearer requests are still rejected when supplying a mismatched Origin. JSON body limit is 2 MiB, remote response limit is 8 MiB, remote timeout is 12 seconds, and query result limit is 5,000 rows. Remote redirects are rejected.
 
-## Operasional
+Parameterized SQL and Zod validation constrain inputs. InfluxQL has an additional read-only check, but read-only InfluxDB tokens remain the actual privilege boundary. Do not assume the application filter covers every Flux capability.
 
-Gunakan host/skema request yang benar, transport HTTPS pada infrastruktur yang sesuai, role database minimum, backup privat, dan least privilege provider/bot. Jangan mencetak secret atau membagikan JSON dashboard yang memuat token dalam query. Docker runtime non-root/read-only bukan pengganti permission resource atau perlindungan host.
+## Operations
 
-Penambahan fitur keamanan harus diuji pada request langsung, akun beda role, grant yang dicabut, sesi kedaluwarsa, dan reconnect stream. Lihat [matriks akses](guides/users-and-permissions.md) serta [test](development/testing.md).
+Preserve the correct request host/scheme, provide HTTPS through the deployment infrastructure, use least-privilege database/provider/bot credentials, and keep private backups. Never print secrets or export dashboards containing tokens inside queries. A non-root/read-only Docker runtime does not replace resource authorization or host security.
+
+Security changes need direct-request tests for roles, revoked grants, expired sessions, and stream reconnects. See the [access matrix](guides/users-and-permissions.md) and [testing guide](development/testing.md).

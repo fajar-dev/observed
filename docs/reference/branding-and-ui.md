@@ -1,26 +1,26 @@
-# Branding dan sistem UI
+# Branding and UI system
 
-## Identitas
+## Identity
 
-Nama produk **Observed**. Gunakan bahasa pemantauan sensor struktur: dashboard sensor, structural trends, threshold alert, source, struktur, bangunan, dan jembatan. Pengguna utamanya engineer sipil, kontraktor, dan pemilik struktur. Logo AMTI tetap dipakai; perubahan copy tidak mengganti logo.
+The product name is **Observed**. Use structural sensor monitoring language: sensor dashboards, structural trends, threshold alerts, sources, structures, buildings, and bridges. The main users are civil engineers, contractors, and structure owners. Keep the AMTI logo; copy changes do not replace it.
 
-Identitas terpusat di [product.ts](../../shared/config/product.ts). Metadata global di [nuxt.config.ts](../../nuxt.config.ts) dan metadata halaman melalui helper SEO. Aplikasi merupakan console privat dengan `noindex, nofollow`, bukan landing page publik.
+Identity is centralized in [product.ts](../../shared/config/product.ts). Global metadata lives in [nuxt.config.ts](../../nuxt.config.ts); pages use the SEO helper. Observed is a private console with `noindex, nofollow`, not a public landing page.
 
-Hindari istilah “workspace” pada copy UI, nama monitoring lama, klaim sensor ingest otomatis, atau fitur yang belum ada. Identifier internal `WorkspaceApi`, `WorkspacePage`, dan `createWorkspace` tidak harus diubah hanya untuk menyesuaikan teks produk.
+Write documentation, UI text, notifications, examples, and code comments in English. Date and number display uses an explicit English locale. Do not translate proper names, public identifiers, or user-authored resource names/queries. Do not put “workspace” or old monitoring brands into UI copy, claim automatic ingestion, or advertise unimplemented features. Internal identifiers such as `WorkspaceApi`, `WorkspacePage`, and `createWorkspace` do not require renaming for copy changes.
 
-## Aturan visual
+## Visual rules
 
-- Pertahankan logo, sidebar, header, palette biru, background putih, dan container fluid.
-- Gunakan komponen Nuxt UI, konfigurasi bersama di [app.config.ts](../../app/app.config.ts), serta primitive yang sudah ada sebelum membuat komponen custom.
-- Ukuran komponen menggunakan `xs`, `sm`, `md`, `lg`, `xl`. Spacing/dimensi memakai token semantic dari [tokens.css](../../app/assets/styles/tokens.css), bukan angka/arbitrary utility per halaman.
-- Toolbar/filter/action biasanya `sm`; field form `md`. Semua input/select/textarea yang memerlukan isian memiliki label, placeholder bermakna, dan pesan validasi.
-- Tab horizontal memakai variant link bergaris. Menu action memakai ikon titik tiga vertikal dan alignment kanan.
-- Modal biasa hanya title, tanpa deskripsi title serta garis pemisah header/footer. Gunakan padding global yang ringkas. Modal/slideover memakai overlay tipis dan blur subtle. Editor fullscreen mempertahankan struktur kerja editor.
-- Toast melalui helper bersama, dengan title singkat dan description yang menjelaskan hasil atau langkah berikutnya; keduanya wajib pada kontrak helper. Pesan sukses tidak boleh menyatakan koneksi sudah teruji jika hanya menyimpan konfigurasi. Tanpa progress/loading toast. Jangan menambah `UAlert` atau banner error paralel untuk alur yang sudah memakai toast.
-- Empty state singkat, dengan CTA jika role dapat membuat resource. Hindari statistik footer atau paragraf penjelasan panjang yang mengulang UI.
+- Preserve the logo, sidebar, header, blue palette, white background, and fluid content container.
+- Prefer Nuxt UI, shared [app.config.ts](../../app/app.config.ts), and existing primitives before custom components.
+- Use component sizes `xs`, `sm`, `md`, `lg`, `xl`. Use semantic spacing/dimension tokens from [tokens.css](../../app/assets/styles/tokens.css), not per-page numeric/arbitrary utilities.
+- Toolbars/filters/actions usually use `sm`; form fields use `md`. Inputs/selects/textareas that require values have labels, meaningful placeholders, and validation messages.
+- Horizontal tabs use the underlined link variant. Action menus use vertical ellipsis icons and right alignment.
+- Regular dialogs have a title without a subtitle or header/footer separators. Use compact shared padding. Modals/slideover overlays have a light tint and subtle blur. Fullscreen editors retain their editing structure.
+- Use the shared toast helper with a short title and description explaining the outcome or next step; both are required by its contract. Saving configuration must not claim a successful connection test. Do not use progress/loading toasts, `UAlert`, or parallel inline error banners for flows already using toasts.
+- Keep empty states concise and provide a CTA when the role can create resources. Avoid repetitive footer counts and long explanatory paragraphs.
 
-Typography: Inter untuk body/form, Manrope untuk heading/metric, JetBrains Mono untuk query/kode. Gunakan tebal huruf dari hierarchy token; jangan semua label dijadikan bold. Diagram/chart harus mempunyai area untuk axis, legend dan tabel yang dapat scroll secara lokal, tanpa overflow halaman.
+Typography uses Inter for body/forms, Manrope for headings/metrics, and JetBrains Mono for queries/code. Follow the weight hierarchy rather than making every label bold. Charts need room for axes/legends; wide tables scroll locally without page overflow.
 
-## Verifikasi UI
+## UI verification
 
-Uji desktop, mobile, judul panjang, banyak seri, tabel lebar, empty state, permission terbatas, keyboard focus, modal close, dan kiosk. Perubahan style lintas aplikasi sebaiknya pada token/konfigurasi komponen, bukan override per view. Aturan lint semantic UI berada di [semantic-ui.mjs](../../tooling/eslint/semantic-ui.mjs).
+Check desktop/mobile, long titles, many series, wide tables, empty states, restricted roles, keyboard focus, dialog closing, and kiosk. Make shared style changes in tokens/component configuration instead of per-view overrides. Semantic UI lint rules live in [semantic-ui.mjs](../../tooling/eslint/semantic-ui.mjs).

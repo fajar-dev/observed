@@ -1,13 +1,14 @@
-# Panduan agent Observed
+# Observed agent guide
 
-Baca [docs/ai/README.md](docs/ai/README.md) sebagai konteks AI, [arsitektur](docs/architecture/overview.md), dan panduan fitur yang terkait sebelum mengubah kode. Dokumentasi lengkap untuk pengguna dan pengembang berada di [docs/README.md](docs/README.md). Instruksi pengguna pada tugas aktif menentukan scope perubahan.
+Read [docs/ai/README.md](docs/ai/README.md), the [architecture guide](docs/architecture/overview.md), and the relevant feature documentation before changing code. Complete user and developer documentation is available in [docs/README.md](docs/README.md). The user's instructions for the active task determine the scope of work.
 
-## Aturan kerja
+## Working rules
 
-- Pertahankan brand Observed untuk monitoring sensor struktur, logo AMTI, dan sistem UI existing. Gunakan Nuxt UI serta semantic tokens, bukan ukuran utility numerik/arbitrary baru.
-- Business rules berada di application service/shared pure functions; database/HTTP di adapter, dependency dirangkai di `server/bootstrap`. Route dan view tetap tipis.
-- Admin penuh; Editor dapat membuat resource dan memperoleh grant Edit yang dapat dicabut; existing resource mengikuti permission. Viewer membaca resource yang ditugaskan. Semua user sign-in dapat query semua sumber.
-- Notifikasi mengikuti akses alert tanpa ACL terpisah. Jaga session revocation, refresh rotation, marker setup sekali, enkripsi credential, dashboard revision, layout desktop/mobile, dan notification cursor bigint sebagai string.
-- Jangan membaca/mencetak secret `.env`, mengirim notifikasi nyata, menjalankan test destruktif pada database aktif, atau push/deploy kecuali scope tugas mengizinkan. Gunakan database pengujian terisolasi.
-- Jangan menghidupkan kembali fitur yang dihapus (Playground, import ID Grafana, star/share, source ACL) tanpa permintaan eksplisit.
-- Perbarui dokumen/kontrak/contoh saat perilaku berubah. Jalankan checks sesuai [testing](docs/development/testing.md), `bun run docs:check`, dan regenerate inventory bila source berubah. Laporkan hasil aktual dan batas verifikasi.
+- Preserve Observed branding for structural sensor monitoring, the AMTI logo, and the existing UI system. Use Nuxt UI and semantic tokens instead of new numeric or arbitrary sizing utilities.
+- Keep business rules in application services or shared pure functions, database and HTTP access in adapters, and dependency composition in `server/bootstrap`. Keep routes and views thin.
+- Admins have full access. Editors can create resources and receive revocable Edit grants; existing resources follow permissions. Viewers read assigned resources. Every signed-in user can query all sources.
+- Notifications follow alert access without a separate ACL. Preserve session revocation, refresh rotation, one-time setup, credential encryption, dashboard revisions, desktop/mobile layouts, and bigint notification cursors represented as strings.
+- Do not read or print `.env` secrets, send real notifications, run destructive tests against an active database, or push/deploy unless the task authorizes it. Use isolated test databases.
+- Do not restore removed features (Playground, Grafana ID import, stars/sharing, source ACLs) without an explicit request.
+- Update documentation, contracts, and examples when behavior changes. Run the appropriate [checks](docs/development/testing.md), `bun run docs:check`, and regenerate the inventory when source changes. Report actual results and verification limits.
+- Write documentation, application-owned messages, examples, and code comments in English. Preserve proper names, public identifiers, and user-authored content.

@@ -1,12 +1,12 @@
-# Panel, query, dan visualisasi
+# Panels, queries, and visualizations
 
-## Editor panel
+## Panel editor
 
-Editor add/edit panel menampilkan query dan preview bersama pengaturan panel. Pilih sumber InfluxDB, gunakan builder untuk menemukan measurement/field/tag atau tulis query langsung. Jalankan query dengan tombol run atau `Ctrl+Enter`/`Cmd+Enter`. Query bahasa Flux/InfluxQL harus cocok dengan sumber; mengganti label bahasa tidak mengonversi sintaks server.
+The add/edit panel editor combines queries, preview, and appearance settings. Choose an InfluxDB source, use the builder to discover measurements/fields/tags, or write a query directly. Run it with the action button or `Ctrl+Enter`/`Cmd+Enter`. The query language must match the source; changing a language label does not translate server syntax.
 
-Panel mendukung query utama dan maksimal sembilan query tambahan. Permintaan preview sebelumnya dibatalkan saat digantikan agar hasil lama tidak menimpa pilihan baru. Simpan panel ke draft, kemudian Save dashboard untuk persistensi.
+Panels support one primary query and up to nine additional queries. Superseded previews are canceled so stale results do not overwrite newer selections. Apply the panel to the draft, then Save the dashboard to persist it.
 
-## Contoh Flux
+## Flux example
 
 ```flux
 from(bucket: v.defaultBucket)
@@ -16,9 +16,9 @@ from(bucket: v.defaultBucket)
   |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)
 ```
 
-Server menyediakan `v.defaultBucket`, `v.timeRangeStart`, `v.timeRangeStop`, dan `v.windowPeriod`. Window agregasi diturunkan dari rentang waktu untuk sekitar 300 interval, minimum satu detik. Pastikan Flux import berada sebelum deklarasi option; client menambahkan prelude setelah import.
+The server provides `v.defaultBucket`, `v.timeRangeStart`, `v.timeRangeStop`, and `v.windowPeriod`. The aggregation window is derived from the requested range for approximately 300 intervals, with a one-second minimum. Flux imports must precede option declarations; the client inserts its prelude after imports.
 
-## Contoh InfluxQL
+## InfluxQL example
 
 ```sql
 SELECT mean("tilt") AS "tilt"
@@ -27,26 +27,26 @@ WHERE $timeFilter AND "sensor" = 'P2'
 GROUP BY time($__interval), "sensor" fill(null)
 ```
 
-`$timeFilter` dan `$__interval` diganti server. Query metadata seperti `SHOW MEASUREMENTS LIMIT 100` berguna untuk discovery. InfluxQL diperiksa sebagai query baca; gunakan credential read-only upstream juga.
+The server substitutes `$timeFilter` and `$__interval`. Metadata queries such as `SHOW MEASUREMENTS LIMIT 100` help with discovery. InfluxQL is checked for read-only operations; use read-only upstream credentials as well.
 
-## Memilih tampilan
+## Choose a visualization
 
-| Tampilan | Penggunaan |
+| Visualization | Typical use |
 | --- | --- |
-| Time series / Area | Perubahan sensor terhadap waktu |
-| Bar chart | Perbandingan nilai/seri |
-| Metric | Nilai hasil reducer, misalnya nilai terakhir |
-| Gauge / Bar gauge | Nilai pada min/max yang ditetapkan |
-| Pie chart | Proporsi nilai positif yang relevan |
-| Table | Inspeksi baris/field hasil query |
-| Text | Catatan teks pada dashboard; bukan HTML bebas |
+| Time series / Area | Sensor measurements over time |
+| Bar chart | Comparing values or series |
+| Metric | A reduced value, such as the latest reading |
+| Gauge / Bar gauge | Values within a configured min/max range |
+| Pie chart | Relevant proportions of positive values |
+| Table | Inspecting returned rows and fields |
+| Text | Dashboard notes; not arbitrary HTML |
 
-Atur title, note, unit, decimals, min/max, reducer, legend, warna, threshold, dan pengaturan field sesuai visualisasi. Sebagian pengaturan lanjutan tersedia melalui JSON, bukan seluruhnya sebagai kontrol editor. Schema lengkap ada di [kontrak data](../reference/data-contracts.md).
+Configure the title, note, unit, decimals, min/max, reducer, legend, colors, thresholds, and field appearance as appropriate. Some advanced options are available through JSON rather than dedicated editor controls. See the [data contracts](../reference/data-contracts.md).
 
-Unit tidak disimpulkan dari judul. Persentase rasio 0–1 berbeda dari nilai 0–100; pilih format yang sesuai data. Threshold warna panel tidak otomatis membuat alert. Untuk banyak seri gunakan legend di kanan atau tabel legend seperlunya; beri tinggi panel cukup. Tabel dapat menggulir di dalam panel untuk menjaga kolom tetap terbaca.
+Units are not inferred from titles. A percentage ratio of 0–1 differs from a percentage value of 0–100; select the format matching the data. Panel color thresholds do not create alert rules automatically. For many series, consider a right-side or table legend and sufficient panel height. Tables can scroll within their panels to keep columns readable.
 
 ## Query inspector
 
-Menu panel → **Inspect data** membuka **Query inspector** dengan tab bergaris: **Stats**, **Query**, **JSON**, **Data**. Stats menjelaskan durasi, jumlah baris/query, dan batas hasil. Data menampilkan tabel dan **Download CSV**. Inspector memperlihatkan query yang dikirim dari panel; jangan menganggapnya trace lengkap seluruh statement/interpolasi server.
+Panel menu → **Inspect data** opens **Query inspector** with underlined **Stats**, **Query**, **JSON**, and **Data** tabs. Stats shows duration, row/query counts, and truncation. Data provides a table and **Download CSV**. The Query tab shows statements submitted by the panel; it is not a full trace of every server interpolation step.
 
-Hasil maksimal 5.000 baris per query. Jika `truncated=true`, kurangi range atau lakukan agregasi/filter di InfluxDB. Selalu periksa kolom waktu, field numerik, label seri, dan kemungkinan nilai null sebelum mengubah format panel untuk memperbaiki data yang salah.
+Each query returns at most 5,000 rows. If `truncated=true`, narrow the range or aggregate/filter in InfluxDB. Check timestamps, numeric fields, series labels, and null values before trying to fix incorrect data through appearance changes.

@@ -1,40 +1,42 @@
-# User, role, dan permission
+# Users, roles, and permissions
 
-Role membatasi jenis tindakan. Permission menentukan dashboard dan alert mana yang dapat diakses. Keduanya diperiksa server; menyembunyikan tombol UI saja bukan otorisasi.
+Roles limit action types. Permissions determine which dashboards and alerts can be accessed. Both are enforced on the server; hiding UI buttons is not authorization.
 
-## Matriks akses
+## Access matrix
 
-| Tindakan | Admin | Editor | Viewer |
+| Action | Admin | Editor | Viewer |
 | --- | --- | --- | --- |
-| Membuat dashboard/alert | Ya | Ya, tanpa perlu akses resource existing | Tidak |
-| Membaca resource existing | Semua | Sesuai View/Edit grant | Sesuai View grant |
-| Mengubah/evaluate alert existing | Semua | Memerlukan Edit grant | Tidak |
-| Menghapus dashboard/alert | Semua | Hanya miliknya sendiri dan masih Edit | Tidak |
-| Melihat sumber dan menjalankan query | Ya | Ya, semua sumber | Ya, semua sumber |
-| Mengubah/test koneksi sumber/Telegram | Ya | Tidak | Tidak |
-| Mengelola user/permission | Ya | Tidak | Tidak |
-| Mengelola folder secara langsung | Ya | Tidak | Tidak |
-| Membaca notifikasi | Semua alert | Mengikuti akses alert | Mengikuti akses alert |
-| Mengelola profil/sesi sendiri | Ya | Ya | Ya |
+| Create dashboards/alerts | Yes | Yes, even without existing resource grants | No |
+| Read existing resources | All | Assigned View/Edit grants | Assigned View grants |
+| Edit/evaluate existing alerts | All | Edit grant required | No |
+| Delete dashboards/alerts | All | Own resources only, with current Edit access | No |
+| Read sources and run queries | Yes | Yes, all sources | Yes, all sources |
+| Configure/test sources and Telegram | Yes | No | No |
+| Manage users/permissions | Yes | No | No |
+| Directly manage folders | Yes | No | No |
+| Read notifications | All alerts | Follows alert access | Follows alert access |
+| Manage own profile/sessions | Yes | Yes | Yes |
 
-Editor otomatis menerima grant Edit yang bisa dicabut untuk resource yang baru dibuatnya. Grant disimpan bersama resource dalam transaksi yang sama. Pembuat tidak mempunyai bypass permanen setelah grant dicabut. Resource lama tanpa `createdBy` hanya dapat dihapus Admin.
+Editors receive revocable Edit grants when they create resources. Resource creation and the creator grant are saved in the same transaction. Creators have no permanent bypass after grant revocation. Only Admins can delete older resources without `createdBy`.
 
-## Menambah user
+## Add a user
 
-Buka **Users → Add user**, isi nama, email, role, status enabled, dan password untuk akun lokal baru. Password memakai 12–128 karakter. Password opsional pada edit berarti tidak mengganti password existing; pembuatan user lokal melalui Users tetap mewajibkan password. User baru selain Admin mulai tanpa akses dashboard/alert existing; sumber tetap bisa di-query. User OAuth baru juga mulai sebagai Viewer jika signup provider diizinkan.
+Open **Users → Add user** and provide name, email, role, enabled state, and a password for a new local account. Passwords require 12–128 characters. Omitting a password during edit preserves it; creating a local user through Users still requires one.
 
-## Mengatur permission
+New non-Admin accounts have no access to existing dashboards/alerts until assigned; they can still query all sources. New OAuth identities start as Viewers when provider signup is enabled.
 
-Buka menu user → **Permissions**. Atur Dashboard dan Alert secara terpisah:
+## Assign permissions
 
-- **No access**: tidak ada resource existing yang tersedia.
-- **Selected resources**: pilih ID resource dan level View/Edit masing-masing.
-- **All resources**: level dasar untuk seluruh resource, termasuk resource baru; grant per item dapat mengubah levelnya.
+Open a user menu → **Permissions** and configure Dashboards and Alerts separately:
 
-Viewer tetap dibatasi View walaupun payload meminta Edit. Admin selalu memiliki semua akses. Tidak ada permission source, notification, folder inheritance, team, atau multi-organization.
+- **No access**: no existing resources are available.
+- **Selected resources**: choose resource IDs and View/Edit levels individually.
+- **All resources**: a base level for every resource, including future resources; per-resource grants can override that level.
 
-Menyimpan permission mencabut sesi target user sehingga akses diperbarui pada sign-in berikutnya. Perubahan password, role/email tertentu, atau menonaktifkan user juga mencabut sesi sesuai kebijakan auth. User tidak dapat menonaktifkan/menghapus/menurunkan role dirinya sendiri melalui administrasi; Admin aktif terakhir dilindungi.
+Viewer remains capped at View even if a payload requests Edit. Admin always has full access. There is no source permission, notification ACL, folder inheritance, team, or multi-organization model.
 
-## Catatan pemisahan data
+Saving permissions revokes the target user's sessions so access is updated on the next sign-in. Password changes, certain role/email changes, or disabling a user also revoke sessions according to authentication policy. Users cannot disable/delete/demote themselves through administration. The last active Admin is protected.
 
-Membatasi dashboard tidak menyembunyikan raw data InfluxDB dari pengguna yang sign-in, karena seluruh pengguna memang diizinkan query semua sumber. Jangan memakai model ini untuk tenant yang harus saling terisolasi pada level data sensor. Pisahkan deployment/database/sumber atau desain otorisasi data khusus bila kebutuhan tersebut muncul.
+## Data isolation boundary
+
+Restricting a dashboard does not hide raw InfluxDB data from signed-in users, because all sources are intentionally queryable by every account. Do not use this model for tenants requiring sensor-data isolation. Separate deployments/databases/sources or design dedicated data authorization when that requirement arises.

@@ -1,59 +1,59 @@
-# Dokumentasi Observed
+# Observed documentation
 
-Observed adalah aplikasi dashboard sensor untuk structural health monitoring pada bangunan, jembatan, dan struktur lainnya. Dokumentasi ini mengikuti implementasi di repositori, bukan daftar fitur yang direncanakan. Label menu ditulis sesuai UI berbahasa Inggris; penjelasan menggunakan bahasa Indonesia.
+Observed is a custom dashboard application for structural health monitoring of buildings, bridges, and other structures. This documentation describes the implementation in this repository, rather than a list of planned features. Documentation and application-owned text use English.
 
-## Jalur membaca
+## Reading paths
 
-| Pembaca | Mulai dari | Lanjutkan ke |
+| Audience | Start here | Continue with |
 | --- | --- | --- |
-| Pengguna | [Pengenalan](introduction.md), [mulai menggunakan](guides/getting-started.md) | Dashboard, panel, alert, notifikasi |
-| Administrator | [Instalasi](installation/local.md), [Docker](installation/docker.md) | Configuration, akun, permission, operasi |
-| Pengembang | [Arsitektur](architecture/overview.md), [kontribusi](development/contributing.md) | Database, API, kontrak, pengujian |
-| AI coding agent | [Panduan AI](ai/README.md), [aturan repositori](../AGENTS.md) | Peta kode, invariants, prosedur verifikasi |
+| Users | [Introduction](introduction.md), [getting started](guides/getting-started.md) | Dashboards, panels, alerts, notifications |
+| Administrators | [Local installation](installation/local.md), [Docker](installation/docker.md) | Configuration, accounts, permissions, operations |
+| Developers | [Architecture](architecture/overview.md), [contributing](development/contributing.md) | Database, API, contracts, testing |
+| AI coding agents | [AI guide](ai/README.md), [repository rules](../AGENTS.md) | Source map, invariants, verification workflow |
 
-## Pengenalan dan instalasi
+## Introduction and installation
 
-- [Tujuan, kemampuan, dan batasan](introduction.md)
-- [Instalasi lokal dan build produksi](installation/local.md)
-- [Docker: aplikasi dan PostgreSQL](installation/docker.md)
-- [Referensi environment](configuration/environment.md)
+- [Purpose, capabilities, and limitations](introduction.md)
+- [Local installation and production builds](installation/local.md)
+- [Docker: application and PostgreSQL](installation/docker.md)
+- [Environment reference](configuration/environment.md)
 - [Configuration: InfluxDB](configuration/data-sources.md)
 - [Configuration: Telegram](configuration/telegram.md)
 
-## Panduan pengguna
+## User guides
 
-1. [Alur awal dan navigasi](guides/getting-started.md)
-2. [Overview dan daftar dashboard](guides/overview-and-library.md)
-3. [Dashboard, row, layout, versi, dan kiosk](guides/dashboards.md)
-4. [Panel, query, visualisasi, dan inspector](guides/panels-and-queries.md)
-5. [Variable dashboard](guides/variables.md)
-6. [Import dan export JSON](guides/json-import.md)
-7. [Alert sensor](guides/alerts.md)
-8. [Notifikasi dalam aplikasi](guides/notifications.md)
-9. [User, role, dan permission](guides/users-and-permissions.md)
-10. [Sign-in, profil, sesi, Google, dan Microsoft](guides/authentication.md)
+1. [Getting started and navigation](guides/getting-started.md)
+2. [Overview and dashboard library](guides/overview-and-library.md)
+3. [Dashboards, rows, layouts, versions, and kiosk](guides/dashboards.md)
+4. [Panels, queries, visualizations, and inspector](guides/panels-and-queries.md)
+5. [Dashboard variables](guides/variables.md)
+6. [JSON import and export](guides/json-import.md)
+7. [Sensor alerts](guides/alerts.md)
+8. [In-app notifications](guides/notifications.md)
+9. [Users, roles, and permissions](guides/users-and-permissions.md)
+10. [Sign-in, profile, sessions, Google, and Microsoft](guides/authentication.md)
 
-## Referensi pengembang
+## Developer reference
 
-- [Arsitektur dan alur request](architecture/overview.md)
-- [Database dan migrasi](architecture/database.md)
-- [API HTTP dan katalog seluruh endpoint](reference/api.md)
-- [Kontrak data, batas input, dan contoh](reference/data-contracts.md)
-- [Branding dan sistem UI](reference/branding-and-ui.md)
-- [Inventaris source yang dihasilkan audit](reference/source-inventory.json)
-- [Contoh dashboard](examples/dashboard.json), [query](examples/query.json), [alert](examples/alert-rule.json), [permission](examples/permissions.json)
+- [Architecture and request flow](architecture/overview.md)
+- [Database and migrations](architecture/database.md)
+- [HTTP API and complete endpoint catalog](reference/api.md)
+- [Data contracts, input limits, and examples](reference/data-contracts.md)
+- [Branding and UI system](reference/branding-and-ui.md)
+- [Generated source inventory](reference/source-inventory.json)
+- [Dashboard example](examples/dashboard.json), [query](examples/query.json), [alert](examples/alert-rule.json), [permissions](examples/permissions.json)
 
-## Operasi dan pengembangan
+## Operations and development
 
-- [Deployment dan health](operations/deployment.md)
-- [Backup dan recovery](operations/backup-and-recovery.md)
+- [Deployment and health](operations/deployment.md)
+- [Backup and recovery](operations/backup-and-recovery.md)
 - [Troubleshooting](operations/troubleshooting.md)
-- [Keamanan dan batas kepercayaan](security.md)
-- [Workflow kontribusi](development/contributing.md)
-- [Pengujian dan quality checks](development/testing.md)
-- [Menambah fitur dengan arsitektur yang ada](development/extension-guide.md)
-- [Panduan AI dan peta perubahan](ai/README.md)
+- [Security and trust boundaries](security.md)
+- [Contribution workflow](development/contributing.md)
+- [Testing and quality checks](development/testing.md)
+- [Extending the application](development/extension-guide.md)
+- [AI workflow and change map](ai/README.md)
 
-## Memelihara dokumentasi
+## Maintaining documentation
 
-Setiap perubahan perilaku harus memperbarui panduan terkait, kontrak, dan contoh. Jalankan `bun run docs:check` untuk memeriksa link lokal, contoh JSON terhadap schema, dan kelengkapan katalog endpoint. Regenerasi inventaris dengan `bun run audit:architecture --inventory`. Hasil test adalah bukti untuk revisi yang diuji; dokumentasi tidak menjamin semua deployment atau semua dashboard Grafana kompatibel.
+Update the relevant guides, contracts, and examples whenever behavior changes. Run `bun run docs:check` to validate local links, JSON examples against schemas, environment templates, and endpoint coverage. Regenerate the inventory with `bun run audit:architecture --inventory`. Test results apply to the revision and environment tested; they do not guarantee compatibility with every deployment or Grafana dashboard.

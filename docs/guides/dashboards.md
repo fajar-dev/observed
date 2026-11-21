@@ -1,42 +1,42 @@
-# Dashboard, layout, row, dan kiosk
+# Dashboards, layouts, rows, and kiosk
 
-## Membaca dashboard
+## Reading a dashboard
 
-Toolbar menampilkan judul/deskripsi, rentang waktu, refresh manual dan interval refresh. Variable berada dalam area dashboard, di bawah toolbar. Pilihan waktu dapat relatif atau absolut; rentang absolut harus memiliki awal dan akhir yang valid, maksimum 366 hari.
+The toolbar shows the title/description, time range, manual refresh, and refresh interval. Variables appear in the dashboard content below the toolbar. Time ranges can be relative or absolute; absolute ranges need valid start/end times and cannot exceed 366 days.
 
-Buka menu panel → **Inspect data** untuk memeriksa hasil query. **Check panel data** pada menu dashboard menjalankan diagnosis variable serta panel, membedakan panel berisi data, kosong, error, dan belum terkonfigurasi.
+Use panel menu → **Inspect data** to examine query results. **Check panel data** in the dashboard menu diagnoses variables and panels, distinguishing ready data, empty results, errors, and missing configuration.
 
-## Mengedit
+## Editing
 
-1. Pilih **Edit dashboard** jika memiliki Edit access.
-2. Gunakan **Add → Add panel** untuk visualisasi atau **Add → Add row** untuk kelompok panel.
-3. Pada desktop, seret panel melalui header dan resize melalui handle grid. Grid menyimpan posisi serta tinggi/lebar panel; format 12 atau 24 kolom dipertahankan.
-4. Gunakan menu panel untuk edit, duplicate, remove, atau **Move to row**. Menghapus panel dari draft belum menghapus keseluruhan dashboard.
-5. Gunakan **Compact layout** melalui menu edit bila ingin merapatkan posisi panel.
-6. Pilih **Save** untuk menyimpan atau **Discard** untuk membuang perubahan draft.
+1. Choose **Edit dashboard** with Edit access.
+2. Use **Add → Add panel** for a visualization or **Add → Add row** for a panel group.
+3. On desktop, drag a panel by its header and resize it using the grid handle. The grid stores position, width, and height, preserving 12- or 24-column layouts.
+4. Use the panel menu to edit, duplicate, remove, or **Move to row**. Removing a panel from the draft does not delete the dashboard.
+5. Use **Compact layout** in the edit menu to reduce layout gaps.
+6. Choose **Save** to persist changes or **Discard** to abandon the draft.
 
-Pada mobile panel ditampilkan dalam satu kolom agar terbaca. Susunan mobile tidak boleh dianggap sebagai penggantian koordinat desktop. Gunakan desktop untuk pengaturan drag/resize yang presisi; uji kembali panel yang memiliki banyak seri atau tabel lebar pada kedua viewport.
+On mobile, panels are presented in one column for readability. This presentation must not replace desktop coordinates. Use desktop for precise drag/resize, then verify charts with many series and wide tables on both viewport sizes.
 
-## Row accordion
+## Collapsible rows
 
-Row mengelompokkan panel dan dapat dibuka/ditutup melalui judulnya. Menu row pada mode edit menyediakan pengaturan judul, urutan, dan penghapusan row. Panel dapat dipindahkan antar-row atau ke **No row**. Menghapus row mempertahankan panelnya di dashboard.
+Rows group panels and collapse through their headings. In edit mode, row menus provide title, ordering, and removal controls. Move panels between rows or to **No row**. Removing a row keeps its panels in the dashboard.
 
-Collapse saat melihat dashboard bersifat sementara. Pengaturan row yang disimpan pada mode edit menentukan keadaan awal yang akan digunakan saat dashboard dibuka kembali.
+Collapsing a row in view mode is temporary. Saving row configuration in edit mode determines its initial state on future visits.
 
-## Settings dan versi
+## Settings and versions
 
-**Dashboard settings** memiliki tab **General**, **Variables**, **Versions**, **JSON**. General mengatur nama, deskripsi singkat, folder, dan tag; variable dijelaskan [terpisah](variables.md).
+**Dashboard settings** contains **General**, **Variables**, **Versions**, and **JSON** tabs. General controls the name, short description, folder, and tags. [Variables](variables.md) are covered separately.
 
-Perubahan dashboard menggunakan revision untuk mendeteksi edit bersamaan. Jika save mendapat conflict 409, jangan menimpa perubahan pengguna lain: simpan salinan draft bila diperlukan, reload versi terbaru, lalu terapkan ulang perubahan.
+Dashboard updates use revisions to detect concurrent edits. On a 409 save conflict, preserve a separate draft if needed, reload the latest version, and reapply the intended changes instead of overwriting another user's work.
 
-Tab Versions menyediakan snapshot sebelumnya (maksimal 100). Memulihkan snapshot memasukkannya ke draft; periksa lalu Save. Dashboard baru belum memiliki snapshot perubahan sampai ada pembaruan. JSON di Settings juga diterapkan ke draft sebelum disimpan.
+Versions contains previous snapshots, up to 100. Restoring a snapshot loads it into the draft; review and Save it. New dashboards have no previous snapshot until an update occurs. JSON changes are also applied to the draft before saving.
 
 ## Refresh
 
-Pilihan: **Off**, **Auto**, **5s**, **10s**, **30s**, **1m**, **5m**, **15m**, **30m**, **1h**, **2h**, **1d**. Nilai lama yang valid seperti 15 detik masih dapat ditampilkan bila dashboard menyimpannya.
+Options are **Off**, **Auto**, **5s**, **10s**, **30s**, **1m**, **5m**, **15m**, **30m**, **1h**, **2h**, and **1d**. Valid saved custom values such as 15 seconds may also appear for existing dashboards.
 
-Auto menghitung `ceil(durasi rentang waktu dalam detik / 300)`, dibatasi 5 detik–1 hari. Contoh rentang 1 jam menghasilkan 12 detik. Timer panel berhenti ketika tab browser tersembunyi atau dashboard sedang diedit. Jadwal alert berjalan di server dan terpisah dari refresh dashboard.
+Auto calculates `ceil(time-range duration in seconds / 300)`, clamped to 5 seconds–1 day. A one-hour range produces 12 seconds. The panel timer pauses while the browser tab is hidden or the dashboard is being edited. Server alert evaluation is independent of dashboard refresh.
 
 ## Kiosk
 
-Pilih **Kiosk mode** atau buka dashboard dengan parameter `?kiosk=1`. Sidebar/header aplikasi disembunyikan, tetapi toolbar dashboard, filter variable, rentang waktu, refresh, dan **Exit kiosk** tetap tersedia. Edit dan action menu disembunyikan. Escape menutup overlay terlebih dahulu atau keluar dari kiosk ketika tidak ada overlay aktif. Kiosk tetap memerlukan autentikasi dan permission, bukan link publik.
+Choose **Kiosk mode** or open a saved dashboard with `?kiosk=1`. The global sidebar/header are hidden, but the dashboard toolbar, variables, time range, refresh, and **Exit kiosk** remain available. Edit controls and action menus are hidden. Escape closes an active overlay first, or exits kiosk when no overlay is open. Kiosk still requires authentication and resource access; it is not a public link.
