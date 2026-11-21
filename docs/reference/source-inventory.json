@@ -1,5 +1,5 @@
 {
-  "runtimeModules": 234,
+  "runtimeModules": 236,
   "styleSheets": 6,
   "featureModules": [
     "alerts",
@@ -443,8 +443,18 @@
       "reachable": true
     },
     {
+      "path": "app/features/overview/components/OverviewDashboardLink.vue",
+      "lines": 37,
+      "reachable": true
+    },
+    {
+      "path": "app/features/overview/composables/useOverview.ts",
+      "lines": 49,
+      "reachable": true
+    },
+    {
       "path": "app/features/overview/views/OverviewView.vue",
-      "lines": 164,
+      "lines": 295,
       "reachable": true
     },
     {

@@ -2,7 +2,11 @@
 
 ## Overview
 
-Overview shows a monitoring summary, recent dashboards, and alert information available to the account. Resource counts follow permissions; restricted accounts do not receive other users' resource lists. Empty states direct Editors/Admins to create resources and help Viewers recognize missing access.
+Overview is the application home. A personal greeting leads to four separate monitoring-summary cards (as permitted by the account), and up to four recently updated dashboards in a full-width list. Alert attention and recent activity appear below the dashboard list in two columns on desktop and one on mobile, with compact empty states. The header Quick access menu offers New dashboard and New alert rule to users who can create them. Alert creation is disabled until a source is available. There is no separate quick-actions section in the page content. Administrators without a source see a prompt to connect InfluxDB.
+
+Counts and lists follow resource permissions. The count cards show available dashboards, enabled alert rules, Telegram destinations, and configured InfluxDB sources as permitted. Telegram counts use the destinations available to the account, without exposing saved tokens. The Needs attention list includes firing, query errors, no data, pending conditions, and rules awaiting their first evaluation. Paused rules are excluded. The page does not infer structural safety or source connection health from configuration counts.
+
+Recent activity uses the existing permission-filtered notification stream, including firing and recovery snapshots. It continues updating when alert pop-ups are disabled. Alert definitions refresh periodically while the page is visible. Dashboard and alert load failures show retry actions rather than claiming that no data or no alerts exist. Viewers without assignments see an access prompt and can use the account menu for their profile.
 
 ## Dashboard library
 
