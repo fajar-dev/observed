@@ -94,7 +94,7 @@ test('alert delivery retries individual destinations and emits recovery only aft
   const telegram: TelegramAccess = { list: async () => [first, second].map(id => ({ id, name: id, chatId: id, hasToken: true })), send: async (id, text, options) => {
     assert.equal(options?.parseMode, 'HTML')
     assert.ok(text.includes('<b>Source:</b> Production InfluxDB'))
-    assert.ok(text.includes('<b>Threshold alert:</b> <code>&gt; 80</code>'))
+    assert.ok(text.includes('<b>Threshold:</b> <code>&gt; 80</code>'))
     deliveries.push(id + ':' + (text.includes('<b>FIRING</b>') ? 'firing' : 'recovery'))
     if (id === second && failOnce) {
       failOnce = false

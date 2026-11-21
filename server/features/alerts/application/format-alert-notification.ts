@@ -2,8 +2,8 @@ import { product } from '#shared/config/product'
 import type { AlertEvaluation, AlertRuleInput } from '#shared/domain/alert-rule'
 
 const operators = { gt: '>', gte: '≥', lt: '<', lte: '≤' } as const
-const numbers = new Intl.NumberFormat('id-ID', { maximumSignificantDigits: 6 })
-const dates = new Intl.DateTimeFormat('id-ID', {
+const numbers = new Intl.NumberFormat('en', { maximumSignificantDigits: 6 })
+const dates = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Jakarta', day: '2-digit', month: 'short', year: 'numeric'
 })
 const times = new Intl.DateTimeFormat('en-GB', {
@@ -30,14 +30,14 @@ export function formatAlertNotification(
   const threshold = `${operators[rule.operator]} ${numbers.format(rule.threshold)}`
   return [
     `${firing ? '🔴 <b>FIRING</b>' : '🟢 <b>RECOVERED</b>'} · ${product.name}`,
-    firing ? 'Nilai pengukuran memenuhi kondisi alert.' : 'Nilai pengukuran tidak lagi memenuhi kondisi alert.',
+    firing ? 'The measured value meets the alert condition.' : 'The measured value no longer meets the alert condition.',
     '',
     `<b>Alert:</b> ${singleLine(rule.name)}`,
     `<b>Source:</b> ${singleLine(sourceName)}`,
-    `<b>Nilai saat ini:</b> <code>${escapeHtml(value)}</code>`,
-    `<b>Threshold alert:</b> <code>${escapeHtml(threshold)}</code>`,
-    `<b>Waktu kejadian:</b> ${dates.format(eventTime)}, ${times.format(eventTime)} WIB`,
+    `<b>Current value:</b> <code>${escapeHtml(value)}</code>`,
+    `<b>Threshold:</b> <code>${escapeHtml(threshold)}</code>`,
+    `<b>Event time:</b> ${dates.format(eventTime)}, ${times.format(eventTime)} UTC+07:00`,
     ...(rule.severity ? [`<b>Severity:</b> ${rule.severity.toUpperCase()}`] : []),
-    ...(rule.summary?.trim() ? ['', '<b>Keterangan:</b>', escapeHtml(rule.summary.trim())] : [])
+    ...(rule.summary?.trim() ? ['', '<b>Details:</b>', escapeHtml(rule.summary.trim())] : [])
   ].join('\n')
 }
