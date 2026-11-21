@@ -71,3 +71,7 @@ Body API maksimal 2 MiB. Credential source/token Telegram hanya diterima di endp
 Pada update source, properti `secret` yang tidak dikirim mempertahankan credential tersimpan; `secret: ""` menghapusnya; string nonkosong menggantinya. Form UI menerjemahkan field kosong menjadi properti yang tidak dikirim, dan checkbox Remove saved credential menjadi string kosong. Jangan menyamakan field kosong pada UI dengan string kosong dalam request API.
 
 Untuk Telegram, `token` yang dihilangkan mempertahankan token tersimpan. String kosong tidak lolos format token. User baru melalui endpoint Users wajib mempunyai password walaupun schema input menjadikan password opsional untuk update; akun OAuth-only dibuat lewat flow provider, bukan dengan menghilangkan password pada create user lokal.
+
+## Preferensi toast alert
+
+AuthUser menyertakan `realtimeAlertToasts: boolean`, default true dari database. `PUT auth/notification-preferences` menerima strict object dengan properti itu saja; hanya akun principal yang dapat diubah. False menghentikan toast alert, bukan stream/inbox atau notifikasi Telegram. Endpoint tidak mengubah password, nama, role, grant, atau sesi.

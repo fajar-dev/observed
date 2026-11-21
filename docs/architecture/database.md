@@ -15,7 +15,7 @@ PostgreSQL menyimpan state aplikasi dalam schema `observe`. Data sensor time ser
 | `dashboard_data_sources` | Referensi sumber untuk integritas dashboard |
 | `alert_rules` | Konfigurasi JSONB, runtime JSONB, enabled, jadwal due, creator |
 | `alert_rule_destinations` | Relasi banyak tujuan Telegram per alert |
-| `users` | Identitas akun, role, status, hash password opsional |
+| `users` | Identitas akun, role, status, hash password opsional, preferensi realtime alert toast |
 | `auth_setup` | Marker singleton setup admin sudah selesai |
 | `auth_identities` | Binding provider + subject ke user |
 | `auth_sessions` | Sesi, expiry, revoke, user agent |
@@ -58,3 +58,5 @@ Saat menambah migrasi: gunakan nomor baru, SQL idempotent yang tepat, guard untu
 Versi dashboard menyimpan maksimal 100 snapshot dan histori evaluasi per rule maksimal 50. Notifikasi bukan ring buffer yang otomatis dibatasi 50 di database; 50 adalah batas daftar inbox. Belum ada job retensi notifikasi configurable. Rencanakan pemeliharaan database sesuai volume event.
 
 Backup harus menyertakan database dan key enkripsi yang sesuai, disimpan terpisah secara aman. [Prosedur backup/recovery](../operations/backup-and-recovery.md) mencakup restore ownership dan verifikasi credential.
+
+Migrasi 10 menambahkan `users.realtime_alert_toasts BOOLEAN NOT NULL DEFAULT true`. Preferensi merupakan pilihan tampilan per user, bukan permission notifikasi. Update preferensi tidak mencabut sesi dan tidak mengubah grant alert.

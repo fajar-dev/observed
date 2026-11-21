@@ -3,7 +3,7 @@ import { profileSchema } from '#shared/domain/auth'
 
 usePageSeo('Profile', 'Manage your Observed account, sign-in methods, and active sessions.')
 
-const { auth, route, configuration, linked, sessions, busy, error, loadError, form, state, save, revoke } = useProfile()
+const { auth, route, configuration, linked, sessions, busy, error, loadError, form, state, save, revoke, preferencesBusy, setRealtimeAlertToasts } = useProfile()
 useErrorToast(() => loadError.value || error.value, 'Account action failed')
 
 useNotice(() => route.query.error === 'oauth'
@@ -88,10 +88,22 @@ useNotice(() => route.query.error === 'oauth'
             label="Save changes"
             size="sm"
             :loading="busy"
+            :disabled="preferencesBusy"
           />
         </UForm>
       </ContentPanel>
       <div class="space-y-space-lg">
+        <ContentPanel title="Notifications">
+          <div class="p-space-lg">
+            <USwitch
+              :model-value="auth.user.value?.realtimeAlertToasts !== false"
+              :disabled="busy || preferencesBusy"
+              label="Alert pop-ups"
+              description="Show alert updates on screen. Your inbox stays active."
+              @update:model-value="setRealtimeAlertToasts"
+            />
+          </div>
+        </ContentPanel>
         <ContentPanel
           v-if="configuration?.providers.length"
           title="Sign-in methods"

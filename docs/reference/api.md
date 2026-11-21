@@ -69,6 +69,7 @@ Aturan singkat: **Signed-in** = semua role yang terautentikasi; **Create** = Adm
 | `GET /api/observe/auth/me` | Signed-in | AuthUser saat ini beserta permission | [handler](../../server/api/observe/auth/me.get.ts) |
 | `GET /api/observe/auth/oauth/:provider/callback` | Provider aktif; linking butuh sesi | Callback authorization code OIDC | [handler](../../server/api/observe/auth/oauth/[provider]/callback.get.ts) |
 | `GET /api/observe/auth/oauth/:provider` | Provider aktif; linking butuh sesi | Redirect provider; ?link=1 untuk hubungkan akun saat sign-in | [handler](../../server/api/observe/auth/oauth/[provider]/index.get.ts) |
+| `PUT /api/observe/auth/notification-preferences` | Signed-in, akun sendiri | Body {realtimeAlertToasts: boolean}; simpan preferensi toast dan kembalikan AuthUser tanpa mencabut sesi | [handler](../../server/api/observe/auth/notification-preferences.put.ts) |
 | `PUT /api/observe/auth/profile` | Signed-in | Body profileSchema; update nama/password akun sendiri | [handler](../../server/api/observe/auth/profile.put.ts) |
 | `GET /api/observe/auth/providers` | Signed-in | Provider identity yang terhubung ke akun | [handler](../../server/api/observe/auth/providers.get.ts) |
 | `POST /api/observe/auth/refresh` | Refresh cookie aktif | Rotasi refresh token; tanpa body; cookie diperbarui | [handler](../../server/api/observe/auth/refresh.post.ts) |

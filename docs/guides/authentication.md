@@ -10,6 +10,10 @@ Sign-in memakai email/password. Akses browser disimpan dalam cookie HttpOnly, bu
 
 Menu akun → **Profile** menyediakan perubahan nama, password lokal dengan current password, daftar metode sign-in yang terhubung, serta browser sessions. Email ditampilkan read-only pada profil pribadi. Perubahan password mencabut sesi dan meminta sign-in kembali. Revoke session dapat dilakukan untuk sesi lain atau sesi saat ini; revoke sesi saat ini langsung keluar.
 
+## Preferensi notifikasi
+
+Di Profile → Notifications, switch **Alert pop-ups** aktif secara default untuk akun baru maupun existing. Perubahan langsung disimpan per akun tanpa menekan Save changes. Saat dimatikan, hanya pop-up firing/recovery yang dihentikan; inbox, unread count, pembaruan alert, toast hasil aksi biasa, dan pengiriman Telegram tetap berjalan. Pilihan tersimpan setelah sign-in ulang. Browser/sesi lain membaca pilihan tersimpan saat memperbarui data akun atau reload.
+
 ## Google dan Microsoft
 
 Administrator menyiapkan aplikasi OAuth web confidential pada provider, lalu mengisi environment dan restart Observed. Daftarkan callback sesuai alamat aplikasi yang dibuka browser. Alamat ini mengikuti request dan tidak memerlukan environment domain:

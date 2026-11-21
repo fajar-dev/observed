@@ -1,3 +1,4 @@
+import { notificationPreferencesMigration } from './migrations/notification-preferences'
 import { permissionsMigration } from './migrations/permissions'
 import pg from 'pg'
 import { notificationsMigration } from './migrations/notifications'
@@ -25,6 +26,7 @@ export class PostgresDatabase {
       await client.query(authenticationMigration)
       await client.query(notificationsMigration)
       await client.query(permissionsMigration)
+      await client.query(notificationPreferencesMigration)
       await client.query('INSERT INTO observe.schema_migrations(version) VALUES(4) ON CONFLICT DO NOTHING')
     }, false)
   }

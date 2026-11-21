@@ -10,7 +10,7 @@ Inbox memuat maksimal 50 item terbaru yang diizinkan. Jumlah unread menghitung s
 
 ## Realtime
 
-Aplikasi membuka koneksi SSE terautentikasi dan menampilkan toast ketika menerima event baru. Histori awal tidak dimunculkan ulang sebagai toast. Jika stream gagal, client menggunakan polling JSON. Sign-out menutup subscription dan membersihkan state/toast akun sebelumnya.
+Aplikasi membuka koneksi SSE terautentikasi dan menampilkan toast ketika menerima event baru. Histori awal tidak dimunculkan ulang sebagai toast. Switch **Profile → Notifications → Alert pop-ups** aktif secara default dan dapat dimatikan per akun. Saat dimatikan, toast alert yang masih tampil ditutup dan event berikutnya tetap memperbarui inbox/unread tanpa pop-up. Mengaktifkannya kembali hanya menampilkan toast untuk event baru, bukan memutar ulang event yang diterima saat dimatikan. Jika stream gagal, client menggunakan polling JSON. Sign-out menutup subscription dan membersihkan state/toast akun sebelumnya.
 
 Server membaca event persisten dari PostgreSQL, sehingga beberapa instance aplikasi dapat menyampaikan event yang sama kepada pengguna yang tepat. SSE menggunakan cursor sequence berbentuk string; jangan mengubahnya menjadi JavaScript Number karena dapat kehilangan presisi bigint.
 

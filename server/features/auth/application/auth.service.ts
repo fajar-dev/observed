@@ -1,6 +1,6 @@
 import { defaultPermissions } from '#shared/domain/permissions'
 import type { UserPermissions } from '#shared/domain/permissions'
-import type { AuthUser, AuthProvider, UserInput } from '#shared/domain/auth'
+import type { AuthUser, AuthProvider, NotificationPreferences, UserInput } from '#shared/domain/auth'
 import { createHash, randomBytes } from 'node:crypto'
 import type { AccessTokens, AuthenticationRepository, PasswordHasher, SessionRecord } from '~~/server/features/auth/domain/authentication.ports'
 import { WorkspaceError } from '~~/server/domain/workspace-error'
@@ -92,6 +92,10 @@ export class AuthService {
       expectedHash = user.passwordHash
     }
     return this.withPermissions(await this.repository.updateProfile(userId, input.name, input.password ? await this.passwords.hash(input.password) : undefined, expectedHash))
+  }
+
+  async updateNotificationPreferences(userId: string, input: NotificationPreferences) {
+    return this.withPermissions(await this.repository.updateNotificationPreferences(userId, input))
   }
 
   listUsers() { return this.repository.listUsers() }

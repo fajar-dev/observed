@@ -1,12 +1,12 @@
 import type pg from 'pg'
 import type { PostgresDatabase } from '~~/server/platform/database/database'
 import { randomUUID } from 'node:crypto'
-import type { AuthProvider, AuthUser, UserInput } from '#shared/domain/auth'
+import type { AuthProvider, AuthUser, NotificationPreferences, UserInput } from '#shared/domain/auth'
 import type { AuthenticationRepository, UserRecord } from '~~/server/features/auth/domain/authentication.ports'
 import { WorkspaceError } from '~~/server/domain/workspace-error'
 
-type UserRow = { id: string, email: string, name: string, role: AuthUser['role'], enabled: boolean, password_hash: string | null, created_at: Date, last_sign_in_at: Date | null }
-const mapUser = (row: UserRow): AuthUser => ({ id: row.id, email: row.email, name: row.name, role: row.role, enabled: row.enabled, hasPassword: !!row.password_hash, createdAt: row.created_at.toISOString(), lastSignInAt: row.last_sign_in_at?.toISOString() ?? null })
+type UserRow = { id: string, email: string, name: string, role: AuthUser['role'], enabled: boolean, realtime_alert_toasts: boolean, password_hash: string | null, created_at: Date, last_sign_in_at: Date | null }
+const mapUser = (row: UserRow): AuthUser => ({ id: row.id, email: row.email, name: row.name, role: row.role, enabled: row.enabled, realtimeAlertToasts: row.realtime_alert_toasts, hasPassword: !!row.password_hash, createdAt: row.created_at.toISOString(), lastSignInAt: row.last_sign_in_at?.toISOString() ?? null })
 const conflict = (message: string) => new WorkspaceError({ statusCode: 409, statusMessage: message })
 
 export class PostgresAuthenticationRepository implements AuthenticationRepository {
@@ -81,6 +81,12 @@ export class PostgresAuthenticationRepository implements AuthenticationRepositor
       if (passwordHash) await client.query('UPDATE observe.auth_sessions SET revoked_at=now() WHERE user_id=$1', [id])
       return mapUser(rows[0]!)
     })
+  }
+
+  async updateNotificationPreferences(userId: string, input: NotificationPreferences) {
+    const { rows } = await this.database.query<UserRow>('UPDATE observe.users SET realtime_alert_toasts=$2 WHERE id=$1 AND enabled RETURNING *', [userId, input.realtimeAlertToasts])
+    if (!rows[0]) throw new WorkspaceError({ statusCode: 401, statusMessage: 'Account unavailable' })
+    return mapUser(rows[0])
   }
 
   async createSession(userId: string, tokenHash: string, userAgent: string) {

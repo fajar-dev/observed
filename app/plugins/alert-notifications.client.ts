@@ -25,7 +25,7 @@ export default defineNuxtPlugin((app) => {
         if (seen.has(item.id)) continue
         seen.add(item.id)
         if (seen.size > 500) seen.delete(seen.values().next().value!)
-        if (item.readAt) continue
+        if (item.readAt || user.value?.realtimeAlertToasts === false) continue
         const notice = toast.add({
           title: `${item.state === 'firing' ? 'Firing' : 'Recovered'} · ${item.alertName}`,
           description: `${item.sourceName} · Current ${item.value ?? '—'} · Threshold ${{ gt: '>', gte: '≥', lt: '<', lte: '≤' }[item.operator]} ${item.threshold}`,
@@ -36,8 +36,14 @@ export default defineNuxtPlugin((app) => {
         if (toastIds.size > 500) toastIds.delete(toastIds.values().next().value!)
       }
     })
+    const stopPreferenceWatch = watch(() => user.value?.realtimeAlertToasts, (enabled) => {
+      if (enabled !== false) return
+      for (const id of toastIds) toast.remove(id)
+      toastIds.clear()
+    })
     void stream.run(controller.signal)
     cleanup(() => {
+      stopPreferenceWatch()
       controller.abort()
       for (const id of toastIds) toast.remove(id)
       toastIds.clear()

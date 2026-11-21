@@ -6,13 +6,15 @@ import { ScryptPasswordHasher } from '~~/server/features/auth/infrastructure/scr
 import { JwtAccessTokens } from '~~/server/features/auth/infrastructure/jwt-access-tokens'
 import { OidcProviders } from '~~/server/features/auth/infrastructure/oidc-providers'
 import { isAllowed, isPublicAuthRoute } from '~~/server/features/auth/domain/access-policy'
-import { setupSchema, userInputSchema } from '#shared/domain/auth'
+import { notificationPreferencesSchema, setupSchema, userInputSchema } from '#shared/domain/auth'
 
 test('authorization separates viewer, editor and administrator capabilities', () => {
   for (const role of ['viewer', 'editor', 'admin'] as const) {
     assert.ok(isAllowed(role, 'dashboards/123', 'GET'))
     assert.ok(isAllowed(role, 'queries', 'POST'))
     assert.ok(isAllowed(role, 'variables/resolve', 'POST'))
+    assert.ok(isAllowed(role, 'auth/notification-preferences', 'PUT'))
+    assert.equal(isAllowed(role, 'auth/notification-preferences', 'GET'), false)
     assert.equal(isAllowed(role, 'dashboards', 'POST'), role !== 'viewer')
     assert.equal(isAllowed(role, 'alert-rules/123/evaluate', 'POST'), role !== 'viewer')
     assert.equal(isAllowed(role, 'data-sources', 'POST'), role === 'admin')
@@ -133,4 +135,12 @@ test('Microsoft OIDC restricts tenant and validates signed ID tokens before retu
   returnedTenant = randomUUID()
   await assert.rejects(providers.finish('microsoft', url, flow, callback))
   await assert.rejects(new OidcProviders({ OBSERVE_MICROSOFT_ENABLED: 'true', OBSERVE_MICROSOFT_CLIENT_ID: 'id', OBSERVE_MICROSOFT_CLIENT_SECRET: 'secret', OBSERVE_MICROSOFT_TENANT_ID: 'common' }, fakeFetch).start('microsoft', callback))
+})
+
+test('notification preferences require an explicit boolean and cannot target another account', () => {
+  assert.deepEqual(notificationPreferencesSchema.parse({ realtimeAlertToasts: false }), { realtimeAlertToasts: false })
+  assert.deepEqual(notificationPreferencesSchema.parse({ realtimeAlertToasts: true }), { realtimeAlertToasts: true })
+  for (const input of [{}, { realtimeAlertToasts: 'false' }, { realtimeAlertToasts: null }, { realtimeAlertToasts: false, userId: 'another-account' }]) {
+    assert.equal(notificationPreferencesSchema.safeParse(input).success, false)
+  }
 })

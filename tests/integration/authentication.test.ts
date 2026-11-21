@@ -30,6 +30,7 @@ test('PostgreSQL authentication: setup, sessions, replay, roles, account changes
     const admin = (successful[0] as PromiseFulfilledResult<Awaited<ReturnType<AuthService['setup']>>>).value
     assert.equal((await store.listUsers()).length, 1)
     assert.equal(admin.user.role, 'admin')
+    assert.equal(admin.user.realtimeAlertToasts, true)
     assert.equal('passwordHash' in admin.user, false)
     await assert.rejects(auth.setup({ email: 'another@example.test', name: 'Other', password: 'administrator-password' }, 'setup-other', 'Test'))
     assert.equal((await auth.configuration([])).setupRequired, false)
@@ -54,6 +55,18 @@ test('PostgreSQL authentication: setup, sessions, replay, roles, account changes
     await assert.rejects(auth.authenticate(editorSession.accessToken))
     const viewerSession = await auth.signIn(editor.email, 'editor-password-long', 'viewer-login', 'Viewer')
     assert.equal((await auth.authenticate(viewerSession.accessToken)).user.role, 'viewer')
+    assert.equal(viewerSession.user.realtimeAlertToasts, true)
+    const preferences = await auth.updateNotificationPreferences(editor.id, { realtimeAlertToasts: false })
+    assert.equal(preferences.realtimeAlertToasts, false)
+    assert.equal((await auth.authenticate(viewerSession.accessToken)).user.realtimeAlertToasts, false)
+    assert.equal((await store.getUser(admin.user.id))?.realtimeAlertToasts, true)
+    const preferenceDatabase = new PostgresDatabase(connection!)
+    try {
+      const persistedUser = await new PostgresAuthenticationRepository(preferenceDatabase).getUser(editor.id)
+      assert.equal(persistedUser?.realtimeAlertToasts, false)
+    } finally { await preferenceDatabase.close() }
+    await auth.updateNotificationPreferences(editor.id, { realtimeAlertToasts: true })
+    assert.equal((await auth.authenticate(viewerSession.accessToken)).user.realtimeAlertToasts, true)
     await assert.rejects(auth.updateProfile(editor.id, { name: 'Editor', currentPassword: 'wrong', password: 'replacement-password' }))
     await auth.updateProfile(editor.id, { name: 'Changed', currentPassword: 'editor-password-long', password: 'replacement-password' })
     await assert.rejects(auth.authenticate(viewerSession.accessToken))
@@ -91,10 +104,12 @@ test('PostgreSQL authentication: setup, sessions, replay, roles, account changes
     // Upgrade an existing installation that predates the completion marker.
     await store.saveUser({ email: 'legacy@example.test', name: 'Existing Admin', role: 'admin', enabled: true }, null)
     await pool.query('DELETE FROM observe.auth_setup')
+    await pool.query('ALTER TABLE observe.users DROP COLUMN realtime_alert_toasts; DELETE FROM observe.schema_migrations WHERE version=10')
     const upgradedDatabase = new PostgresDatabase(connection!)
     const upgraded = new PostgresAuthenticationRepository(upgradedDatabase)
     try {
       assert.equal(await upgraded.isSetupComplete(), true)
+      assert.equal((await upgraded.findUser('legacy@example.test'))?.realtimeAlertToasts, true)
       assert.equal((await pool.query('SELECT count(*)::integer AS count FROM observe.auth_setup')).rows[0].count, 1)
     } finally { await upgradedDatabase.close() }
   } finally {

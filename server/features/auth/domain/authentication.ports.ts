@@ -1,4 +1,4 @@
-import type { AuthProvider, AuthSession, AuthUser, UserInput } from '#shared/domain/auth'
+import type { AuthProvider, AuthSession, AuthUser, NotificationPreferences, UserInput } from '#shared/domain/auth'
 
 export type UserRecord = AuthUser & { passwordHash: string | null }
 export type SessionCredentials = SessionRecord & { accessToken: string, refreshToken: string }
@@ -11,6 +11,7 @@ export interface AuthenticationRepository {
   saveUser(input: UserInput, passwordHash: string | null, id?: string, actorId?: string, first?: boolean): Promise<AuthUser>
   deleteUser(id: string, actorId: string): Promise<void>
   updateProfile(id: string, name: string, passwordHash?: string, expectedHash?: string): Promise<AuthUser>
+  updateNotificationPreferences(userId: string, input: NotificationPreferences): Promise<AuthUser>
   createSession(userId: string, tokenHash: string, userAgent: string): Promise<SessionRecord>
   rotateSession(tokenHash: string, nextHash: string): Promise<SessionRecord | undefined>
   sessionUser(userId: string, sessionId: string): Promise<AuthUser | undefined>
