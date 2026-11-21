@@ -112,7 +112,7 @@ useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value =
         </template>
         <template #condition-cell="{ row }">
           <p class="text-sm text-highlighted">
-            {{ reducerLabels[row.original.reducer] }} {{ operatorSymbols[row.original.operator] }} {{ row.original.threshold.toLocaleString() }}
+            {{ reducerLabels[row.original.reducer] }} {{ operatorSymbols[row.original.operator] }} {{ row.original.threshold.toLocaleString('en') }}
           </p>
           <p class="mt-space-xs text-xs text-muted">
             Every {{ duration(row.original.interval) }} · {{ row.original.pendingFor ? 'For ' + duration(row.original.pendingFor) : 'Immediate' }}
@@ -132,7 +132,7 @@ useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value =
           <p
             v-if="row.original.muteUntil && Date.parse(row.original.muteUntil) > Date.now()"
             class="mt-space-xs text-xs text-muted"
-            :title="'Muted until ' + new Date(row.original.muteUntil).toLocaleString()"
+            :title="'Muted until ' + new Date(row.original.muteUntil).toLocaleString('en')"
           >
             Notifications muted
           </p>
@@ -140,7 +140,7 @@ useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value =
         <template #evaluation-cell="{ row }">
           <template v-if="row.original.evaluation">
             <div class="flex items-center gap-space-sm">
-              <span class="text-sm font-medium tabular-nums text-highlighted">{{ row.original.evaluation.value === null ? '—' : row.original.evaluation.value.toLocaleString(undefined, { maximumSignificantDigits: 4 }) }}</span>
+              <span class="text-sm font-medium tabular-nums text-highlighted">{{ row.original.evaluation.value === null ? '—' : row.original.evaluation.value.toLocaleString('en', { maximumSignificantDigits: 4 }) }}</span>
               <UTooltip
                 v-if="row.original.evaluation.message || row.original.evaluation.deliveryError"
                 :text="row.original.evaluation.message || row.original.evaluation.deliveryError"
@@ -154,9 +154,9 @@ useNotice(() => canWrite.value && !sources.value.length && sourcesStatus.value =
             </div>
             <time
               :datetime="row.original.evaluation.time"
-              :title="new Date(row.original.evaluation.time).toLocaleString()"
+              :title="new Date(row.original.evaluation.time).toLocaleString('en')"
               class="mt-space-xs block text-xs text-muted"
-            >{{ new Date(row.original.evaluation.time).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</time>
+            >{{ new Date(row.original.evaluation.time).toLocaleString('en', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</time>
           </template>
           <span
             v-else

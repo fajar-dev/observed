@@ -31,7 +31,7 @@ const tab = ref('stats')
           <div class="flex justify-between border-b border-default pb-space-md">
             <dt class="text-muted">
               Rows returned
-            </dt><dd>{{ results.reduce((sum, result) => sum + result.rows.length, 0).toLocaleString() }}</dd>
+            </dt><dd>{{ results.reduce((sum, result) => sum + result.rows.length, 0).toLocaleString('en') }}</dd>
           </div>
           <div class="flex justify-between border-b border-default pb-space-md">
             <dt class="text-muted">

@@ -57,12 +57,12 @@ export function reduceValues(series: TimeSeries, reducer: PanelOptions['reducer'
 
 export function formatMetric(value: Cell | undefined, options: PanelOptions) {
   if (typeof value !== 'number') return value === null || value === undefined ? 'No value' : String(value)
-  const fixed = (number: number) => number.toLocaleString(undefined, { maximumFractionDigits: options.decimals })
+  const fixed = (number: number) => number.toLocaleString('en', { maximumFractionDigits: options.decimals })
   if (options.unit.startsWith('suffix:')) return fixed(value) + ' ' + options.unit.slice(7)
   if (options.unit.startsWith('prefix:')) return options.unit.slice(7) + fixed(value)
   if (options.unit.startsWith('currency:')) {
     try {
-      return new Intl.NumberFormat(undefined, { style: 'currency', currency: options.unit.slice(9), maximumFractionDigits: options.decimals }).format(value)
+      return new Intl.NumberFormat('en', { style: 'currency', currency: options.unit.slice(9), maximumFractionDigits: options.decimals }).format(value)
     } catch {
       return fixed(value)
     }
@@ -70,7 +70,7 @@ export function formatMetric(value: Cell | undefined, options: PanelOptions) {
   if (['dateTimeAsIso', 'dateTimeAsUS', 'dateTimeAsSystem', 'dateTimeAsIsoNoDate'].includes(options.unit)) {
     const date = new Date(value)
     if (!Number.isFinite(date.getTime())) return fixed(value)
-    return options.unit === 'dateTimeAsIso' ? date.toISOString() : options.unit === 'dateTimeAsIsoNoDate' ? date.toLocaleTimeString() : date.toLocaleString()
+    return options.unit === 'dateTimeAsIso' ? date.toISOString() : options.unit === 'dateTimeAsIsoNoDate' ? date.toLocaleTimeString('en') : date.toLocaleString('en')
   }
   if (options.unit === 'short') {
     const scale = value === 0 ? 0 : Math.max(0, Math.min(4, Math.floor(Math.log10(Math.abs(value)) / 3)))
@@ -104,7 +104,7 @@ export function metricColor(value: number, options: PanelOptions) {
 }
 
 export function formatTableCell(key: string, value: unknown, options: PanelOptions) {
-  if (typeof value === 'string' && /^(?:_time|time)$/i.test(key) && Number.isFinite(Date.parse(value))) return new Date(value).toLocaleString()
+  if (typeof value === 'string' && /^(?:_time|time)$/i.test(key) && Number.isFinite(Date.parse(value))) return new Date(value).toLocaleString('en')
   if (typeof value !== 'number') return value === null || value === undefined ? '—' : String(value)
   return formatMetric(value, fieldMetricOptions(key, options))
 }

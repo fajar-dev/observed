@@ -207,7 +207,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
               <p class="text-sm font-medium">
                 Version {{ version.snapshot.revision || 1 }}
               </p><p class="mt-space-xs text-xs text-muted">
-                {{ new Date(version.updatedAt).toLocaleString() }}
+                {{ new Date(version.updatedAt).toLocaleString('en') }}
               </p>
             </div>
             <UButton

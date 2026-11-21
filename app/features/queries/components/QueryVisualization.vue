@@ -223,14 +223,14 @@ function sparklinePoints(item: TimeSeries) {
       v-else-if="compact && type === 'table' && rows.length > 500"
       class="mt-space-xs shrink-none text-xs text-dimmed"
     >
-      Showing first 500 of {{ rows.length.toLocaleString() }} rows
+      Showing first 500 of {{ rows.length.toLocaleString('en') }} rows
     </p>
 
     <p
       v-if="!compact && type !== 'text' && results.length"
       class="mt-space-md shrink-none text-xs text-dimmed"
     >
-      {{ rows.length.toLocaleString() }} rows · {{ results.reduce((sum, result) => sum + result.duration, 0) }} ms
+      {{ rows.length.toLocaleString('en') }} rows · {{ results.reduce((sum, result) => sum + result.duration, 0) }} ms
       <span v-if="type === 'table' && rows.length > 500"> · Showing first 500 rows</span>
       <span
         v-if="results.some(result => result.truncated)"

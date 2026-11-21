@@ -11,7 +11,7 @@ const start = ref('')
 const stop = ref('')
 const error = ref('')
 const label = computed(() => from.value && to.value
-  ? new Date(from.value).toLocaleString() + ' — ' + new Date(to.value).toLocaleString()
+  ? new Date(from.value).toLocaleString('en') + ' — ' + new Date(to.value).toLocaleString('en')
   : ranges.find(item => item.value === range.value)?.label ?? 'Time range')
 function localDateTime(value: string) {
   const date = new Date(value)
@@ -118,7 +118,7 @@ function absolute() {
             />
           </button>
           <p class="mt-space-xs border-t border-default px-space-md pt-space-sm text-xs text-dimmed">
-            Browser timezone · {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
+            Browser timezone · {{ Intl.DateTimeFormat('en').resolvedOptions().timeZone }}
           </p>
         </div>
       </div>

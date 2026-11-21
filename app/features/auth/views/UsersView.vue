@@ -69,7 +69,7 @@ useErrorToast(() => loadError.value || (!deleting.value ? error.value : ''))
           />
         </template>
         <template #lastSignInAt-cell="{ row }">
-          <span class="whitespace-nowrap text-xs text-muted">{{ row.original.lastSignInAt ? new Date(row.original.lastSignInAt).toLocaleString() : 'Never' }}</span>
+          <span class="whitespace-nowrap text-xs text-muted">{{ row.original.lastSignInAt ? new Date(row.original.lastSignInAt).toLocaleString('en') : 'Never' }}</span>
         </template>
         <template #actions-cell="{ row }">
           <UDropdownMenu

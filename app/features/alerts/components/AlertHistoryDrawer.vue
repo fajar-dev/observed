@@ -19,12 +19,12 @@ const { historyOpen, editing } = useAlertRules()
       >
         <div>
           <p class="text-xs text-muted">
-            {{ new Date(evaluation.time).toLocaleString() }}
+            {{ new Date(evaluation.time).toLocaleString('en') }}
           </p><p
             v-if="evaluation.value !== null"
             class="mt-space-xs text-sm text-highlighted"
           >
-            Value {{ evaluation.value.toLocaleString() }}
+            Value {{ evaluation.value.toLocaleString('en') }}
           </p><p
             v-if="evaluation.message || evaluation.deliveryError"
             class="mt-space-xs text-xs text-error"

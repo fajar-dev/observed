@@ -51,7 +51,7 @@ watch(() => props.sessions.length, (total) => {
             </p>
           </div>
           <template #details>
-            Started {{ new Date(session.createdAt).toLocaleString() }}
+            Started {{ new Date(session.createdAt).toLocaleString('en') }}
           </template>
           <template #actions>
             <UButton

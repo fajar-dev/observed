@@ -114,7 +114,7 @@ useErrorToast(() => loadError.value || (!open.value && !removeOpen.value ? error
           </div>
         </template>
         <template #updatedAt-cell="{ row }">
-          <span class="whitespace-nowrap">{{ new Date(row.original.updatedAt).toLocaleDateString() }}</span>
+          <span class="whitespace-nowrap">{{ new Date(row.original.updatedAt).toLocaleDateString('en') }}</span>
         </template>
         <template #actions-cell="{ row }">
           <UDropdownMenu

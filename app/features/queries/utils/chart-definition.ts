@@ -56,7 +56,7 @@ export function buildChartDefinition(series: TimeSeries[], type: 'line' | 'area'
       x: {
         scale: type === 'bar' ? scaleBand<number>().domain([...new Set(rows.map(row => row.x))].sort((a, b) => a - b)).padding(0.2) : scaleLinear().domain(bounds ? [bounds.min, bounds.max] : [0, 1]),
         nice: false,
-        axis: small ? false : { tickLabels, ticks: { count: Math.max(2, Math.min(6, Math.floor(dimensions.width / 120))), format: (value: number) => hasTime ? new Date(value).toLocaleString(undefined, bounds && bounds.max - bounds.min >= 86400_000 ? { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' } : { hour: '2-digit', minute: '2-digit' }) : String(value) } }
+        axis: small ? false : { tickLabels, ticks: { count: Math.max(2, Math.min(6, Math.floor(dimensions.width / 120))), format: (value: number) => hasTime ? new Date(value).toLocaleString('en', bounds && bounds.max - bounds.min >= 86400_000 ? { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' } : { hour: '2-digit', minute: '2-digit' }) : String(value) } }
       },
       y: { scale: scaleLinear().domain(numericDomain(primaryRows, settings)), nice: settings.max === undefined, grid: true, axis: { tickLabels, label: small ? undefined : settings.axisLabel, ticks: { count: Math.max(2, Math.min(5, Math.floor(dimensions.height / 50))), format: (value: number) => formatMetric(value, settings) } } },
       secondary: { channel: 'y', side: 'right', scale: scaleLinear().domain(numericDomain(secondaryRows, secondarySettings)), nice: true, axis: secondaryRows.length && !small ? { tickLabels, label: settings.rightAxisLabel, ticks: { count: 4, format: (value: number) => formatMetric(value, secondarySettings) } } : false }

@@ -71,7 +71,7 @@ onBeforeUnmount(() => observer?.disconnect())
               v-if="hasTime && points[0]"
               class="font-semibold text-highlighted"
             >
-              {{ new Date(Number(points[0].xValue)).toLocaleString() }}
+              {{ new Date(Number(points[0].xValue)).toLocaleString('en') }}
             </p>
             <div
               v-for="(point, index) in points.filter(point => !fieldAppearance(point.datum.field, options).hideTooltip)"

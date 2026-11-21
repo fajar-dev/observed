@@ -99,7 +99,7 @@ useNotice(() => open.value && diagnostics.value && Object.keys(diagnostics.value
               />
             </div>
             <p class="mt-space-xs text-xs text-muted">
-              {{ panel.message || panel.rows.toLocaleString() + ' rows returned' }}
+              {{ panel.message || panel.rows.toLocaleString('en') + ' rows returned' }}
             </p>
           </div>
         </template>

@@ -187,7 +187,7 @@ useErrorToast(error, 'Could not load query fields')
         size="xs"
         @click="useStarter"
       />
-      <span v-else>{{ query.length.toLocaleString() }} characters</span>
+      <span v-else>{{ query.length.toLocaleString('en') }} characters</span>
       <span>⌘ / Ctrl + Enter to run</span>
     </div>
   </div>

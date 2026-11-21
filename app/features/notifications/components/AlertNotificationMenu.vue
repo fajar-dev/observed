@@ -95,7 +95,7 @@ const number = (value: number | null) => value === null ? '—' : new Intl.Numbe
                 <time
                   :datetime="item.occurredAt"
                   class="block text-xs text-dimmed"
-                >{{ new Date(item.occurredAt).toLocaleString() }}</time>
+                >{{ new Date(item.occurredAt).toLocaleString('en') }}</time>
                 <UButton
                   v-if="!item.readAt"
                   label="Mark as read"

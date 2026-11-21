@@ -96,7 +96,7 @@ useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.v
             <p class="truncate text-sm font-medium text-highlighted">{{ dashboard.name }}</p>
             <p class="mt-space-xs text-xs text-muted">{{ dashboard.folder || 'General' }} · {{ dashboard.panels.length }} panels</p>
           </div>
-          <span class="shrink-none text-xs text-dimmed">{{ new Date(dashboard.updatedAt).toLocaleDateString() }}</span>
+          <span class="shrink-none text-xs text-dimmed">{{ new Date(dashboard.updatedAt).toLocaleDateString('en') }}</span>
         </NuxtLink>
       </ContentPanel>
       <ContentPanel
