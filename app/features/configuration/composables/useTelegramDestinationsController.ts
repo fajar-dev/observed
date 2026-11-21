@@ -40,7 +40,7 @@ export function useTelegramDestinationsController() {
       form.token = undefined
       open.value = false
       await refresh()
-      toast.add({ title: 'Telegram destination saved', color: 'success' })
+      toast.add({ title: 'Telegram destination saved', description: `You can select ${form.name} in your alert rules.`, color: 'success' })
     })
   }
 
@@ -49,7 +49,7 @@ export function useTelegramDestinationsController() {
     try {
       await perform(async () => {
         await apiRequest(`telegram-destinations/${destination.id}/test`, { method: 'POST' })
-        toast.add({ title: `Test sent to ${destination.name}`, color: 'success' })
+        toast.add({ title: 'Test message sent', description: `A test notification was sent to ${destination.name}.`, color: 'success' })
       })
     } finally {
       testing.value = ''

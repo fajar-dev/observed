@@ -63,7 +63,7 @@ useErrorToast(() => settings.value ? error.value || settingsError.value : '')
             icon="i-lucide-clock-3"
             color="neutral"
             variant="outline"
-            @click="draft.range = range; toast.add({ title: 'Default time range updated' })"
+            @click="draft.range = range; toast.add({ title: 'Default time range updated', description: 'Save the dashboard to use this range when it opens.' })"
           />
           <div
             v-if="!isNew && original && canDeleteDashboard(original)"

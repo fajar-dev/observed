@@ -36,10 +36,10 @@ export default defineAppConfig({
     empty: { slots: { root: 'rounded-xl p-space-xxl', title: 'font-heading text-heading font-semibold', description: 'text-sm leading-relaxed text-muted' } },
     toast: { slots: {
       root: 'rounded-lg border border-default bg-default p-space-lg shadow-lg ring-none gap-space-md',
-      title: 'text-sm font-semibold text-highlighted',
+      title: 'text-sm font-semibold leading-snug break-words text-highlighted',
       description: 'mt-space-xs text-xs leading-relaxed break-words text-muted',
       icon: 'size-icon-md shrink-none',
-      actions: 'flex gap-space-sm shrink-none',
+      actions: 'mt-none flex gap-space-sm shrink-none',
       close: 'p-none'
     } },
     badge: { slots: { base: 'rounded-sm font-medium' } },

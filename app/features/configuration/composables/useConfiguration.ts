@@ -41,7 +41,7 @@ function createConfiguration() {
       if (id) connectionStatus[id] = undefined
       open.value = false
       await refresh()
-      toast.add({ title: 'Data source saved', color: 'success' })
+      toast.add({ title: 'Data source saved', description: `Connection settings for ${form.name} have been saved.`, color: 'success' })
     })
   }
   async function test(source: DataSource) {

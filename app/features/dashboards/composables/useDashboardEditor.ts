@@ -58,7 +58,7 @@ function createDashboardEditor() {
       setDashboard(saved)
       editing.value = false
       settings.value = false
-      toast.add({ title: 'Dashboard saved', color: 'success' })
+      toast.add({ title: 'Dashboard saved', description: 'Your panels and layout have been saved.', color: 'success' })
       await refreshList()
       if (isNew) await router.replace('/dashboards/' + saved.id)
     })

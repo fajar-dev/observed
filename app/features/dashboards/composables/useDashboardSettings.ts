@@ -55,7 +55,7 @@ export function useDashboardSettings(draft: Ref<DashboardDefinition>, editing: R
     try {
       const parsed = dashboardSchema.parse(JSON.parse(jsonDocument.value))
       draft.value = { ...parsed, revision: draft.value.revision }
-      toast.add({ title: 'JSON applied to draft. Save to persist.' })
+      toast.add({ title: 'Dashboard JSON applied', description: 'Review the changes and save the dashboard to keep them.' })
       settings.value = false
     } catch (failure) {
       settingsError.value = failure instanceof Error ? failure.message : 'Invalid dashboard JSON'

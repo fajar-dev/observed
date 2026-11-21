@@ -22,7 +22,7 @@ export function useProfile() {
         return
       }
       auth.user.value = user
-      toast.add({ title: 'Profile saved', color: 'success' })
+      toast.add({ title: 'Profile saved', description: 'Your account details have been updated.', color: 'success' })
     })
   }
   async function revoke(session: AuthSession) {

@@ -3,7 +3,7 @@ import type { MaybeRefOrGetter } from 'vue'
 
 type Notice = {
   title: string
-  description?: string
+  description: string
   color?: ToastProps['color']
   icon?: string
   actions?: ToastProps['actions']

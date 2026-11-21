@@ -53,7 +53,7 @@ function createAlertRules() {
       if (!id) await refreshAccess()
       open.value = false
       await refresh()
-      toast.add({ title: 'Alert rule saved', color: 'success' })
+      toast.add({ title: 'Alert rule saved', description: 'Threshold and notification settings have been saved.', color: 'success' })
     })
   }
   async function evaluate(rule: AlertRule) {
@@ -62,7 +62,7 @@ function createAlertRules() {
       await perform(async () => {
         await apiRequest('alert-rules/' + rule.id + '/evaluate', { method: 'POST' })
         await refresh()
-        toast.add({ title: 'Rule evaluated' })
+        toast.add({ title: 'Rule evaluated', description: `The latest evaluation for ${rule.name} is available in its history.` })
       })
     } finally {
       evaluating.value = ''

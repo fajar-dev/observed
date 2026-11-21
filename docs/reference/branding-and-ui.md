@@ -16,7 +16,7 @@ Hindari istilah “workspace” pada copy UI, nama monitoring lama, klaim sensor
 - Toolbar/filter/action biasanya `sm`; field form `md`. Semua input/select/textarea yang memerlukan isian memiliki label, placeholder bermakna, dan pesan validasi.
 - Tab horizontal memakai variant link bergaris. Menu action memakai ikon titik tiga vertikal dan alignment kanan.
 - Modal biasa hanya title, tanpa deskripsi title serta garis pemisah header/footer. Gunakan padding global yang ringkas. Modal/slideover memakai overlay tipis dan blur subtle. Editor fullscreen mempertahankan struktur kerja editor.
-- Toast melalui helper bersama, tanpa progress/loading toast. Jangan menambah `UAlert` atau banner error paralel untuk alur yang sudah memakai toast.
+- Toast melalui helper bersama, dengan title singkat dan description yang menjelaskan hasil atau langkah berikutnya; keduanya wajib pada kontrak helper. Pesan sukses tidak boleh menyatakan koneksi sudah teruji jika hanya menyimpan konfigurasi. Tanpa progress/loading toast. Jangan menambah `UAlert` atau banner error paralel untuk alur yang sudah memakai toast.
 - Empty state singkat, dengan CTA jika role dapat membuat resource. Hindari statistik footer atau paragraf penjelasan panjang yang mengulang UI.
 
 Typography: Inter untuk body/form, Manrope untuk heading/metric, JetBrains Mono untuk query/kode. Gunakan tebal huruf dari hierarchy token; jangan semua label dijadikan bold. Diagram/chart harus mempunyai area untuk axis, legend dan tabel yang dapat scroll secara lokal, tanpa overflow halaman.
