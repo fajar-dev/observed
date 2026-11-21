@@ -1,5 +1,9 @@
 <script setup lang="ts">
 const { isAdmin, greeting, canViewDashboards, canViewAlerts, canCreateDashboard, canCreateAlert, sources, sourcesStatus, sourcesError, dashboardsStatus, dashboardsError, refreshDashboards, alertsStatus, alertsError, refreshAlerts, recent, active, attention, activity, activityLoading, sourceNames, alertState, summaries } = useOverview()
+const quickAccessItems = computed(() => [
+  ...(canCreateDashboard.value ? [{ label: 'New dashboard', icon: 'i-lucide-panels-top-left', to: '/dashboards/new' }] : []),
+  ...(canCreateAlert.value ? [{ label: 'New alert rule', icon: 'i-lucide-bell-plus', to: '/alerts?new=1', disabled: !sources.value.length }] : [])
+])
 usePageSeo('Overview', 'Your Observed home for sensor dashboards, alert conditions, and recent monitoring activity.')
 </script>
 
@@ -15,10 +19,20 @@ usePageSeo('Overview', 'Your Observed home for sensor dashboards, alert conditio
         :ui="{ root: 'content-toolbar', container: 'w-full', wrapper: 'gap-space-lg', title: 'break-words' }"
       >
         <template
-          v-if="canCreateDashboard"
+          v-if="quickAccessItems.length"
           #links
         >
-          <NewDashboardMenu />
+          <UDropdownMenu
+            :items="quickAccessItems"
+            :content="{ align: 'end' }"
+          >
+            <UButton
+              label="Quick access"
+              icon="i-lucide-plus"
+              trailing-icon="i-lucide-chevron-down"
+              size="sm"
+            />
+          </UDropdownMenu>
         </template>
       </UPageHeader>
     </template>
