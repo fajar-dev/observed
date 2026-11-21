@@ -1,67 +1,98 @@
 <script setup lang="ts">
-const { isAdmin } = useAuthentication()
-const { canCreateDashboard: canWrite, canViewDashboards, canViewAlerts } = useAccessPermissions()
-usePageSeo('Overview', 'Review sensor dashboards, structural trends, and configured threshold alerts in Observed.')
-const { data: sources, error: sourcesError } = useDataSources()
-const { data: dashboards, error: dashboardsError, status } = useDashboards()
-const { data: alerts, error: alertsError } = useAlertRuleRecords()
-const { data: destinations, error: destinationsError } = useTelegramDestinations()
-const firing = computed(() => alerts.value.filter(rule => rule.enabled && rule.evaluation?.state === 'firing'))
-const recent = computed(() => [...dashboards.value].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 6))
-const summaries = computed(() => [
-  ...(isAdmin.value || canViewDashboards.value || canViewAlerts.value ? [{ title: 'Data sources', count: sources.value.length, to: isAdmin.value ? '/configuration' : canViewDashboards.value ? '/dashboards' : '/alerts', icon: 'i-lucide-database' }] : []),
-  ...(canViewDashboards.value ? [{ title: 'Dashboards', count: dashboards.value.length, to: '/dashboards', icon: 'i-lucide-panels-top-left' }] : []),
-  ...(canViewAlerts.value ? [{ title: 'Firing alerts', count: firing.value.length, to: '/alerts', icon: 'i-lucide-bell-ring' }] : [])
-])
-useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.value || destinationsError.value, 'Could not load overview')
+const { isAdmin, greeting, canViewDashboards, canViewAlerts, canCreateDashboard, canCreateAlert, sources, sourcesStatus, sourcesError, dashboardsStatus, dashboardsError, refreshDashboards, alertsStatus, alertsError, refreshAlerts, recent, active, attention, activity, activityLoading, sourceNames, alertState, summaries } = useOverview()
+usePageSeo('Overview', 'Your Observed home for sensor dashboards, alert conditions, and recent monitoring activity.')
 </script>
 
 <template>
   <WorkspacePage
     compact
-    icon="i-lucide-house"
-    title="Overview"
-    description="Sensor dashboards, structural trends, and threshold alerts."
+    :title="greeting"
   >
-    <template #actions>
-      <NewDashboardMenu />
+    <template #header>
+      <UPageHeader
+        :title="greeting"
+        description="Open your dashboards and catch up on sensor monitoring."
+        :ui="{ root: 'content-toolbar', container: 'w-full', wrapper: 'gap-space-lg', title: 'break-words' }"
+      >
+        <template
+          v-if="canCreateDashboard"
+          #links
+        >
+          <NewDashboardMenu />
+        </template>
+      </UPageHeader>
     </template>
-    <div
-      class="toolbar"
-      role="group"
-      aria-label="Monitoring summary"
-    >
-      <UButton
-        v-for="item in summaries"
-        :key="item.title"
-        :to="item.to"
-        :icon="item.icon"
-        :label="item.title + ' · ' + item.count"
-        size="sm"
-        color="neutral"
-        variant="ghost"
+    <div class="space-y-space-lg">
+      <div
+        v-if="isAdmin && sourcesStatus === 'success' && !sources.length && !sourcesError"
+        class="flex flex-wrap items-center justify-between gap-space-md rounded-md bg-muted p-space-lg"
+      >
+        <div class="min-w-none">
+          <p class="text-sm font-semibold text-highlighted">
+            Connect your first sensor source
+          </p>
+          <p class="mt-space-xs text-xs text-muted">
+            Add InfluxDB to start monitoring your sensor data.
+          </p>
+        </div>
+        <UButton
+          label="Add data source"
+          to="/configuration"
+          icon="i-lucide-plus"
+          size="sm"
+        />
+      </div>
+      <section
+        v-if="summaries.length"
+        aria-label="Monitoring summary"
+        class="grid gap-space-md"
+        :class="[summaries.length > 1 ? 'grid-cols-pair' : undefined, summaries.length === 4 ? 'lg:grid-cols-quartet' : summaries.length === 3 ? 'lg:grid-cols-trio' : undefined]"
+      >
+        <UCard
+          v-for="item in summaries"
+          :key="item.label"
+        >
+          <div class="flex items-center justify-between gap-space-md">
+            <p class="text-xs font-medium text-muted">
+              {{ item.label }}
+            </p>
+            <UIcon
+              :name="item.icon"
+              class="size-icon-sm shrink-none text-dimmed"
+            />
+          </div>
+          <USkeleton
+            v-if="item.loading"
+            class="mt-space-md h-control-sm w-compact"
+          />
+          <p
+            v-else
+            class="mt-space-sm font-heading text-title font-semibold tabular-nums text-highlighted"
+          >
+            {{ item.failed ? '—' : item.value.toLocaleString('en') }}
+          </p>
+          <p class="mt-space-xs text-xs text-muted">
+            {{ item.failed ? 'Temporarily unavailable' : item.hint }}
+          </p>
+        </UCard>
+      </section>
+      <UEmpty
+        v-if="!canViewDashboards && !canViewAlerts"
+        title="Your monitoring home is ready"
+        description="Ask an administrator to assign your sensor dashboards and alert rules."
+        icon="i-lucide-shield"
+        variant="naked"
+        class="p-space-lg"
       />
-    </div>
-    <UEmpty
-      v-if="!canViewDashboards && !canViewAlerts"
-      title="No monitoring access assigned"
-      description="Ask an administrator to grant access to your sensor dashboards and alert rules."
-      icon="i-lucide-shield"
-      variant="naked"
-    />
-    <div class="grid min-w-none items-start gap-space-lg xl:grid-cols-overview">
       <ContentPanel
         v-if="canViewDashboards"
-        list
+        title="Your dashboards"
+        role="region"
+        aria-label="Your dashboards"
       >
-        <template #header>
-          <h2 class="text-sm font-semibold text-highlighted">
-            Recent dashboards
-          </h2>
-        </template>
         <template #actions>
           <UButton
-            label="View all"
+            label="Browse all"
             to="/dashboards"
             color="neutral"
             variant="ghost"
@@ -70,95 +101,181 @@ useErrorToast(() => sourcesError.value || dashboardsError.value || alertsError.v
           />
         </template>
         <USkeleton
-          v-if="status === 'pending' && !recent.length"
-          class="m-space-md h-sidebar"
+          v-if="dashboardsStatus === 'pending' && !recent.length"
+          class="m-space-lg h-compact"
         />
-        <UEmpty
-          v-else-if="!recent.length"
-          variant="naked"
-          title="Create your first dashboard"
-          description="Visualize your sensor data or import dashboard JSON."
-          icon="i-lucide-panels-top-left"
-          size="sm"
-          :actions="canWrite ? [{ label: 'Create dashboard', to: '/dashboards/new', icon: 'i-lucide-plus', size: 'sm' }] : []"
-        />
-        <NuxtLink
-          v-for="dashboard in recent"
-          :key="dashboard.id"
-          :to="'/dashboards/' + dashboard.id"
-          class="flex min-w-none items-center gap-space-md px-space-lg py-space-md hover:bg-muted"
-        >
-          <UIcon
-            name="i-lucide-panels-top-left"
-            class="size-icon-md shrink-none text-primary"
-          />
-          <div class="min-w-none flex-fill">
-            <p class="truncate text-sm font-medium text-highlighted">{{ dashboard.name }}</p>
-            <p class="mt-space-xs text-xs text-muted">{{ dashboard.folder || 'General' }} · {{ dashboard.panels.length }} panels</p>
-          </div>
-          <span class="shrink-none text-xs text-dimmed">{{ new Date(dashboard.updatedAt).toLocaleDateString('en') }}</span>
-        </NuxtLink>
-      </ContentPanel>
-      <ContentPanel
-        v-if="canViewAlerts"
-        list
-      >
-        <template #header>
-          <h2 class="text-sm font-semibold text-highlighted">
-            Alerts
-          </h2>
-        </template>
-        <template #actions>
-          <UButton
-            label="View rules"
-            to="/alerts"
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            trailing-icon="i-lucide-arrow-right"
-          />
-        </template>
-        <div class="flex items-center gap-space-md px-space-lg py-space-md">
-          <UIcon
-            :name="firing.length ? 'i-lucide-bell-ring' : 'i-lucide-check-check'"
-            class="size-icon-md shrink-none"
-            :class="firing.length ? 'text-error' : 'text-muted'"
-          />
-          <div class="min-w-none">
-            <p class="text-sm font-medium text-highlighted">
-              {{ firing.length ? firing.length + ' firing alerts' : 'No firing alerts' }}
-            </p>
-            <p class="mt-space-xs text-xs text-muted">
-              {{ alerts.length }} rules · {{ destinations.length }} Telegram destinations
-            </p>
-          </div>
-        </div>
-        <NuxtLink
-          v-for="rule in firing.slice(0, 4)"
-          :key="rule.id"
-          to="/alerts"
-          class="flex items-center justify-between gap-space-md px-space-lg py-space-md text-sm hover:bg-muted"
-        >
-          <span class="truncate font-medium">{{ rule.name }}</span><UBadge
-            label="Firing"
-            color="error"
-            variant="subtle"
-          />
-        </NuxtLink>
         <div
-          v-if="isAdmin && !destinations.length"
-          class="px-space-lg py-space-md"
+          v-else-if="dashboardsError && !recent.length"
+          class="flex flex-wrap items-center justify-between gap-space-md p-space-lg"
         >
+          <p class="text-sm text-muted">
+            Dashboards are unavailable
+          </p>
           <UButton
-            size="sm"
-            label="Configure Telegram"
-            to="/configuration?section=telegram-destinations"
-            icon="i-lucide-send"
+            label="Try again"
             color="neutral"
             variant="outline"
+            size="sm"
+            @click="refreshDashboards()"
           />
         </div>
+        <div
+          v-else-if="!recent.length"
+          class="flex flex-wrap items-center justify-between gap-space-md p-space-lg"
+        >
+          <p class="text-sm text-muted">
+            {{ canCreateDashboard ? 'Build your first sensor dashboard' : 'No dashboards assigned yet' }}
+          </p>
+          <UButton
+            v-if="canCreateDashboard"
+            label="Create dashboard"
+            to="/dashboards/new"
+            icon="i-lucide-plus"
+            size="sm"
+          />
+        </div>
+        <ul
+          v-else
+          class="divide-y divide-default"
+        >
+          <li
+            v-for="dashboard in recent"
+            :key="dashboard.id"
+          >
+            <OverviewDashboardLink :dashboard="dashboard" />
+          </li>
+        </ul>
       </ContentPanel>
+      <div
+        v-if="canViewAlerts"
+        class="grid min-w-none items-start gap-space-lg lg:grid-cols-pair"
+      >
+        <ContentPanel
+          title="Needs attention"
+          role="region"
+          aria-label="Alerts needing attention"
+        >
+          <template #actions>
+            <UButton
+              label="View rules"
+              to="/alerts"
+              trailing-icon="i-lucide-arrow-right"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+            />
+          </template>
+          <USkeleton
+            v-if="alertsStatus === 'pending' && !attention.length"
+            class="m-space-lg h-compact"
+          />
+          <div
+            v-else-if="alertsError"
+            class="flex flex-wrap items-center justify-between gap-space-md p-space-lg"
+          >
+            <p class="text-sm text-muted">
+              Alert status is unavailable
+            </p>
+            <UButton
+              label="Try again"
+              color="neutral"
+              variant="outline"
+              size="sm"
+              @click="refreshAlerts()"
+            />
+          </div>
+          <ul
+            v-else-if="attention.length"
+            class="divide-y divide-default"
+          >
+            <li
+              v-for="rule in attention.slice(0, 4)"
+              :key="rule.id"
+            >
+              <NuxtLink
+                to="/alerts"
+                class="flex min-w-none items-start gap-space-md px-space-lg py-space-md hover:bg-muted"
+              >
+                <UIcon
+                  :name="alertState(rule).icon"
+                  class="mt-space-xs size-icon-sm shrink-none"
+                  :class="alertState(rule).color === 'error' ? 'text-error' : alertState(rule).color === 'warning' ? 'text-warning' : 'text-dimmed'"
+                />
+                <div class="min-w-none flex-fill">
+                  <p class="truncate text-sm font-medium text-highlighted">{{ rule.name }}</p>
+                  <p class="mt-space-xs truncate text-xs text-muted">{{ sourceNames[rule.dataSourceId] || 'Sensor source' }} · {{ alertState(rule).message }}</p>
+                </div>
+                <UBadge
+                  :label="alertState(rule).label"
+                  :color="alertState(rule).color"
+                  variant="subtle"
+                  class="shrink-none"
+                />
+              </NuxtLink>
+            </li>
+          </ul>
+          <div
+            v-else
+            class="flex flex-wrap items-center justify-between gap-space-md p-space-lg"
+          >
+            <p class="text-sm text-muted">
+              {{ active.length ? 'No alerts need attention' : 'No active alert rules' }}
+            </p>
+            <UButton
+              v-if="!active.length && canCreateAlert && sources.length"
+              label="Create alert"
+              to="/alerts?new=1"
+              icon="i-lucide-plus"
+              size="sm"
+            />
+          </div>
+        </ContentPanel>
+        <ContentPanel
+          title="Recent activity"
+          role="region"
+          aria-label="Recent monitoring activity"
+        >
+          <USkeleton
+            v-if="activityLoading && !activity.length"
+            class="m-space-lg h-compact"
+          />
+          <ul
+            v-else-if="activity.length"
+            class="divide-y divide-default"
+          >
+            <li
+              v-for="item in activity"
+              :key="item.id"
+            >
+              <NuxtLink
+                to="/alerts"
+                class="flex min-w-none items-start gap-space-md px-space-lg py-space-md hover:bg-muted"
+              >
+                <UIcon
+                  :name="item.state === 'firing' ? 'i-lucide-bell-ring' : 'i-lucide-circle-check'"
+                  class="mt-space-xs size-icon-sm shrink-none"
+                  :class="item.state === 'firing' ? 'text-error' : 'text-success'"
+                />
+                <div class="min-w-none flex-fill">
+                  <p class="truncate text-sm font-medium text-highlighted">{{ item.alertName }}</p>
+                  <p class="mt-space-xs truncate text-xs text-muted">{{ item.state === 'firing' ? 'Firing' : 'Recovered' }} · {{ item.sourceName }}</p>
+                </div>
+                <time
+                  :datetime="item.occurredAt"
+                  :title="new Date(item.occurredAt).toLocaleString('en')"
+                  class="shrink-none text-xs text-dimmed"
+                >{{ new Date(item.occurredAt).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' }) }}</time>
+              </NuxtLink>
+            </li>
+          </ul>
+          <p
+            v-else
+            class="p-space-lg text-sm text-muted"
+          >
+            No alert activity yet. Firing and recovery updates will appear here.
+          </p>
+        </ContentPanel>
+      </div>
     </div>
   </WorkspacePage>
 </template>
